@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="D3DCore">
+      <UniqueIdentifier>{A9FF23F2-15DF-A28D-1EF7-2D648A5509EF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="D3DCore\Renderer">
+      <UniqueIdentifier>{6FF197B1-5BEA-B603-841C-9C887074960F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="D3DCore\Renderer\DXError">
+      <UniqueIdentifier>{0432E3A5-F056-3226-19A2-17B605263144}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\d3dcpch.h" />
+    <ClInclude Include="src\D3DCore\Core\EntryPoint.h" />
+    <ClInclude Include="src\D3DCore\Core\Base.h" />
+    <ClInclude Include="src\D3DCore\Core\Log.h" />
+    <ClInclude Include="src\D3DCore\Core\D3DCWindows.h" />
+    <ClInclude Include="src\D3DCore\Core\D3DCAssert.h" />
+    <ClInclude Include="src\D3DCore\Core\D3DCException.h" />
+    <ClInclude Include="src\D3DCore\Core\Window.h" />
+    <ClInclude Include="src\D3DCore\Events\ApplicationEvent.h" />
+    <ClInclude Include="src\D3DCore\Events\Event.h" />
+    <ClInclude Include="src\D3DCore\Events\KeyEvent.h" />
+    <ClInclude Include="src\D3DCore\Core\KeyCodes.h" />
+    <ClInclude Include="src\D3DCore\Core\MouseCodes.h" />
+    <ClInclude Include="src\D3DCore\Events\MouseEvent.h" />
+    <ClInclude Include="src\D3DCore\Core\Layer.h" />
+    <ClInclude Include="src\D3DCore\Core\LayerStack.h" />
+    <ClInclude Include="src\D3DCore\Core\Application.h" />
+    <ClInclude Include="src\D3DCore.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\d3dcpch.cpp" />
+    <ClCompile Include="src\D3DCore\Core\Log.cpp" />
+    <ClCompile Include="src\D3DCore\Core\D3DCException.cpp" />
+    <ClCompile Include="src\D3DCore\Core\Window.cpp" />
+    <ClCompile Include="src\D3DCore\Core\LayerStack.cpp" />
+    <ClCompile Include="src\D3DCore\Core\Application.cpp" />
+  </ItemGroup>
+</Project>

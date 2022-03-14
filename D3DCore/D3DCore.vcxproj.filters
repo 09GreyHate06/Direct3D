@@ -30,6 +30,24 @@
     <ClInclude Include="src\D3DCore\Core\LayerStack.h" />
     <ClInclude Include="src\D3DCore\Core\Application.h" />
     <ClInclude Include="src\D3DCore.h" />
+    <ClInclude Include="src\D3DCore\Renderer\D3DContext.h" />
+    <ClInclude Include="src\D3DCore\Renderer\DXError\dxerr.h" />
+    <ClInclude Include="src\D3DCore\Renderer\DXError\DxgiInfoManager.h" />
+    <ClInclude Include="src\D3DCore\Renderer\Renderer.h" />
+    <ClInclude Include="src\D3DCore\Renderer\Framebuffer.h" />
+    <ClInclude Include="src\D3DCore\Renderer\Shader.h" />
+    <ClInclude Include="src\D3DCore\Utils\Loader.h" />
+    <ClInclude Include="src\D3DCore\Renderer\Buffer.h" />
+    <ClInclude Include="src\D3DCore\Renderer\Texture.h" />
+    <ClInclude Include="src\D3DCore\Utils\BasicMesh.h" />
+    <ClInclude Include="src\D3DCore\Utils\EditorCamera.h" />
+    <ClInclude Include="src\D3DCore\Core\Input.h" />
+    <ClInclude Include="src\D3DCore\Scene\Entity.h" />
+    <ClInclude Include="src\D3DCore\Scene\Scene.h" />
+    <ClInclude Include="src\D3DCore\Scene\Components.h" />
+    <ClInclude Include="src\D3DCore\Scene\System.h" />
+    <ClInclude Include="src\D3DCore\Core\Time.h" />
+    <ClInclude Include="src\D3DCore\ImGui\ImGuiLayer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\d3dcpch.cpp" />
@@ -38,5 +56,26 @@
     <ClCompile Include="src\D3DCore\Core\Window.cpp" />
     <ClCompile Include="src\D3DCore\Core\LayerStack.cpp" />
     <ClCompile Include="src\D3DCore\Core\Application.cpp" />
+    <ClCompile Include="src\D3DCore\Renderer\D3DContext.cpp" />
+    <ClCompile Include="src\D3DCore\Renderer\DXError\dxerr.cpp" />
+    <ClCompile Include="src\D3DCore\Renderer\DXError\DxgiInfoManager.cpp" />
+    <ClCompile Include="src\D3DCore\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\D3DCore\Renderer\Framebuffer.cpp" />
+    <ClCompile Include="src\D3DCore\Renderer\Shader.cpp" />
+    <ClCompile Include="src\D3DCore\Utils\Loader.cpp" />
+    <ClCompile Include="src\D3DCore\Renderer\Buffer.cpp" />
+    <ClCompile Include="src\D3DCore\Renderer\Texture.cpp" />
+    <ClCompile Include="src\D3DCore\Utils\BasicMesh.cpp" />
+    <ClCompile Include="src\D3DCore\Utils\EditorCamera.cpp" />
+    <ClCompile Include="src\D3DCore\Core\Input.cpp" />
+    <ClCompile Include="src\D3DCore\Scene\Scene.cpp" />
+    <ClCompile Include="src\D3DCore\Core\Time.cpp" />
+    <ClCompile Include="src\D3DCore\ImGui\ImGuiBuild.cpp" />
+    <ClCompile Include="src\D3DCore\ImGui\ImGuiLayer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\D3DCore\Renderer\DXError\DXGetErrorDescription.inl" />
+    <None Include="src\D3DCore\Renderer\DXError\DXGetErrorString.inl" />
+    <None Include="src\D3DCore\Renderer\DXError\DXTrace.inl" />
   </ItemGroup>
 </Project>

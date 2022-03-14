@@ -32,7 +32,7 @@ namespace d3dcore
 		}
 
 		HRESULT hr;
-		D3DC_GFX_THROW_NOINFO(DxgiGetDebugInterface(__uuidof(IDXGIInfoQueue), &m_dxgiInfoQueue));
+		D3DC_CONTEXT_THROW_NOINFO(DxgiGetDebugInterface(__uuidof(IDXGIInfoQueue), &m_dxgiInfoQueue));
 	}
 
 	void DxgiInfoManager::Set()
@@ -51,12 +51,12 @@ namespace d3dcore
 			HRESULT hr;
 			SIZE_T messageLength = 0;
 			// get the size of message i in bytes
-			D3DC_GFX_THROW_NOINFO(m_dxgiInfoQueue->GetMessage(DXGI_DEBUG_ALL, i, nullptr, &messageLength));
+			D3DC_CONTEXT_THROW_NOINFO(m_dxgiInfoQueue->GetMessage(DXGI_DEBUG_ALL, i, nullptr, &messageLength));
 			// allocate memory for message
 			auto bytes = std::make_unique<byte[]>(messageLength);
 			auto message = reinterpret_cast<DXGI_INFO_QUEUE_MESSAGE*>(bytes.get());
 			// get the message and push its description into the vector
-			D3DC_GFX_THROW_NOINFO(m_dxgiInfoQueue->GetMessage(DXGI_DEBUG_ALL, i, message, &messageLength));
+			D3DC_CONTEXT_THROW_NOINFO(m_dxgiInfoQueue->GetMessage(DXGI_DEBUG_ALL, i, message, &messageLength));
 			messages.emplace_back(message->pDescription);
 		}
 

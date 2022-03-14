@@ -93,8 +93,8 @@ namespace d3dcore
 
 	LRESULT Window::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
-		//if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
-		//	return true;
+		if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
+			return true;
 
 		switch (msg)
 		{
@@ -308,8 +308,8 @@ namespace d3dcore
 	{
 		std::ostringstream oss;
 		oss << GetType() << '\n'
-			<< "[ERROR CODE] " << GetErrorCode() << '\n'
-			<< "[DESCRIPTION] " << GetErrorDescription() << '\n'
+			<< "[Error Code] " << GetErrorCode() << '\n'
+			<< "[Description] " << GetErrorDescription() << '\n'
 			<< GetOriginString();
 
 		m_whatBuffer = oss.str();

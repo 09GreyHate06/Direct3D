@@ -12,7 +12,7 @@
 //--------------------------------------------------------------------------------------
 
 #pragma once
-#include "D3DCore/Core/WinDef.h" // <Windows.h>
+#include "D3DCore/Core/D3DCWindows.h" // <Windows.h>
 #include <sal.h>
 
 #ifdef __cplusplus

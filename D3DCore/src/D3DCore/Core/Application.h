@@ -2,6 +2,7 @@
 #include "LayerStack.h"
 #include "Window.h"
 #include "D3DCore/Events/ApplicationEvent.h"
+#include "D3DCore/ImGui/ImGuiLayer.h"
 
 namespace d3dcore
 {
@@ -19,7 +20,9 @@ namespace d3dcore
 		void Run();
 		void OnEvent(Event& event);
 
-		//ImGuiLayer* GetImGuiLayer() const { return m_imGuiLayer; }
+		inline void Close() { m_window->Close(); }
+
+		ImGuiLayer* GetImGuiLayer() const { return m_imGuiLayer; }
 		Window& GetWindow() const { return *m_window; }
 		static Application& Get() { return *s_instance; }
 
@@ -30,7 +33,7 @@ namespace d3dcore
 		std::unique_ptr<Window> m_window;
 		LayerStack m_layerStack;
 		bool m_running = true;
-		//ImGuiLayer* m_imGuiLayer;
+		ImGuiLayer* m_imGuiLayer;
 		
 		static Application* s_instance;
 	};

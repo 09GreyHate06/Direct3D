@@ -1,6 +1,9 @@
 #include "d3dcpch.h"
 #include "Application.h"
 #include "Base.h"
+#include "Time.h"
+
+#include "D3DCore/Renderer/Renderer.h"
 
 namespace d3dcore
 {
@@ -14,10 +17,16 @@ namespace d3dcore
 
 		m_window = std::make_unique<Window>(1280, 720, "D3DCore");
 		m_window->SetEventCallback(D3DC_BIND_EVENT_FN(Application::OnEvent));
+
+		Renderer::Init();
+
+		m_imGuiLayer = new ImGuiLayer();
+		PushOverlay(m_imGuiLayer);
 	}
 
 	Application::~Application()
 	{
+		Renderer::Shutdown();
 	}
 
 	void Application::PushLayer(Layer* layer)
@@ -27,7 +36,7 @@ namespace d3dcore
 
 	void Application::PushOverlay(Layer* overlay)
 	{
-		m_layerStack.PopOverlay(overlay);
+		m_layerStack.PushOverlay(overlay);
 	}
 
 	void Application::PopLayer(Layer* layer)
@@ -42,18 +51,22 @@ namespace d3dcore
 
 	void Application::Run()
 	{
+		Time::Init();
+
 		while (m_running)
 		{
+			Time::UpdateDelta();
+
 			for (Layer* layer : m_layerStack)
 				layer->OnUpdate();
 
-			//m_imGuiLayer->Begin();
-			//for (Layer* layer : m_layerStack)
-			//	layer->OnImGuiRender();
-			//m_imGuiLayer->End();
+			m_imGuiLayer->Begin();
+			for (Layer* layer : m_layerStack)
+				layer->OnImGuiRender();
+			m_imGuiLayer->End();
 
 			Window::PollEvents();
-			// Renderer::EndFrame();
+			Renderer::SwapBuffers(1);
 		}
 	}
 

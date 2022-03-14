@@ -54,7 +54,6 @@ namespace d3dcore
 		uint32_t GetHeight() const { return m_data.height; }
 		bool IsFocus() const { return m_data.isFocus; }
 		HWND GetNativeWindow() const { return m_hWnd; }
-
 		static void PollEvents();
 
 	private:

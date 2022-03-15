@@ -20,7 +20,7 @@ namespace d3dcore
 		void Run();
 		void OnEvent(Event& event);
 
-		inline void Close() { m_window->Close(); }
+		inline void Close() { m_running = false; }
 
 		ImGuiLayer* GetImGuiLayer() const { return m_imGuiLayer; }
 		Window& GetWindow() const { return *m_window; }

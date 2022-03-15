@@ -122,15 +122,15 @@ namespace d3dcore
 		}
 		case WM_SIZE:
 		{
-			if (wParam == SIZE_MINIMIZED)
-				m_data.isMinimized = true;
-			else
-				m_data.isMinimized = false;
-
 			UINT width = LOWORD(lParam);
 			UINT height = HIWORD(lParam);
 			m_data.width = width;
 			m_data.height = height;
+
+			if (wParam == SIZE_MINIMIZED || width == 0 || height == 0)
+				m_data.isMinimized = true;
+			else
+				m_data.isMinimized = false;
 
 			if (!m_data.eventCallbackFn) break;
 			m_data.eventCallbackFn(WindowResizeEvent(width, height));

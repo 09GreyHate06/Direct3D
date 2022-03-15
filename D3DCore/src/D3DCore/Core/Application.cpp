@@ -60,10 +60,13 @@ namespace d3dcore
 			for (Layer* layer : m_layerStack)
 				layer->OnUpdate();
 
-			m_imGuiLayer->Begin();
-			for (Layer* layer : m_layerStack)
-				layer->OnImGuiRender();
-			m_imGuiLayer->End();
+			if (!m_window->IsMinimized())
+			{
+				m_imGuiLayer->Begin();
+				for (Layer* layer : m_layerStack)
+					layer->OnImGuiRender();
+				m_imGuiLayer->End();
+			}
 
 			Window::PollEvents();
 			Renderer::SwapBuffers(1);

@@ -1,6 +1,7 @@
 #include "EditorLayer.h"
 #include "Scene/Components/Components.h"
 #include "Utils/ModelLoader.h"
+#include "Utils/FileDialog.h"
 
 using namespace d3dcore;
 using namespace DirectX;
@@ -19,88 +20,14 @@ void EditorLayer::OnAttach()
 	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
 	Renderer::SetDepthStencilState(dsDesc);
 
-	auto cubeVertices = utils::CreateCubeVertices();
-	auto cubeIndices = utils::CreateCubeIndices();
-	auto planeVertices = utils::CreatePlaneVertices(true, true, -0.5f, 0.5f, 10.0f, 10.0f);
-	auto planeIndices = utils::CreatePlaneIndices();
-	
-	VertexBufferDesc cubeVbDesc = {};
-	cubeVbDesc.data = cubeVertices.data();
-	cubeVbDesc.size = static_cast<uint32_t>(cubeVertices.size()) * sizeof(float);
-	cubeVbDesc.stride = 8 * sizeof(float);
-	cubeVbDesc.usage = D3D11_USAGE_IMMUTABLE;
-	cubeVbDesc.cpuAccessFlag = 0;
-	auto cubeVB = VertexBuffer::Create(cubeVbDesc);
-
-	IndexBufferDesc cubeIbDesc = {};
-	cubeIbDesc.data = cubeIndices.data();
-	cubeIbDesc.size = static_cast<uint32_t>(cubeIndices.size()) * sizeof(uint32_t);
-	cubeIbDesc.usage = D3D11_USAGE_IMMUTABLE;
-	cubeIbDesc.cpuAccessFlag = 0;
-	auto cubeIB = IndexBuffer::Create(cubeIbDesc);
-
-	VertexBufferDesc planeVbDesc = {};
-	planeVbDesc.data = planeVertices.data();
-	planeVbDesc.size = static_cast<uint32_t>(planeVertices.size()) * sizeof(float);
-	planeVbDesc.stride = 8 * sizeof(float);
-	planeVbDesc.usage = D3D11_USAGE_IMMUTABLE;
-	planeVbDesc.cpuAccessFlag = 0;
-	auto planeVB = VertexBuffer::Create(planeVbDesc);
-
-	IndexBufferDesc planeIbDesc = {};
-	planeIbDesc.data = planeIndices.data();
-	planeIbDesc.size = static_cast<uint32_t>(planeIndices.size()) * sizeof(uint32_t);
-	planeIbDesc.usage = D3D11_USAGE_IMMUTABLE;
-	planeIbDesc.cpuAccessFlag = 0;
-	auto planeIB = IndexBuffer::Create(planeIbDesc);
-
-
-	auto steel1 = Texture2D::Create("res/textures/steel1.png", false, Texture2DDesc());
-	auto groundMarble = Texture2D::Create("res/textures/groundMarble.png", false, Texture2DDesc());
-
-	Entity cube = m_scene->CreateEntity();
-	Entity plane = m_scene->CreateEntity();
-	Entity dirLight = m_scene->CreateEntity();
-
-	auto& cubeMesh = cube.AddComponent<MeshComponent>();
-	cubeMesh.vBuffer = cubeVB;
-	cubeMesh.iBuffer = cubeIB;
-	auto& cubeMR = cube.AddComponent<MeshRendererComponent>();
-	cubeMR.receiveLight = true;
-	cubeMR.topology = Topology::TriangleList;
-	auto& cubeMat = cube.AddComponent<MaterialComponent>();
-	cubeMat.diffuseMap = steel1;
-	cubeMat.specularMap = steel1;
-	cubeMat.ambientCol = { 1.0f, 1.0f, 1.0f };
-	cubeMat.diffuseCol = { 1.0f, 1.0f, 1.0f };
-	cubeMat.specularCol = { 1.0f, 1.0f, 1.0f };
-	cubeMat.shininess = 122.0f;
-
-	auto& planeT = plane.GetComponent<TransformComponent>();
-	planeT.position = { 0.0f, -1.0f, 0.0f };
-	planeT.scale = { 30.0f, 30.0f, 30.0f };
-	auto& planeMesh = plane.AddComponent<MeshComponent>();
-	planeMesh.vBuffer = planeVB;
-	planeMesh.iBuffer = planeIB;
-	auto& planeMR = plane.AddComponent<MeshRendererComponent>();
-	planeMR.receiveLight = true;
-	planeMR.topology = Topology::TriangleList;
-	auto& planeMat = plane.AddComponent<MaterialComponent>();
-	planeMat.diffuseMap = groundMarble;
-	planeMat.specularMap = groundMarble;
-	planeMat.ambientCol = { 1.0f, 1.0f, 1.0f };
-	planeMat.diffuseCol = { 1.0f, 1.0f, 1.0f };
-	planeMat.specularCol = { 1.0f, 1.0f, 1.0f };
-	planeMat.shininess = 32.0f;
+	Entity dirLight = m_scene->CreateEntity("Directional Light");
 
 	dirLight.GetComponent<TransformComponent>().rotation = { 50.0f, -30.0f, 0.0f };
 	auto& light = dirLight.AddComponent<DirectionalLightComponent>();
-	light.color = { 42.0f / 255.0f, 42.0f / 255.0f, 53.0f / 255.0f };
+	light.color = { 1.0f, 1.0f, 1.0f };
 	light.ambientIntensity = 0.2f;
 	light.diffuseIntensity = 0.8f;
 	light.specularIntensity = 1.0f;
-	
-	ModelLoader::LoadModel("D:/3D_Models/Mech_F_432/mech_f_432.obj", m_scene.get());
 }
 
 void EditorLayer::OnEvent(d3dcore::Event& event)
@@ -108,14 +35,17 @@ void EditorLayer::OnEvent(d3dcore::Event& event)
 	if (event.GetEventType() == EventType::WindowResize)
 	{
 		auto& e = static_cast<WindowResizeEvent&>(event);
-		ViewportDesc vpDesc = {};
-		vpDesc.width = static_cast<float>(e.GetWidth());
-		vpDesc.height = static_cast<float>(e.GetHeight());
-		vpDesc.topLeftX = 0.0f;
-		vpDesc.topLeftY = 0.0f;
-		vpDesc.minDepth = 0.0f;
-		vpDesc.maxDepth = 1.0f;
-		Renderer::SetViewport(vpDesc);
+		if (e.GetWidth() > 0 && e.GetHeight() > 0)
+		{
+			ViewportDesc vpDesc = {};
+			vpDesc.width = static_cast<float>(e.GetWidth());
+			vpDesc.height = static_cast<float>(e.GetHeight());
+			vpDesc.topLeftX = 0.0f;
+			vpDesc.topLeftY = 0.0f;
+			vpDesc.minDepth = 0.0f;
+			vpDesc.maxDepth = 1.0f;
+			Renderer::SetViewport(vpDesc);
+		}
 	}
 
 	m_camera.OnEvent(event);
@@ -200,11 +130,12 @@ void EditorLayer::OnImGuiRender()
 	{
 		if (ImGui::BeginMenu("File"))
 		{
-			//// Disabling fullscreen would allow the window to be moved to the front of other windows,
-			//// which we can't undo at the moment without finer window depth/z control.
-			//ImGui::MenuItem("Fullscreen", NULL, &opt_fullscreen);
-			//ImGui::MenuItem("Padding", NULL, &opt_padding);
-			//ImGui::Separator();
+			if (ImGui::MenuItem("Load Model"))
+			{
+				std::string filename = FileDialog::OpenFileDialog("3D Model Files (*.obj, *.fbx)\0*.obj;*.fbx\0");
+				if (!filename.empty())
+					ModelLoader::LoadModel(filename, m_scene.get());
+			}
 
 			if (ImGui::MenuItem("Exit"))
 				Application::Get().Close();

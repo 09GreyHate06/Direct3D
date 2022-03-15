@@ -48,11 +48,11 @@ namespace d3dcore
 		void SetTitle(const std::string& title);
 		bool ShoudClose() const { return m_data.shouldClose; }
 		inline void SetEventCallback(const EventCallbackFn& callback) { m_data.eventCallbackFn = callback; }
-		inline void Close() { m_data.shouldClose = true; }
 
 		uint32_t GetWidth() const { return m_data.width; }
 		uint32_t GetHeight() const { return m_data.height; }
 		bool IsFocus() const { return m_data.isFocus; }
+		bool IsMinimized() const { return m_data.isMinimized; }
 		HWND GetNativeWindow() const { return m_hWnd; }
 		static void PollEvents();
 

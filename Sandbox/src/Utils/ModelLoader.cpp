@@ -25,11 +25,7 @@ d3dcore::Entity ModelLoader::LoadModel(const std::string& filename, Scene* appSc
     s_directory = s_directory.lexically_normal();
     s_directory = s_directory.parent_path();
 
-    Entity entity;
-    if (auto value = ProcessNode(scene->mRootNode, scene, Entity(), appScene))
-    {
-        entity = value.value();
-    }
+    Entity entity = ProcessNode(scene->mRootNode, scene, Entity(), appScene);
 
     s_textureMaps.clear();
     s_directory.clear();
@@ -37,7 +33,7 @@ d3dcore::Entity ModelLoader::LoadModel(const std::string& filename, Scene* appSc
     return entity;
 }
 
-std::optional<Entity> ModelLoader::ProcessNode(aiNode* node, const aiScene* scene, d3dcore::Entity parent, Scene* appScene)
+Entity ModelLoader::ProcessNode(aiNode* node, const aiScene* scene, d3dcore::Entity parent, Scene* appScene)
 {
     Entity nodeEntity = appScene->CreateEntity(node->mName.C_Str(), parent);
 
@@ -59,15 +55,15 @@ std::optional<Entity> ModelLoader::ProcessNode(aiNode* node, const aiScene* scen
         return {};
 }
 
-struct Vertex
-{
-    XMFLOAT3 position;
-    XMFLOAT2 uv;
-    XMFLOAT3 normal;
-};
-
 void ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene, MeshComponent* meshComponent, MaterialComponent* matComponent)
 {
+    struct Vertex
+    {
+        XMFLOAT3 position;
+        XMFLOAT2 uv;
+        XMFLOAT3 normal;
+    };
+
     std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
 
@@ -128,7 +124,7 @@ void ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene, MeshComponent*
     matComponent->shininess = shininess;
 
     VertexBufferDesc vbDesc = {};
-    vbDesc.size = vertices.size() * sizeof(Vertex);
+    vbDesc.size = static_cast<uint32_t>(vertices.size() * sizeof(Vertex));
     vbDesc.stride = sizeof(Vertex);
     vbDesc.data = vertices.data();
     vbDesc.cpuAccessFlag = 0;
@@ -136,7 +132,7 @@ void ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene, MeshComponent*
     std::shared_ptr<VertexBuffer> vb = VertexBuffer::Create(vbDesc);
 
     IndexBufferDesc ibDesc = {};
-    ibDesc.size = indices.size() * sizeof(uint32_t);
+    ibDesc.count = indices.size();
     ibDesc.data = indices.data();
     ibDesc.usage = D3D11_USAGE_DEFAULT;
     ibDesc.cpuAccessFlag = 0;

@@ -127,7 +127,7 @@ namespace d3dcore
 
 
 	IndexBuffer::IndexBuffer(const IndexBufferDesc& desc)
-		: m_size(desc.size), m_count(desc.size / sizeof(uint32_t))
+		: m_size(static_cast<uint32_t>(desc.count * sizeof(uint32_t))), m_count(desc.count)
 	{
 		HRESULT hr;
 

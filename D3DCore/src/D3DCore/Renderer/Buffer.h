@@ -64,7 +64,7 @@ namespace d3dcore
 	struct IndexBufferDesc
 	{
 		const uint32_t* data = nullptr;
-		uint32_t size = 0;
+		uint32_t count = 0;
 		D3D11_USAGE usage = D3D11_USAGE_DEFAULT;
 		uint32_t cpuAccessFlag = 0;
 	};

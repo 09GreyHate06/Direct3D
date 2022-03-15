@@ -77,13 +77,26 @@ void SceneHierarchyPanel::OnImGuiRender()
 		m_context->GetRegistry().each([&](entt::entity entityID)
 		{
 			Entity entity = { entityID, m_context };
+			ImGui::BeginChild("abc");
 			DrawEntityNode(entity, false);
-		});
+			ImGui::EndChild();
 
+			if (ImGui::BeginDragDropTarget())
+			{
+				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(s_entityDragDropID);
+				if (payload)
+				{
+					Entity* draggedEntity = reinterpret_cast<Entity*>(payload->Data);
+					m_context->SetEntityRelationship(*draggedEntity, Entity());
+				}
+				ImGui::EndDragDropTarget();
+			}
+		});
 
 		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
 			m_selectedEntity = {};
 
+		ImGui::BeginChild("abc");
 		if (ImGui::BeginPopupContextWindow(0, 1, false))
 		{
 			if (ImGui::MenuItem("Create Empty Entity"))
@@ -91,6 +104,7 @@ void SceneHierarchyPanel::OnImGuiRender()
 
 			ImGui::EndPopup();
 		}
+		ImGui::EndChild();
 
 		ImGui::End();
 	}
@@ -254,13 +268,13 @@ void SceneHierarchyPanel::DrawComponents(d3dcore::Entity entity)
 
 	ImGui::PopItemWidth();
 
-	DrawComponent<RelationshipComponent>("Relationship", entity, [](auto& component)
-	{
-		ImGui::LabelText("Parent", component.parent ? component.parent.GetComponent<TagComponent>().tag.c_str() : "N/A");
-		ImGui::LabelText("First child", component.first ? component.first.GetComponent<TagComponent>().tag.c_str() : "N/A");
-		ImGui::LabelText("Prev sibling", component.prev ? component.prev.GetComponent<TagComponent>().tag.c_str() : "N/A");
-		ImGui::LabelText("Next sibling", component.next ? component.next.GetComponent<TagComponent>().tag.c_str() : "N/A");
-	});
+	//DrawComponent<RelationshipComponent>("Relationship", entity, [](auto& component)
+	//{
+	//	ImGui::LabelText("Parent", component.parent ? component.parent.GetComponent<TagComponent>().tag.c_str() : "N/A");
+	//	ImGui::LabelText("First child", component.first ? component.first.GetComponent<TagComponent>().tag.c_str() : "N/A");
+	//	ImGui::LabelText("Prev sibling", component.prev ? component.prev.GetComponent<TagComponent>().tag.c_str() : "N/A");
+	//	ImGui::LabelText("Next sibling", component.next ? component.next.GetComponent<TagComponent>().tag.c_str() : "N/A");
+	//});
 
 	DrawComponent<TransformComponent>("Transform", entity, [](auto& component)
 	{
@@ -305,7 +319,7 @@ void SceneHierarchyPanel::DrawComponents(d3dcore::Entity entity)
 
 	DrawComponent<MaterialComponent>("Material", entity, [](auto& component)
 	{
-		if (ImGui::Button(std::string("Diffuse Map: " + (component.diffuseMap ? component.diffuseMap->GetFilepath().string() : "N/A")).c_str()))
+		if (ImGui::Button(std::string("Browse").c_str()))
 		{
 			std::string newTexFilepath = FileDialog::OpenFileDialog("Image Files (*.png, *.jpg, *.jpeg)\0*.png;*.jpg;\0*.jpeg\0");
 			if (!newTexFilepath.empty())
@@ -314,7 +328,12 @@ void SceneHierarchyPanel::DrawComponents(d3dcore::Entity entity)
 				component.diffuseMap = tex;
 			}
 		}
-		if (ImGui::Button(std::string("Specular Map: " + (component.specularMap ? component.specularMap->GetFilepath().string() : "N/A")).c_str()))
+		ImGui::SameLine();
+		ImGui::PushItemWidth(-1);
+		ImGui::Text(std::string(component.diffuseMap ? component.diffuseMap->GetFilepath().string() : "N/A").c_str());
+		ImGui::PopItemWidth();
+
+		if (ImGui::Button(std::string("Browse").c_str()))
 		{
 			std::string newTexFilepath = FileDialog::OpenFileDialog("Image Files (*.png, *.jpg, *.jpeg)\0*.png;*.jpg;\0*.jpeg\0");
 			if (!newTexFilepath.empty())
@@ -323,6 +342,11 @@ void SceneHierarchyPanel::DrawComponents(d3dcore::Entity entity)
 				component.specularMap = tex;
 			}
 		}
+		ImGui::SameLine();
+		ImGui::PushItemWidth(-1);
+		ImGui::Text(std::string(component.specularMap ? component.specularMap->GetFilepath().string() : "N/A").c_str());
+		ImGui::PopItemWidth();
+
 
 		ImGui::ColorEdit3("Ambient Color", &component.ambientCol.x);
 		ImGui::ColorEdit3("Diffuse Color", &component.diffuseCol.x);

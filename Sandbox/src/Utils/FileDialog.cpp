@@ -1,5 +1,4 @@
 #include "FileDialog.h"
-#include <Windows.h>
 #include "D3DCore/Core/Log.h"
 #include "D3DCore/Core/Application.h"
 #include <commdlg.h>

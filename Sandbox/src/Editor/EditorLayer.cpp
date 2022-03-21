@@ -28,6 +28,38 @@ void EditorLayer::OnAttach()
 	light.ambientIntensity = 0.2f;
 	light.diffuseIntensity = 0.8f;
 	light.specularIntensity = 1.0f;
+
+
+	auto cubeVertices = utils::CreateCubeVertices();
+	auto cubeIndices = utils::CreateCubeIndices();
+	auto planeVertices = utils::CreatePlaneVertices();
+	auto planeIndices = utils::CreatePlaneIndices();
+
+	VertexBufferDesc cubeVBDesc = {};
+	cubeVBDesc.size = (uint32_t)cubeVertices.size() * sizeof(float);
+	cubeVBDesc.stride = (uint32_t)(8 * sizeof(float));
+	cubeVBDesc.usage = D3D11_USAGE_DEFAULT;
+	cubeVBDesc.cpuAccessFlag = 0;
+	m_cubeVB = VertexBuffer::Create(cubeVertices.data(), cubeVBDesc);
+
+	IndexBufferDesc cubeIBDesc = {};
+	cubeIBDesc.count = (uint32_t)cubeIndices.size();
+	cubeIBDesc.usage = D3D11_USAGE_DEFAULT;
+	cubeIBDesc.cpuAccessFlag = 0;
+	m_cubeIB = IndexBuffer::Create(cubeIndices.data(), cubeIBDesc);
+
+	VertexBufferDesc planeVBDesc = {};
+	planeVBDesc.size = (uint32_t)planeVertices.size() * sizeof(float);
+	planeVBDesc.stride = (uint32_t)(8 * sizeof(float));
+	planeVBDesc.usage = D3D11_USAGE_DEFAULT;
+	planeVBDesc.cpuAccessFlag = 0;
+	m_planeVB = VertexBuffer::Create(planeVertices.data(), planeVBDesc);
+
+	IndexBufferDesc planeIBDesc = {};
+	planeIBDesc.count = (uint32_t)planeIndices.size();
+	planeIBDesc.usage = D3D11_USAGE_DEFAULT;
+	planeIBDesc.cpuAccessFlag = 0;
+	m_planeIB = IndexBuffer::Create(planeIndices.data(), planeIBDesc);
 }
 
 void EditorLayer::OnEvent(d3dcore::Event& event)
@@ -130,6 +162,12 @@ void EditorLayer::OnImGuiRender()
 	{
 		if (ImGui::BeginMenu("File"))
 		{
+			if (ImGui::MenuItem("Create Cube"))
+				CreateCube();
+
+			if (ImGui::MenuItem("Create Plane"))
+				CreatePlane();
+
 			if (ImGui::MenuItem("Load Model"))
 			{
 				std::string filename = FileDialog::OpenFileDialog("3D Model Files (*.obj, *.fbx)\0*.obj;*.fbx\0");
@@ -164,4 +202,38 @@ void EditorLayer::OnImGuiRender()
 
 	m_sceneHierarchyPanel.OnImGuiRender();
 	ImGui::End();
+}
+
+void EditorLayer::CreateCube()
+{
+	Entity entity = m_scene->CreateEntity("Cube");
+	auto& mc = entity.AddComponent<MeshComponent>();
+	mc.vBuffer = m_cubeVB;
+	mc.iBuffer = m_cubeIB;
+	auto& mat = entity.AddComponent<MaterialComponent>();
+	mat.diffuseMap = nullptr;
+	mat.specularMap = nullptr;
+	mat.ambientCol = { 1.0f, 1.0f, 1.0f };
+	mat.diffuseCol = { 1.0f, 1.0f, 1.0f };
+	mat.specularCol = { 1.0f, 1.0f, 1.0f };
+	mat.tiling = { 1.0f, 1.0f };
+	mat.shininess = 32.0f;
+	entity.AddComponent<MeshRendererComponent>();
+}
+
+void EditorLayer::CreatePlane()
+{
+	Entity entity = m_scene->CreateEntity("Plane");
+	auto& mc = entity.AddComponent<MeshComponent>();
+	mc.vBuffer = m_planeVB;
+	mc.iBuffer = m_planeIB;
+	auto& mat = entity.AddComponent<MaterialComponent>();
+	mat.diffuseMap = nullptr;
+	mat.specularMap = nullptr;
+	mat.ambientCol = { 1.0f, 1.0f, 1.0f };
+	mat.diffuseCol = { 1.0f, 1.0f, 1.0f };
+	mat.specularCol = { 1.0f, 1.0f, 1.0f };
+	mat.tiling = { 1.0f, 1.0f };
+	mat.shininess = 32.0f;
+	entity.AddComponent<MeshRendererComponent>();
 }

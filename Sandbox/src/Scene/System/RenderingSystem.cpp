@@ -101,7 +101,10 @@ namespace cbufs
 			DirectX::XMFLOAT3 diffuseCol;
 			float p1;
 			DirectX::XMFLOAT3 specularCol;
+			float p2;
+			DirectX::XMFLOAT2 tiling;
 			float shininess;
+			float p3;
 
 		} material;
 	};
@@ -120,7 +123,10 @@ namespace cbufs
 	struct TexturePSEntityCBuf
 	{
 		DirectX::XMFLOAT3 color;
-		float pad0;
+		float p0;
+		DirectX::XMFLOAT2 tiling;
+		float p1;
+		float p2;
 	};
 }
 
@@ -222,6 +228,7 @@ void RenderingSystem::Render(const d3dcore::utils::EditorCamera& camera)
 				psEntityCBuf.material.ambientCol = mat.ambientCol;
 				psEntityCBuf.material.diffuseCol = mat.diffuseCol;
 				psEntityCBuf.material.specularCol = mat.specularCol;
+				psEntityCBuf.material.tiling = mat.tiling;
 				psEntityCBuf.material.shininess = mat.shininess;
 				m_lightPSEntityCBuf->SetData(&psEntityCBuf);
 			}
@@ -249,6 +256,7 @@ void RenderingSystem::Render(const d3dcore::utils::EditorCamera& camera)
 
 				cbufs::TexturePSEntityCBuf psEntityCBuf = {};
 				psEntityCBuf.color = mat.diffuseCol;
+				psEntityCBuf.tiling = mat.tiling;
 				m_texturePSEntityCBuf->SetData(&psEntityCBuf);
 			}
 

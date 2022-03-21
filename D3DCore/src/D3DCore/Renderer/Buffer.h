@@ -33,7 +33,6 @@ namespace d3dcore
 
 	struct VertexBufferDesc
 	{
-		const void* data = nullptr; 
 		uint32_t size = 0; 
 		uint32_t stride = 0;
 		D3D11_USAGE usage = D3D11_USAGE_DEFAULT;
@@ -46,12 +45,12 @@ namespace d3dcore
 		~VertexBuffer() = default;
 		void Bind() const;
 		void SetData(const void* data);
-
-		static std::shared_ptr<VertexBuffer> Create(const VertexBufferDesc& desc);
+		
+		static std::shared_ptr<VertexBuffer> Create(const void* data, const VertexBufferDesc& desc);
 
 
 	private:
-		VertexBuffer(const VertexBufferDesc& desc);
+		VertexBuffer(const void* data, const VertexBufferDesc& desc);
 
 		Microsoft::WRL::ComPtr<ID3D11Buffer> m_vertexBuffer;
 		uint32_t m_stride = 0;
@@ -63,7 +62,6 @@ namespace d3dcore
 
 	struct IndexBufferDesc
 	{
-		const uint32_t* data = nullptr;
 		uint32_t count = 0;
 		D3D11_USAGE usage = D3D11_USAGE_DEFAULT;
 		uint32_t cpuAccessFlag = 0;
@@ -77,10 +75,10 @@ namespace d3dcore
 		void SetData(const uint32_t* data);
 		uint32_t GetCount() const { return m_count; }
 		
-		static std::shared_ptr<IndexBuffer> Create(const IndexBufferDesc& desc);
+		static std::shared_ptr<IndexBuffer> Create(const void* data, const IndexBufferDesc& desc);
 
 	private:
-		IndexBuffer(const IndexBufferDesc& desc);
+		IndexBuffer(const void* data, const IndexBufferDesc& desc);
 
 		Microsoft::WRL::ComPtr<ID3D11Buffer> m_indexBuffer;
 		uint32_t m_size;

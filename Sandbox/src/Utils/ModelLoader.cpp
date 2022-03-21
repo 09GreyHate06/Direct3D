@@ -18,7 +18,7 @@ d3dcore::Entity ModelLoader::LoadModel(const std::string& filename, Scene* appSc
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
-        D3DC_LOG_WARN("Failed to load model: {0}", filename);
+        D3DC_LOG_WARN("Failed to load model: {0}'\n'[Description] {1}", filename, importer.GetErrorString());
         return Entity();
     }
 
@@ -57,13 +57,6 @@ Entity ModelLoader::ProcessNode(aiNode* node, const aiScene* scene, d3dcore::Ent
 
 void ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene, MeshComponent* meshComponent, MaterialComponent* matComponent)
 {
-    struct Vertex
-    {
-        XMFLOAT3 position;
-        XMFLOAT2 uv;
-        XMFLOAT3 normal;
-    };
-
     std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
 
@@ -121,22 +114,21 @@ void ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene, MeshComponent*
     matComponent->ambientCol = ambientCol;
     matComponent->diffuseCol = diffuseCol;
     matComponent->specularCol = specularCol;
+    matComponent->tiling = { 1.0f, 1.0f };
     matComponent->shininess = shininess;
 
     VertexBufferDesc vbDesc = {};
     vbDesc.size = static_cast<uint32_t>(vertices.size() * sizeof(Vertex));
     vbDesc.stride = sizeof(Vertex);
-    vbDesc.data = vertices.data();
     vbDesc.cpuAccessFlag = 0;
     vbDesc.usage = D3D11_USAGE_DEFAULT;
-    std::shared_ptr<VertexBuffer> vb = VertexBuffer::Create(vbDesc);
+    std::shared_ptr<VertexBuffer> vb = VertexBuffer::Create(vertices.data(), vbDesc);
 
     IndexBufferDesc ibDesc = {};
-    ibDesc.count = indices.size();
-    ibDesc.data = indices.data();
+    ibDesc.count = static_cast<uint32_t>(indices.size());   
     ibDesc.usage = D3D11_USAGE_DEFAULT;
     ibDesc.cpuAccessFlag = 0;
-    std::shared_ptr<IndexBuffer> ib = IndexBuffer::Create(ibDesc);
+    std::shared_ptr<IndexBuffer> ib = IndexBuffer::Create(indices.data(), ibDesc);
 
     meshComponent->vBuffer = vb;
     meshComponent->iBuffer = ib;

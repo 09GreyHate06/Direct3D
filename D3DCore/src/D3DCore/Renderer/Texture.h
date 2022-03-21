@@ -14,6 +14,7 @@ namespace d3dcore
 		D3D11_FILTER filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 		D3D11_TEXTURE_ADDRESS_MODE addressU = D3D11_TEXTURE_ADDRESS_WRAP;
 		D3D11_TEXTURE_ADDRESS_MODE addressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		float borderColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f }; // if texture address is D3D11_TEXTURE_ADDRESS_BORDER
 	};
 
 	class Texture2D

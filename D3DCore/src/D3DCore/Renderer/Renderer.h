@@ -37,6 +37,8 @@ namespace d3dcore
 		static void SetTopology(Topology topology);
 		static void SetViewport(ViewportDesc vp);
 		static void SetDepthStencilState(D3D11_DEPTH_STENCIL_DESC dsDesc);
+
+		// SetFramebuffer doesn't increment shared ptr ref count
 		static void SetFramebuffer(const std::shared_ptr<Framebuffer>& fb);
 
 		static const ViewportDesc& GetViewport() { return s_viewport; }

@@ -7,7 +7,7 @@ namespace d3dcore::utils
 	struct EditorCameraDesc
 	{
 		float fov = 45.0f, aspect = 1280.0f / 720.0f, nearPlane = 0.1f, farPlane = 1000.0f;
-		float yaw = 0.0f, pitch = 0.0f, distance = 10.0f;
+		float yaw = 0.0f, pitch = 0.0f, distance = 20.0f;
 		float viewportWidth = 1280.0f, viewportHeight = 720.0f;
 		DirectX::XMFLOAT3 position = { 0.0f, 0.0f, 0.0f };
 		DirectX::XMFLOAT3 focalPoint = { 0.0f, 0.0f, 0.0f };

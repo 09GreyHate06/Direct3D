@@ -223,9 +223,9 @@ namespace d3dcore::utils
 		return vertices;
 	}
 
-	std::vector<uint32_t> CreateCubeIndices()
+	std::array<uint32_t, 36> CreateCubeIndices()
 	{
-		return std::move(std::vector<uint32_t>
+		return std::move(std::array<uint32_t, 36>
 		{
 			// back
 			0, 1, 2,
@@ -253,9 +253,9 @@ namespace d3dcore::utils
 		});
 	}
 
-	std::vector<uint32_t> CreatePlaneIndices()
+	std::array<uint32_t, 6> CreatePlaneIndices()
 	{
-		return std::move(std::vector<uint32_t>
+		return std::move(std::array<uint32_t, 6>
 		{
 			0, 1, 2,
 			2, 3, 0,

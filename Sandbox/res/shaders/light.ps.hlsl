@@ -14,7 +14,10 @@ struct Material
     float3 diffuseCol;
     float p1;
     float3 specularCol;
+    float p2;
+    float2 tiling;
     float shininess;
+    float p3;
 };
 
 struct DirectionalLight
@@ -88,9 +91,9 @@ float4 main(VSOutput input) : SV_TARGET
     float3 pixelToView = normalize(input.viewPosition - input.pixelPosition);
     float3 normal = normalize(input.normal);
 
-    float3 mAmbient = (float3) diffuseMap.Sample(diffuseSampler, input.uv) * material.ambientCol;
-    float3 mDiffuse = (float3) diffuseMap.Sample(diffuseSampler, input.uv) * material.diffuseCol;
-    float3 mSpecular = (float3) specularMap.Sample(specularSampler, input.uv) * material.specularCol;
+    float3 mAmbient = (float3) diffuseMap.Sample(diffuseSampler, input.uv * material.tiling) * material.ambientCol;
+    float3 mDiffuse = (float3) diffuseMap.Sample(diffuseSampler, input.uv * material.tiling) * material.diffuseCol;
+    float3 mSpecular = (float3) specularMap.Sample(specularSampler, input.uv * material.tiling) * material.specularCol;
 
     float3 dirLightPhong = float3(0.0f, 0.0f, 0.0f);
     float3 pointLightPhong = float3(0.0f, 0.0f, 0.0f);

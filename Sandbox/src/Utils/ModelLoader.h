@@ -4,6 +4,13 @@
 #include "Scene/Components/Components.h"
 #include <filesystem>
 
+struct Vertex
+{
+	DirectX::XMFLOAT3 position;
+	DirectX::XMFLOAT2 uv;
+	DirectX::XMFLOAT3 normal;
+};
+
 class ModelLoader
 {
 private:

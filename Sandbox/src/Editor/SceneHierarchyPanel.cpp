@@ -130,7 +130,9 @@ void SceneHierarchyPanel::DrawEntityNode(d3dcore::Entity entity, bool child)
 
 	auto& tag = entity.GetComponent<TagComponent>().tag;
 
-	ImGuiTreeNodeFlags flags = ((m_selectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
+	ImGuiTreeNodeFlags flags = ((m_selectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0)
+		| (relationship.first ? 0 : ImGuiTreeNodeFlags_Leaf) | ImGuiTreeNodeFlags_OpenOnArrow;
+
 	flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
 	bool opened = ImGui::TreeNodeEx(reinterpret_cast<void*>(static_cast<uint64_t>(static_cast<uint32_t>(entity))), flags, tag.c_str());
 	if (ImGui::IsItemClicked())
@@ -171,7 +173,6 @@ void SceneHierarchyPanel::DrawEntityNode(d3dcore::Entity entity, bool child)
 		Entity next;
 		while (current)
 		{
-
 			DrawEntityNode(current, true);
 			if (!current) break;
 			next = current.GetComponent<RelationshipComponent>().next;
@@ -319,21 +320,38 @@ void SceneHierarchyPanel::DrawComponents(d3dcore::Entity entity)
 
 	DrawComponent<MaterialComponent>("Material", entity, [](auto& component)
 	{
-		if (ImGui::Button(std::string("Browse").c_str()))
+		int id = 0;
+		ImGui::Text("Diffuse Map");
+		ImGui::PushID(id++);
+		if (ImGui::Button("Browse"))
 		{
-			std::string newTexFilepath = FileDialog::OpenFileDialog("Image Files (*.png, *.jpg, *.jpeg)\0*.png;*.jpg;\0*.jpeg\0");
+			std::string newTexFilepath = FileDialog::OpenFileDialog("Image Files (*.png, *.jpg, *.jpeg, *.tga)\0*.png;*.jpg;\0*.jpeg;\0*.tga\0");
 			if (!newTexFilepath.empty())
 			{
 				auto tex = Texture2D::Create(newTexFilepath, false, Texture2DDesc());
 				component.diffuseMap = tex;
 			}
 		}
+		ImGui::PopID();
+
+		ImGui::PushID(id++);
+		ImGui::SameLine();
+		ImGui::PushItemWidth(-1);
+		if (ImGui::Button("Remove"))
+		{
+			component.diffuseMap = nullptr;
+		}
+		ImGui::PopItemWidth();
+		ImGui::PopID();
+
 		ImGui::SameLine();
 		ImGui::PushItemWidth(-1);
 		ImGui::Text(std::string(component.diffuseMap ? component.diffuseMap->GetFilepath().string() : "N/A").c_str());
 		ImGui::PopItemWidth();
 
-		if (ImGui::Button(std::string("Browse").c_str()))
+		ImGui::Text("Specular Map");
+		ImGui::PushID(id++);
+		if (ImGui::Button("Browse"))
 		{
 			std::string newTexFilepath = FileDialog::OpenFileDialog("Image Files (*.png, *.jpg, *.jpeg)\0*.png;*.jpg;\0*.jpeg\0");
 			if (!newTexFilepath.empty())
@@ -342,6 +360,18 @@ void SceneHierarchyPanel::DrawComponents(d3dcore::Entity entity)
 				component.specularMap = tex;
 			}
 		}
+		ImGui::PopID();
+
+		ImGui::PushID(id++);
+		ImGui::SameLine();
+		ImGui::PushItemWidth(-1);
+		if (ImGui::Button("Remove"))
+		{
+			component.specularMap = nullptr;
+		}
+		ImGui::PopItemWidth();
+		ImGui::PopID();
+
 		ImGui::SameLine();
 		ImGui::PushItemWidth(-1);
 		ImGui::Text(std::string(component.specularMap ? component.specularMap->GetFilepath().string() : "N/A").c_str());
@@ -351,6 +381,7 @@ void SceneHierarchyPanel::DrawComponents(d3dcore::Entity entity)
 		ImGui::ColorEdit3("Ambient Color", &component.ambientCol.x);
 		ImGui::ColorEdit3("Diffuse Color", &component.diffuseCol.x);
 		ImGui::ColorEdit3("Specular Color", &component.specularCol.x);
+		ImGui::DragFloat2("Tiling", &component.tiling.x);
 		ImGui::DragFloat("Shininess", &component.shininess, s_dragSpeed);
 	});
 

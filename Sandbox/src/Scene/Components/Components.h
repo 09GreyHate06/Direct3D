@@ -21,6 +21,7 @@ struct MaterialComponent
 	DirectX::XMFLOAT3 ambientCol = { 1.0f, 1.0f, 1.0f };
 	DirectX::XMFLOAT3 diffuseCol = { 1.0f, 1.0f, 1.0f };
 	DirectX::XMFLOAT3 specularCol = { 1.0f, 1.0f, 1.0f };
+	DirectX::XMFLOAT2 tiling = { 1.0f, 1.0f };
 	float shininess = 32.0f;
 };
 

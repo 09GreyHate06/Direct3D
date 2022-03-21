@@ -121,7 +121,7 @@ namespace d3dcore
 			inputLayoutDesc.push_back(elementDesc);
 		}
 
-		D3DC_CONTEXT_THROW_INFO(D3DContext::GetDevice()->CreateInputLayout(inputLayoutDesc.data(), inputLayoutDesc.size(), 
+		D3DC_CONTEXT_THROW_INFO(D3DContext::GetDevice()->CreateInputLayout(inputLayoutDesc.data(), static_cast<uint32_t>(inputLayoutDesc.size()), 
 			m_vsByteCode->GetBufferPointer(), m_vsByteCode->GetBufferSize(), &m_vsInputLayout));
 	}
 

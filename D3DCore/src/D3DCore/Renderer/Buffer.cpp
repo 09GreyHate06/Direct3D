@@ -77,7 +77,7 @@ namespace d3dcore
 
 
 
-	VertexBuffer::VertexBuffer(const VertexBufferDesc& desc)
+	VertexBuffer::VertexBuffer(const void* data, const VertexBufferDesc& desc)
 		: m_size(desc.size), m_stride(desc.stride)
 	{
 		HRESULT hr;
@@ -90,10 +90,10 @@ namespace d3dcore
 		vDesc.MiscFlags = 0;
 		vDesc.StructureByteStride = m_stride;
 
-		if (desc.data)
+		if (data)
 		{
 			D3D11_SUBRESOURCE_DATA srd = {};
-			srd.pSysMem = desc.data;
+			srd.pSysMem = data;
 			D3DC_CONTEXT_THROW_INFO(D3DContext::GetDevice()->CreateBuffer(&vDesc, &srd, &m_vertexBuffer));
 		}
 		else
@@ -108,9 +108,9 @@ namespace d3dcore
 		D3DContext::GetDeviceContext()->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), &m_stride, &offset);
 	}
 
-	std::shared_ptr<VertexBuffer> VertexBuffer::Create(const VertexBufferDesc& desc)
+	std::shared_ptr<VertexBuffer> VertexBuffer::Create(const void* data, const VertexBufferDesc& desc)
 	{
-		return std::shared_ptr<VertexBuffer>(new VertexBuffer(desc));
+		return std::shared_ptr<VertexBuffer>(new VertexBuffer(data, desc));
 	}
 
 	void VertexBuffer::SetData(const void* data)
@@ -126,7 +126,7 @@ namespace d3dcore
 
 
 
-	IndexBuffer::IndexBuffer(const IndexBufferDesc& desc)
+	IndexBuffer::IndexBuffer(const void* data, const IndexBufferDesc& desc)
 		: m_size(static_cast<uint32_t>(desc.count * sizeof(uint32_t))), m_count(desc.count)
 	{
 		HRESULT hr;
@@ -139,10 +139,10 @@ namespace d3dcore
 		iDesc.MiscFlags = 0;
 		iDesc.StructureByteStride = sizeof(uint32_t);
 
-		if (desc.data)
+		if (data)
 		{
 			D3D11_SUBRESOURCE_DATA srd = {};
-			srd.pSysMem = desc.data;
+			srd.pSysMem = data;
 			D3DC_CONTEXT_THROW_INFO(D3DContext::GetDevice()->CreateBuffer(&iDesc, &srd, &m_indexBuffer));
 		}
 		else
@@ -151,9 +151,9 @@ namespace d3dcore
 		}
 	}
 
-	std::shared_ptr<IndexBuffer> IndexBuffer::Create(const IndexBufferDesc& desc)
+	std::shared_ptr<IndexBuffer> IndexBuffer::Create(const void* data, const IndexBufferDesc& desc)
 	{
-		return std::shared_ptr<IndexBuffer>(new IndexBuffer(desc));
+		return std::shared_ptr<IndexBuffer>(new IndexBuffer(data, desc));
 	}
 
 	void IndexBuffer::Bind() const

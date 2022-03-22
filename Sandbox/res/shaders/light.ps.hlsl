@@ -5,6 +5,8 @@ struct VSOutput
     float3 normal : NORMAL;
     float3 pixelPosition : PIXEL_POSITION;
     float3 viewPosition : VIEW_POSITION;
+    float3 tangent : TANGENT;
+    float3 bitangent : BITANGENT;
 };
 
 struct Material
@@ -17,7 +19,7 @@ struct Material
     float p2;
     float2 tiling;
     float shininess;
-    float p3;
+    bool enableNormalMap;
 };
 
 struct DirectionalLight
@@ -80,8 +82,10 @@ cbuffer PSEntityCBuf : register(b1)
 
 Texture2D diffuseMap : register(t0);
 Texture2D specularMap : register(t1);
+Texture2D normalMap : register(t2);
 SamplerState diffuseSampler : register(s0);
 SamplerState specularSampler : register(s1);
+SamplerState normalSampler : register(s2);
 
 float3 Phong(float3 pixelToLight, float3 pixelToView, float3 normal, float3 lAmbient, float3 lDiffuse, float3 lSpecular, float3 mAmbient, float3 mDiffuse, float3 mSpecular);
 float CalcAttenuation(float distance, float attConstant, float attLinear, float attQuadratic);
@@ -90,6 +94,19 @@ float4 main(VSOutput input) : SV_TARGET
 {
     float3 pixelToView = normalize(input.viewPosition - input.pixelPosition);
     float3 normal = normalize(input.normal);
+    if (material.enableNormalMap)
+    {
+        float3 t = normalize(input.tangent - dot(input.tangent, normal) * normal);
+        float3 b = cross(normal, t);
+        const float3x3 tanToWorld = float3x3(
+            normalize(t),
+            normalize(b),
+            normalize(normal)
+        );
+        normal = normalMap.Sample(normalSampler, input.uv).xyz;
+        normal = normal * 2.0f - 1.0f;
+        normal = normalize(mul(normal, tanToWorld));
+    }
 
     float3 mAmbient = (float3) diffuseMap.Sample(diffuseSampler, input.uv * material.tiling) * material.ambientCol;
     float3 mDiffuse = (float3) diffuseMap.Sample(diffuseSampler, input.uv * material.tiling) * material.diffuseCol;

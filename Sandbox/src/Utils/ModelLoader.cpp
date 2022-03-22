@@ -14,7 +14,8 @@ d3dcore::Entity ModelLoader::LoadModel(const std::string& filename, Scene* appSc
 
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(filename,
-        aiProcess_JoinIdenticalVertices | aiProcess_MakeLeftHanded | aiProcess_Triangulate | aiProcess_FlipWindingOrder | aiProcess_FlipUVs | aiProcess_GenNormals);
+        aiProcess_JoinIdenticalVertices | aiProcess_MakeLeftHanded | aiProcess_Triangulate | aiProcess_FlipWindingOrder | 
+        aiProcess_FlipUVs | aiProcess_GenNormals | aiProcess_CalcTangentSpace);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
@@ -64,13 +65,24 @@ void ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene, MeshComponent*
     for (uint32_t i = 0; i < mesh->mNumVertices; i++)
     {
         Vertex vertex = {};
-        vertex.position = { mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z };
-        vertex.normal = { mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z };
+        vertex.position = *reinterpret_cast<XMFLOAT3*>(&mesh->mVertices[i]);
+        vertex.normal = *reinterpret_cast<XMFLOAT3*>(&mesh->mNormals[i]);
 
         if (mesh->mTextureCoords[0])
-            vertex.uv = { mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
+            vertex.uv = *reinterpret_cast<XMFLOAT2*>(&mesh->mTextureCoords[0][i]);
         else
             vertex.uv = { 0.0f, 0.0f };
+
+        if (mesh->HasTangentsAndBitangents())
+        {
+            vertex.tangent = *reinterpret_cast<XMFLOAT3*>(&mesh->mTangents[i]);
+            vertex.bitangent = *reinterpret_cast<XMFLOAT3*>(&mesh->mBitangents[i]);
+        }
+        else
+        {
+            vertex.tangent = { 1.0f, 0.0f, 0.0f };
+            vertex.bitangent = { 0.0f, 1.0f, 0.0f };
+        }
 
         vertices.push_back(vertex);
     }
@@ -85,6 +97,7 @@ void ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene, MeshComponent*
 
     std::shared_ptr<Texture2D> diffuseMap = nullptr;
     std::shared_ptr<Texture2D> specularMap = nullptr;
+    std::shared_ptr<Texture2D> normalMap = nullptr;
 
     XMFLOAT3 ambientCol = { 1.0f, 1.0f, 1.0f };
     XMFLOAT3 diffuseCol = { 1.0f, 1.0f, 1.0f };
@@ -96,6 +109,10 @@ void ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene, MeshComponent*
         aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
         diffuseMap = LoadTextureMap(mat, aiTextureType_DIFFUSE);
         specularMap = LoadTextureMap(mat, aiTextureType_SPECULAR);
+        normalMap = LoadTextureMap(mat, aiTextureType_HEIGHT);
+        if (!normalMap)
+            normalMap = LoadTextureMap(mat, aiTextureType_NORMALS);
+        
 
         ambientCol = LoadSolidColorMap(mat, AI_MATKEY_COLOR_AMBIENT);
         diffuseCol = LoadSolidColorMap(mat, AI_MATKEY_COLOR_DIFFUSE);
@@ -111,6 +128,7 @@ void ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene, MeshComponent*
 
     matComponent->diffuseMap = diffuseMap;
     matComponent->specularMap = specularMap;
+    matComponent->normalMap = normalMap;
     matComponent->ambientCol = ambientCol;
     matComponent->diffuseCol = diffuseCol;
     matComponent->specularCol = specularCol;

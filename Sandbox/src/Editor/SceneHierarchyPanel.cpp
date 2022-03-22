@@ -378,6 +378,35 @@ void SceneHierarchyPanel::DrawComponents(d3dcore::Entity entity)
 		ImGui::PopItemWidth();
 
 
+		ImGui::Text("Normal Map");
+		ImGui::PushID(id++);
+		if (ImGui::Button("Browse"))
+		{
+			std::string newTexFilepath = FileDialog::OpenFileDialog("Image Files (*.png, *.jpg, *.jpeg, *.tga)\0*.png;*.jpg;\0*.jpeg;\0*.tga\0");
+			if (!newTexFilepath.empty())
+			{
+				auto tex = Texture2D::Create(newTexFilepath, false, Texture2DDesc());
+				component.normalMap = tex;
+			}
+		}
+		ImGui::PopID();
+
+		ImGui::PushID(id++);
+		ImGui::SameLine();
+		ImGui::PushItemWidth(-1);
+		if (ImGui::Button("Remove"))
+		{
+			component.normalMap = nullptr;
+		}
+		ImGui::PopItemWidth();
+		ImGui::PopID();
+
+		ImGui::SameLine();
+		ImGui::PushItemWidth(-1);
+		ImGui::Text(std::string(component.normalMap ? component.normalMap->GetFilepath().string() : "N/A").c_str());
+		ImGui::PopItemWidth();
+
+
 		ImGui::ColorEdit3("Ambient Color", &component.ambientCol.x);
 		ImGui::ColorEdit3("Diffuse Color", &component.diffuseCol.x);
 		ImGui::ColorEdit3("Specular Color", &component.specularCol.x);

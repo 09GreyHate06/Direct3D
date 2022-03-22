@@ -104,7 +104,7 @@ namespace cbufs
 			float p2;
 			DirectX::XMFLOAT2 tiling;
 			float shininess;
-			float p3;
+			BOOL enableNormalMap;
 
 		} material;
 	};
@@ -195,6 +195,8 @@ void RenderingSystem::Render(const d3dcore::utils::EditorCamera& camera)
 
 			if (renderer.receiveLight)
 			{
+				bool enableNormalMap = false;
+
 				m_lightShader->Bind();
 
 				m_lightVSSysCBuf->VSBind(m_lightShader->GetVSResBinding("VSSystemCBuf"));
@@ -211,6 +213,14 @@ void RenderingSystem::Render(const d3dcore::utils::EditorCamera& camera)
 					mat.specularMap->PSBind(m_lightShader->GetPSResBinding("specularMap"));
 				else
 					m_defaultTexture->PSBind(m_lightShader->GetPSResBinding("specularMap"));
+
+				if (mat.normalMap)
+				{
+					mat.normalMap->PSBind(m_lightShader->GetPSResBinding("normalMap"));
+					enableNormalMap = true;
+				}
+				else
+					m_defaultTexture->PSBind(m_lightShader->GetPSResBinding("normalMap"));
 
 				cbufs::LightVSSystemCBuf vsSysCBuf = {};
 				XMStoreFloat4x4(&vsSysCBuf.camera.view, XMMatrixTranspose(camera.GetViewMatrix()));
@@ -230,6 +240,7 @@ void RenderingSystem::Render(const d3dcore::utils::EditorCamera& camera)
 				psEntityCBuf.material.specularCol = mat.specularCol;
 				psEntityCBuf.material.tiling = mat.tiling;
 				psEntityCBuf.material.shininess = mat.shininess;
+				psEntityCBuf.material.enableNormalMap = enableNormalMap;
 				m_lightPSEntityCBuf->SetData(&psEntityCBuf);
 			}
 			else

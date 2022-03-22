@@ -30,14 +30,14 @@ void EditorLayer::OnAttach()
 	light.specularIntensity = 1.0f;
 
 
-	auto cubeVertices = utils::CreateCubeVertices();
-	auto cubeIndices = utils::CreateCubeIndices();
-	auto planeVertices = utils::CreatePlaneVertices();
-	auto planeIndices = utils::CreatePlaneIndices();
+	auto cubeVertices = utils::CreateCubeVerticesEx();
+	auto cubeIndices = utils::CreateCubeIndicesEx();
+	auto planeVertices = utils::CreatePlaneVerticesEx();
+	auto planeIndices = utils::CreatePlaneIndicesEx();
 
 	VertexBufferDesc cubeVBDesc = {};
-	cubeVBDesc.size = (uint32_t)cubeVertices.size() * sizeof(float);
-	cubeVBDesc.stride = (uint32_t)(8 * sizeof(float));
+	cubeVBDesc.size = (uint32_t)cubeVertices.size() * sizeof(utils::Vertex);
+	cubeVBDesc.stride = sizeof(utils::Vertex);
 	cubeVBDesc.usage = D3D11_USAGE_DEFAULT;
 	cubeVBDesc.cpuAccessFlag = 0;
 	m_cubeVB = VertexBuffer::Create(cubeVertices.data(), cubeVBDesc);
@@ -49,8 +49,8 @@ void EditorLayer::OnAttach()
 	m_cubeIB = IndexBuffer::Create(cubeIndices.data(), cubeIBDesc);
 
 	VertexBufferDesc planeVBDesc = {};
-	planeVBDesc.size = (uint32_t)planeVertices.size() * sizeof(float);
-	planeVBDesc.stride = (uint32_t)(8 * sizeof(float));
+	planeVBDesc.size = (uint32_t)planeVertices.size() * sizeof(utils::Vertex);
+	planeVBDesc.stride = sizeof(utils::Vertex);
 	planeVBDesc.usage = D3D11_USAGE_DEFAULT;
 	planeVBDesc.cpuAccessFlag = 0;
 	m_planeVB = VertexBuffer::Create(planeVertices.data(), planeVBDesc);

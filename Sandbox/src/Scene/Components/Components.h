@@ -18,6 +18,7 @@ struct MaterialComponent
 {
 	std::shared_ptr<d3dcore::Texture2D> diffuseMap = nullptr;
 	std::shared_ptr<d3dcore::Texture2D> specularMap = nullptr;
+	std::shared_ptr<d3dcore::Texture2D> normalMap = nullptr;
 	DirectX::XMFLOAT3 ambientCol = { 1.0f, 1.0f, 1.0f };
 	DirectX::XMFLOAT3 diffuseCol = { 1.0f, 1.0f, 1.0f };
 	DirectX::XMFLOAT3 specularCol = { 1.0f, 1.0f, 1.0f };

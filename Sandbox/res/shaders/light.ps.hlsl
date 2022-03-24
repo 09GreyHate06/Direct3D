@@ -5,8 +5,8 @@ struct VSOutput
     float3 normal : NORMAL;
     float3 pixelPosition : PIXEL_POSITION;
     float3 viewPosition : VIEW_POSITION;
-    float3 tangent : TANGENT;
-    float3 bitangent : BITANGENT;
+    float3 wsTangent : WS_TANGENT;
+    float3 wsBitangent : WS_BITANGENT;
 };
 
 struct Material
@@ -96,14 +96,14 @@ float4 main(VSOutput input) : SV_TARGET
     float3 normal = normalize(input.normal);
     if (material.enableNormalMap)
     {
-        float3 t = normalize(input.tangent - dot(input.tangent, normal) * normal);
+        float3 t = normalize(input.wsTangent - dot(input.wsTangent, normal) * normal);
         float3 b = cross(normal, t);
         const float3x3 tanToWorld = float3x3(
             normalize(t),
             normalize(b),
             normalize(normal)
         );
-        normal = normalMap.Sample(normalSampler, input.uv).xyz;
+        normal = normalMap.Sample(normalSampler, input.uv * material.tiling).xyz;
         normal = normal * 2.0f - 1.0f;
         normal = normalize(mul(normal, tanToWorld));
     }

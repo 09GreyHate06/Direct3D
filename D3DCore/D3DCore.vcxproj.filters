@@ -40,7 +40,7 @@
     <ClInclude Include="src\D3DCore\Renderer\Buffer.h" />
     <ClInclude Include="src\D3DCore\Renderer\Texture.h" />
     <ClInclude Include="src\D3DCore\Utils\BasicMesh.h" />
-    <ClInclude Include="src\D3DCore\Utils\EditorCamera.h" />
+    <ClInclude Include="src\D3DCore\Utils\EditorCamController.h" />
     <ClInclude Include="src\D3DCore\Core\Input.h" />
     <ClInclude Include="src\D3DCore\Scene\Entity.h" />
     <ClInclude Include="src\D3DCore\Scene\Scene.h" />
@@ -48,6 +48,8 @@
     <ClInclude Include="src\D3DCore\Scene\System.h" />
     <ClInclude Include="src\D3DCore\Core\Time.h" />
     <ClInclude Include="src\D3DCore\ImGui\ImGuiLayer.h" />
+    <ClInclude Include="src\D3DCore\Utils\Camera.h" />
+    <ClInclude Include="src\D3DCore\Utils\FPSCamController.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\d3dcpch.cpp" />
@@ -66,12 +68,14 @@
     <ClCompile Include="src\D3DCore\Renderer\Buffer.cpp" />
     <ClCompile Include="src\D3DCore\Renderer\Texture.cpp" />
     <ClCompile Include="src\D3DCore\Utils\BasicMesh.cpp" />
-    <ClCompile Include="src\D3DCore\Utils\EditorCamera.cpp" />
+    <ClCompile Include="src\D3DCore\Utils\EditorCamController.cpp" />
     <ClCompile Include="src\D3DCore\Core\Input.cpp" />
     <ClCompile Include="src\D3DCore\Scene\Scene.cpp" />
     <ClCompile Include="src\D3DCore\Core\Time.cpp" />
     <ClCompile Include="src\D3DCore\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\D3DCore\ImGui\ImGuiLayer.cpp" />
+    <ClCompile Include="src\D3DCore\Utils\Camera.cpp" />
+    <ClCompile Include="src\D3DCore\Utils\FPSCamController.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\D3DCore\Renderer\DXError\DXGetErrorDescription.inl" />

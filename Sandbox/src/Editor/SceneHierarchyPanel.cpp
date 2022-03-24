@@ -320,12 +320,13 @@ void SceneHierarchyPanel::DrawComponents(d3dcore::Entity entity)
 
 	DrawComponent<MaterialComponent>("Material", entity, [](auto& component)
 	{
+		const char* filter = "Image Files (*.png, *.jpg, *.jpeg, *.tga)\0*.png; *.jpg; *.jpeg; *.tga";
 		int id = 0;
 		ImGui::Text("Diffuse Map");
 		ImGui::PushID(id++);
 		if (ImGui::Button("Browse"))
 		{
-			std::string newTexFilepath = FileDialog::OpenFileDialog("Image Files (*.png, *.jpg, *.jpeg, *.tga)\0*.png;*.jpg;\0*.jpeg;\0*.tga\0");
+			std::string newTexFilepath = FileDialog::OpenFileDialog(filter);
 			if (!newTexFilepath.empty())
 			{
 				auto tex = Texture2D::Create(newTexFilepath, false, Texture2DDesc());
@@ -353,7 +354,7 @@ void SceneHierarchyPanel::DrawComponents(d3dcore::Entity entity)
 		ImGui::PushID(id++);
 		if (ImGui::Button("Browse"))
 		{
-			std::string newTexFilepath = FileDialog::OpenFileDialog("Image Files (*.png, *.jpg, *.jpeg)\0*.png;*.jpg;\0*.jpeg\0");
+			std::string newTexFilepath = FileDialog::OpenFileDialog(filter);
 			if (!newTexFilepath.empty())
 			{
 				auto tex = Texture2D::Create(newTexFilepath, false, Texture2DDesc());
@@ -382,7 +383,7 @@ void SceneHierarchyPanel::DrawComponents(d3dcore::Entity entity)
 		ImGui::PushID(id++);
 		if (ImGui::Button("Browse"))
 		{
-			std::string newTexFilepath = FileDialog::OpenFileDialog("Image Files (*.png, *.jpg, *.jpeg, *.tga)\0*.png;*.jpg;\0*.jpeg;\0*.tga\0");
+			std::string newTexFilepath = FileDialog::OpenFileDialog(filter);
 			if (!newTexFilepath.empty())
 			{
 				auto tex = Texture2D::Create(newTexFilepath, false, Texture2DDesc());

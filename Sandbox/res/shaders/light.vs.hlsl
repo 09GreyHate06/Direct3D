@@ -14,8 +14,8 @@ struct VSOutput
     float3 normal : NORMAL;
     float3 pixelPosition : PIXEL_POSITION;
     float3 viewPosition : VIEW_POSITION;
-    float3 tangent : TANGENT;
-    float3 bitangent : BITANGENT;
+    float3 wsTangent : WS_TANGENT;
+    float3 wsBitangent : WS_BITANGENT;
 };
 
 struct Camera
@@ -51,7 +51,7 @@ VSOutput main(VSInput input)
     vso.normal = mul(input.normal, (float3x3)entity.normalMatrix);
     vso.pixelPosition = (float3)mul(float4(input.position, 1.0f), entity.transform);
     vso.viewPosition = camera.position;
-    vso.tangent = mul(input.tangent, wsTransform);
-    vso.bitangent = mul(input.bitangent, wsTransform);
+    vso.wsTangent = mul(input.tangent, wsTransform);
+    vso.wsBitangent = mul(input.bitangent, wsTransform);
     return vso;
 }

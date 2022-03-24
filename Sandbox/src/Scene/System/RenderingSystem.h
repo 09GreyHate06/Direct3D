@@ -7,7 +7,7 @@ public:
 	RenderingSystem(d3dcore::Scene* scene);
 	RenderingSystem();
 
-	void Render(const d3dcore::utils::EditorCamera& camera);
+	void Render(const d3dcore::utils::Camera& camera);
 	const std::shared_ptr<d3dcore::Framebuffer> GetFramebuffer() const { return m_framebuffer; }
 
 private:

@@ -123,7 +123,9 @@
     <ClInclude Include="src\D3DCore\Scene\Scene.h" />
     <ClInclude Include="src\D3DCore\Scene\System.h" />
     <ClInclude Include="src\D3DCore\Utils\BasicMesh.h" />
-    <ClInclude Include="src\D3DCore\Utils\EditorCamera.h" />
+    <ClInclude Include="src\D3DCore\Utils\Camera.h" />
+    <ClInclude Include="src\D3DCore\Utils\EditorCamController.h" />
+    <ClInclude Include="src\D3DCore\Utils\FPSCamController.h" />
     <ClInclude Include="src\D3DCore\Utils\Loader.h" />
     <ClInclude Include="src\d3dcpch.h" />
     <ClInclude Include="src\D3DCore\Core\Window.h" />
@@ -150,7 +152,9 @@
     <ClCompile Include="src\D3DCore\Renderer\Texture.cpp" />
     <ClCompile Include="src\D3DCore\Scene\Scene.cpp" />
     <ClCompile Include="src\D3DCore\Utils\BasicMesh.cpp" />
-    <ClCompile Include="src\D3DCore\Utils\EditorCamera.cpp" />
+    <ClCompile Include="src\D3DCore\Utils\Camera.cpp" />
+    <ClCompile Include="src\D3DCore\Utils\EditorCamController.cpp" />
+    <ClCompile Include="src\D3DCore\Utils\FPSCamController.cpp" />
     <ClCompile Include="src\D3DCore\Utils\Loader.cpp" />
     <ClCompile Include="src\d3dcpch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>

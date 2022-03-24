@@ -30,7 +30,9 @@
 
 #include "D3DCore/Utils/BasicMesh.h"
 #include "D3DCore/Utils/Loader.h"
-#include "D3DCore/Utils/EditorCamera.h"
+#include "D3DCore/Utils/Camera.h"
+#include "D3DCore/Utils/EditorCamController.h"
+#include "D3DCore/Utils/FPSCamController.h"
 
 #include <entt/entt.hpp>
 #include <d3d11.h>

@@ -13,5 +13,6 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <filesystem>
+#include <algorithm>
 
 #include "D3DCore/Core/Log.h"

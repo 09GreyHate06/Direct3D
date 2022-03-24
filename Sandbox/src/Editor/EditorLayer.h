@@ -16,7 +16,9 @@ private:
 	void CreateCube();
 	void CreatePlane();
 
-	d3dcore::utils::EditorCamera m_camera;
+	d3dcore::utils::Camera m_camera;
+	d3dcore::utils::EditorCamController m_editorCamController;
+
 	std::unique_ptr<d3dcore::Scene> m_scene;
 	std::unique_ptr<RenderingSystem> m_renderingSystem;
 	SceneHierarchyPanel m_sceneHierarchyPanel;

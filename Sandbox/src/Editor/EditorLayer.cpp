@@ -9,7 +9,18 @@ using namespace Microsoft::WRL;
 
 void EditorLayer::OnAttach()
 {
-	m_camera.SetCamera(utils::EditorCameraDesc());
+	auto& app = Application::Get();
+	utils::CameraDesc camDesc = {};
+	camDesc.aspect = static_cast<float>(app.GetWindow().GetWidth()) / app.GetWindow().GetHeight();
+	camDesc.fov = 45.0f;
+	camDesc.nearPlane = 0.1f;
+	camDesc.farPlane = 1000.0f;
+	camDesc.position = { 0.0f, 0.0f, -5.0f };
+	camDesc.yaw = 0.0f;
+	camDesc.pitch = 0.0f;
+	m_camera.Set(camDesc);
+	m_editorCamController.SetContext(&m_camera);
+
 	m_scene = std::make_unique<Scene>();
 	m_renderingSystem = std::make_unique<RenderingSystem>(m_scene.get());
 	m_sceneHierarchyPanel.SetContext(m_scene.get());
@@ -80,22 +91,22 @@ void EditorLayer::OnEvent(d3dcore::Event& event)
 		}
 	}
 
-	m_camera.OnEvent(event);
+	m_editorCamController.OnEvent(event);
 }
 
 void EditorLayer::OnUpdate()
 {
 	if (m_viewportFocus)
-		m_camera.OnUpdate();
+		m_editorCamController.OnUpdate();
 	else
-		m_camera.Reset();
+		m_editorCamController.Reset();
 
 	if (const FramebufferDesc& desc = m_renderingSystem->GetFramebuffer()->GetDesc();
 		m_sceneViewportWidth > 0.0f && m_sceneViewportHeight > 0.0f &&
 		(desc.width != m_sceneViewportWidth || desc.height != m_sceneViewportHeight))
 	{
 		m_renderingSystem->GetFramebuffer()->Resize(static_cast<uint32_t>(m_sceneViewportWidth), static_cast<uint32_t>(m_sceneViewportHeight));
-		m_camera.SetViewportSize(m_sceneViewportWidth, m_sceneViewportHeight);
+		m_editorCamController.SetViewportSize(m_sceneViewportWidth, m_sceneViewportHeight);
 	}
 
 	m_renderingSystem->Render(m_camera);
@@ -107,7 +118,7 @@ void EditorLayer::OnDetach()
 
 void EditorLayer::OnImGuiRender()
 {
-	static bool openDockspace{ true };
+	static bool openDockspace = true;
 	static bool opt_fullscreen = true;
 	static bool opt_padding = false;
 	static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;

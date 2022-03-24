@@ -164,7 +164,7 @@ RenderingSystem::RenderingSystem()
 {
 }
 
-void RenderingSystem::Render(const d3dcore::utils::EditorCamera& camera)
+void RenderingSystem::Render(const d3dcore::utils::Camera& camera)
 {
 	Renderer::ClearBuffer(0.1f, 0.1f, 0.1f, 1.0f);
 
@@ -195,7 +195,7 @@ void RenderingSystem::Render(const d3dcore::utils::EditorCamera& camera)
 
 			if (renderer.receiveLight)
 			{
-				bool enableNormalMap = false;
+				BOOL enableNormalMap = FALSE;
 
 				m_lightShader->Bind();
 
@@ -217,7 +217,7 @@ void RenderingSystem::Render(const d3dcore::utils::EditorCamera& camera)
 				if (mat.normalMap)
 				{
 					mat.normalMap->PSBind(m_lightShader->GetPSResBinding("normalMap"));
-					enableNormalMap = true;
+					enableNormalMap = TRUE;
 				}
 				else
 					m_defaultTexture->PSBind(m_lightShader->GetPSResBinding("normalMap"));

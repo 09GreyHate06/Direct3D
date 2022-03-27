@@ -31,6 +31,21 @@ void EditorLayer::OnAttach()
 	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
 	Renderer::SetDepthStencilState(dsDesc);
 
+	D3D11_BLEND_DESC blendDesc = CD3D11_BLEND_DESC(CD3D11_DEFAULT());
+	blendDesc.AlphaToCoverageEnable = FALSE;
+	blendDesc.IndependentBlendEnable = FALSE;
+	auto& brt = blendDesc.RenderTarget[0];
+	brt.BlendEnable = TRUE;
+	brt.SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	brt.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	brt.BlendOp = D3D11_BLEND_OP_ADD;
+	brt.SrcBlendAlpha = D3D11_BLEND_ZERO;
+	brt.DestBlendAlpha = D3D11_BLEND_ONE;
+	brt.BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	brt.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	Renderer::SetBlendState(blendDesc);
+
+
 	Entity dirLight = m_scene->CreateEntity("Directional Light");
 
 	dirLight.GetComponent<TransformComponent>().rotation = { 50.0f, -30.0f, 0.0f };
@@ -215,7 +230,7 @@ void EditorLayer::OnImGuiRender()
 	ImGui::End();
 }
 
-void EditorLayer::CreateCube()
+d3dcore::Entity EditorLayer::CreateCube()
 {
 	Entity entity = m_scene->CreateEntity("Cube");
 	auto& mc = entity.AddComponent<MeshComponent>();
@@ -224,15 +239,15 @@ void EditorLayer::CreateCube()
 	auto& mat = entity.AddComponent<MaterialComponent>();
 	mat.diffuseMap = nullptr;
 	mat.specularMap = nullptr;
-	mat.ambientCol = { 1.0f, 1.0f, 1.0f };
-	mat.diffuseCol = { 1.0f, 1.0f, 1.0f };
-	mat.specularCol = { 1.0f, 1.0f, 1.0f };
+	mat.diffuseCol = { 1.0f, 1.0f, 1.0f, 1.0f };
 	mat.tiling = { 1.0f, 1.0f };
 	mat.shininess = 32.0f;
 	entity.AddComponent<MeshRendererComponent>();
+
+	return entity;
 }
 
-void EditorLayer::CreatePlane()
+d3dcore::Entity EditorLayer::CreatePlane()
 {
 	Entity entity = m_scene->CreateEntity("Plane");
 	auto& mc = entity.AddComponent<MeshComponent>();
@@ -241,10 +256,10 @@ void EditorLayer::CreatePlane()
 	auto& mat = entity.AddComponent<MaterialComponent>();
 	mat.diffuseMap = nullptr;
 	mat.specularMap = nullptr;
-	mat.ambientCol = { 1.0f, 1.0f, 1.0f };
-	mat.diffuseCol = { 1.0f, 1.0f, 1.0f };
-	mat.specularCol = { 1.0f, 1.0f, 1.0f };
+	mat.diffuseCol = { 1.0f, 1.0f, 1.0f, 1.0f };
 	mat.tiling = { 1.0f, 1.0f };
 	mat.shininess = 32.0f;
 	entity.AddComponent<MeshRendererComponent>();
+
+	return entity;
 }

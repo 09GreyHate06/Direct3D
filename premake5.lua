@@ -117,3 +117,47 @@ project "Sandbox"
         defines "D3DC_RELEASE"
         runtime "Release"
         optimize "on"
+
+--[[ project "Raycaster"
+    location "Raycaster"
+    kind "ConsoleApp"
+    language "C++"
+    cppdialect "C++17"
+    staticruntime "on"
+
+    targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+    files
+    {
+        "%{prj.name}/src/**.h",
+        "%{prj.name}/src/**.cpp",
+    }
+
+    includedirs
+    {
+        "%{prj.name}/src",
+        "D3DCore/src/",
+        "%{IncludeDir.entt}",
+        "%{IncludeDir.ImGui}",
+        "%{IncludeDir.assimp}",
+        "%{IncludeDir.spdlog}",
+    }
+
+    links
+    {
+        "D3DCore"
+    }
+
+    filter "system:windows"
+        systemversion "latest"
+
+    filter "configurations:Debug"
+        defines "D3DC_DEBUG"
+        runtime "Debug"
+        symbols "on"
+
+    filter "configurations:Release"
+        defines "D3DC_RELEASE"
+        runtime "Release"
+        optimize "on" ]]

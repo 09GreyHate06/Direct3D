@@ -2,6 +2,7 @@
 #include "D3DCore/Core/D3DCWindows.h"
 #include "Framebuffer.h"
 #include <d3d11.h>
+#include <optional>
 
 namespace d3dcore
 {
@@ -36,7 +37,8 @@ namespace d3dcore
 
 		static void SetTopology(Topology topology);
 		static void SetViewport(ViewportDesc vp);
-		static void SetDepthStencilState(D3D11_DEPTH_STENCIL_DESC dsDesc);
+		static void SetDepthStencilState(const D3D11_DEPTH_STENCIL_DESC& dsDesc);
+		static void SetBlendState(const D3D11_BLEND_DESC& bsDesc, std::optional<float> blendFactor = {});
 
 		// SetFramebuffer doesn't increment shared ptr ref count
 		static void SetFramebuffer(const std::shared_ptr<Framebuffer>& fb);
@@ -51,6 +53,7 @@ namespace d3dcore
 		static bool s_usingDefRTV;
 
 		static Microsoft::WRL::ComPtr<ID3D11DepthStencilState> s_depthStencilState;
+		static Microsoft::WRL::ComPtr<ID3D11BlendState> s_blendState;
 		static Microsoft::WRL::ComPtr<ID3D11RenderTargetView> s_defRTV;
 		static Microsoft::WRL::ComPtr<ID3D11DepthStencilView> s_defDSV;
 

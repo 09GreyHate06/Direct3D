@@ -6,8 +6,7 @@ struct VSOutput
 
 cbuffer PSEntityCBuf
 {
-    float3 color;
-    float p0;
+    float4 color;
     float2 tiling;
     float p1;
     float p2;
@@ -18,5 +17,5 @@ SamplerState samplerState : register(s0);
 
 float4 main(VSOutput input) : SV_TARGET
 {
-    return tex.Sample(samplerState, input.uv * tiling) * float4(color, 1.0f);
+    return tex.Sample(samplerState, input.uv * tiling) * color;
 }

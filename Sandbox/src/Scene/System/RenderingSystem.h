@@ -11,6 +11,9 @@ public:
 	const std::shared_ptr<d3dcore::Framebuffer> GetFramebuffer() const { return m_framebuffer; }
 
 private:
+	void Render_(const d3dcore::utils::Camera& camera);
+	void Render_Outlined(const d3dcore::utils::Camera& camera);
+
 	void SetLigths();
 	DirectX::XMMATRIX GetEntityParentsTransform(d3dcore::RelationshipComponent& relationship);
 

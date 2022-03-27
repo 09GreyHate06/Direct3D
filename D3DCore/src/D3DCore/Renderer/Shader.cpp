@@ -75,7 +75,7 @@ namespace d3dcore
 
 		D3D11_SHADER_DESC shaderDesc = {};
 		D3DC_CONTEXT_THROW_INFO(m_vsReflection->GetDesc(&shaderDesc));
-
+		
 		// Read input layout description from shader info
 		std::vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutDesc;
 		for (uint32_t i = 0; i < shaderDesc.InputParameters; i++)

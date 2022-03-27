@@ -264,6 +264,14 @@ void SceneHierarchyPanel::DrawComponents(d3dcore::Entity entity)
 			ImGui::CloseCurrentPopup();
 		}
 
+		if (ImGui::MenuItem("Mesh Outliner"))
+		{
+			if (!entity.HasComponent<MeshOutlinerComponent>())
+				m_selectedEntity.AddComponent<MeshOutlinerComponent>();
+			else
+				D3DC_LOG_WARN(entity.GetComponent<TagComponent>().tag + " already have Mesh Outliner Component");
+		}
+
 		ImGui::EndPopup();
 	}
 
@@ -407,10 +415,7 @@ void SceneHierarchyPanel::DrawComponents(d3dcore::Entity entity)
 		ImGui::Text(std::string(component.normalMap ? component.normalMap->GetFilepath().string() : "N/A").c_str());
 		ImGui::PopItemWidth();
 
-
-		ImGui::ColorEdit3("Ambient Color", &component.ambientCol.x);
-		ImGui::ColorEdit3("Diffuse Color", &component.diffuseCol.x);
-		ImGui::ColorEdit3("Specular Color", &component.specularCol.x);
+		ImGui::ColorEdit4("Diffuse Color", &component.diffuseCol.x);
 		ImGui::DragFloat2("Tiling", &component.tiling.x);
 		ImGui::DragFloat("Shininess", &component.shininess, s_dragSpeed);
 	});
@@ -445,5 +450,11 @@ void SceneHierarchyPanel::DrawComponents(d3dcore::Entity entity)
 		ImGui::DragFloat("Quadratic", &component.quadratic, s_dragSpeed);
 		ImGui::DragFloat("Inner cutoff angle", &component.innerCutOffAngle, s_dragSpeed);
 		ImGui::DragFloat("Outer cutoff angle", &component.outerCutOffAngle, s_dragSpeed);
+	});
+
+	DrawComponent<MeshOutlinerComponent>("Mesh Outliner", entity, [](auto& component)
+	{
+		ImGui::DragFloat("Outline multiplier", &component.outlineMult, s_dragSpeed);
+		ImGui::ColorEdit4("Color", &component.color.x);
 	});
 }

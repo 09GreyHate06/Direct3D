@@ -13,8 +13,8 @@ public:
 	virtual void OnImGuiRender() override;
 
 private:
-	void CreateCube();
-	void CreatePlane();
+	d3dcore::Entity CreateCube();
+	d3dcore::Entity CreatePlane();
 
 	d3dcore::utils::Camera m_camera;
 	d3dcore::utils::EditorCamController m_editorCamController;

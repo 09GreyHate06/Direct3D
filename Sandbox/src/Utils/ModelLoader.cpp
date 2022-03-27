@@ -99,9 +99,7 @@ void ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene, MeshComponent*
     std::shared_ptr<Texture2D> specularMap = nullptr;
     std::shared_ptr<Texture2D> normalMap = nullptr;
 
-    XMFLOAT3 ambientCol = { 1.0f, 1.0f, 1.0f };
     XMFLOAT3 diffuseCol = { 1.0f, 1.0f, 1.0f };
-    XMFLOAT3 specularCol = { 1.0f, 1.0f, 1.0f };
     float shininess = 32.0f;
 
     if (mesh->mMaterialIndex >= 0)
@@ -113,11 +111,7 @@ void ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene, MeshComponent*
         if (!normalMap)
             normalMap = LoadTextureMap(mat, aiTextureType_NORMALS);
         
-
-        ambientCol = LoadSolidColorMap(mat, AI_MATKEY_COLOR_AMBIENT);
         diffuseCol = LoadSolidColorMap(mat, AI_MATKEY_COLOR_DIFFUSE);
-        specularCol = LoadSolidColorMap(mat, AI_MATKEY_COLOR_SPECULAR);
-
 
         if (aiGetMaterialFloat(mat, AI_MATKEY_SHININESS, &shininess) != AI_SUCCESS)
             shininess = 32.0f;
@@ -129,9 +123,7 @@ void ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene, MeshComponent*
     matComponent->diffuseMap = diffuseMap;
     matComponent->specularMap = specularMap;
     matComponent->normalMap = normalMap;
-    matComponent->ambientCol = ambientCol;
-    matComponent->diffuseCol = diffuseCol;
-    matComponent->specularCol = specularCol;
+    matComponent->diffuseCol = { diffuseCol.x, diffuseCol.y, diffuseCol.z, 1.0f };
     matComponent->tiling = { 1.0f, 1.0f };
     matComponent->shininess = shininess;
 

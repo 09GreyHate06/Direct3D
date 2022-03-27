@@ -19,9 +19,7 @@ struct MaterialComponent
 	std::shared_ptr<d3dcore::Texture2D> diffuseMap = nullptr;
 	std::shared_ptr<d3dcore::Texture2D> specularMap = nullptr;
 	std::shared_ptr<d3dcore::Texture2D> normalMap = nullptr;
-	DirectX::XMFLOAT3 ambientCol = { 1.0f, 1.0f, 1.0f };
-	DirectX::XMFLOAT3 diffuseCol = { 1.0f, 1.0f, 1.0f };
-	DirectX::XMFLOAT3 specularCol = { 1.0f, 1.0f, 1.0f };
+	DirectX::XMFLOAT4 diffuseCol = { 1.0f, 1.0f, 1.0f, 1.0f };
 	DirectX::XMFLOAT2 tiling = { 1.0f, 1.0f };
 	float shininess = 32.0f;
 };
@@ -59,6 +57,12 @@ struct SpotLightComponent
 
 	float innerCutOffAngle = 10.0f;
 	float outerCutOffAngle = 15.0f;
+};
+
+struct MeshOutlinerComponent
+{
+	float outlineMult = 1.1f;
+	DirectX::XMFLOAT4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
 };
 
 // use this instead of loading each mesh n different entities. Why? it's slow! prolly need multi threading (don't know how)

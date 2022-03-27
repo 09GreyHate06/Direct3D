@@ -11,12 +11,7 @@ struct VSOutput
 
 struct Material
 {
-    float3 ambientCol;
-    float p0;
-    float3 diffuseCol;
-    float p1;
-    float3 specularCol;
-    float p2;
+    float4 diffuseCol;
     float2 tiling;
     float shininess;
     bool enableNormalMap;
@@ -87,7 +82,7 @@ SamplerState diffuseSampler : register(s0);
 SamplerState specularSampler : register(s1);
 SamplerState normalSampler : register(s2);
 
-float3 Phong(float3 pixelToLight, float3 pixelToView, float3 normal, float3 lAmbient, float3 lDiffuse, float3 lSpecular, float3 mAmbient, float3 mDiffuse, float3 mSpecular);
+float3 Phong(float3 pixelToLight, float3 pixelToView, float3 normal, float3 lAmbient, float3 lDiffuse, float3 lSpecular, float3 mDiffuse, float3 mSpecular);
 float CalcAttenuation(float distance, float attConstant, float attLinear, float attQuadratic);
 
 float4 main(VSOutput input) : SV_TARGET
@@ -108,9 +103,8 @@ float4 main(VSOutput input) : SV_TARGET
         normal = normalize(mul(normal, tanToWorld));
     }
 
-    float3 mAmbient = (float3) diffuseMap.Sample(diffuseSampler, input.uv * material.tiling) * material.ambientCol;
-    float3 mDiffuse = (float3) diffuseMap.Sample(diffuseSampler, input.uv * material.tiling) * material.diffuseCol;
-    float3 mSpecular = (float3) specularMap.Sample(specularSampler, input.uv * material.tiling) * material.specularCol;
+    float4 mDiffuse = diffuseMap.Sample(diffuseSampler, input.uv * material.tiling) * material.diffuseCol;
+    float4 mSpecular = specularMap.Sample(specularSampler, input.uv * material.tiling);
 
     float3 dirLightPhong = float3(0.0f, 0.0f, 0.0f);
     float3 pointLightPhong = float3(0.0f, 0.0f, 0.0f);
@@ -120,7 +114,7 @@ float4 main(VSOutput input) : SV_TARGET
     {
         DirectionalLight light = dirLights[i];
         float3 pixelToLight = normalize(-light.direction);
-        dirLightPhong += Phong(pixelToLight, pixelToView, normal, light.ambient, light.diffuse, light.specular, mAmbient, mDiffuse, mSpecular);
+        dirLightPhong += Phong(pixelToLight, pixelToView, normal, light.ambient, light.diffuse, light.specular, mDiffuse.rgb, mSpecular.rgb);
     }
 
     for (uint i = 0; i < activePointLights; i++)
@@ -128,7 +122,7 @@ float4 main(VSOutput input) : SV_TARGET
         PointLight light = pointLights[i];
         float3 pixelToLight = normalize(light.position - input.pixelPosition);
         float attenuation = CalcAttenuation(length(light.position - input.pixelPosition), light.attConstant, light.attLinear, light.attQuadratic);
-        float3 phong = Phong(pixelToLight, pixelToView, normal, light.ambient, light.diffuse, light.specular, mAmbient, mDiffuse, mSpecular);
+        float3 phong = Phong(pixelToLight, pixelToView, normal, light.ambient, light.diffuse, light.specular, mDiffuse.rgb, mSpecular.rgb);
         pointLightPhong += phong * attenuation;
     }
 
@@ -142,16 +136,16 @@ float4 main(VSOutput input) : SV_TARGET
         float epsilon = light.innerCutOff - light.outerCutOff;
         float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0f, 1.0f);
 
-        float3 phong = Phong(pixelToLight, pixelToView, normal, light.ambient, light.diffuse, light.specular, mAmbient, mDiffuse, mSpecular);
+        float3 phong = Phong(pixelToLight, pixelToView, normal, light.ambient, light.diffuse, light.specular, mDiffuse.rgb, mSpecular.rgb);
         spotLightPhong += phong * attenuation * intensity;
     }
 
-    return float4(dirLightPhong + pointLightPhong + spotLightPhong, 1.0f);
+    return float4(dirLightPhong + pointLightPhong + spotLightPhong, mDiffuse.a);
 }
 
-float3 Phong(float3 pixelToLight, float3 pixelToView, float3 normal, float3 lAmbient, float3 lDiffuse, float3 lSpecular, float3 mAmbient, float3 mDiffuse, float3 mSpecular)
+float3 Phong(float3 pixelToLight, float3 pixelToView, float3 normal, float3 lAmbient, float3 lDiffuse, float3 lSpecular, float3 mDiffuse, float3 mSpecular)
 {
-    float3 ambient = lAmbient * mAmbient;
+    float3 ambient = lAmbient * mDiffuse;
 
     float diffuseFactor = max(dot(normal, pixelToLight), 0.0f);
     float3 diffuse = lDiffuse * mDiffuse * diffuseFactor;

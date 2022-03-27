@@ -25,13 +25,13 @@ namespace d3dcore
 		m_renderTargetSrv.Reset();
 		m_depthStencilView.Reset();
 		m_depthStencilTexture.Reset();
-		
+
 		D3D11_TEXTURE2D_DESC rtTexDesc = {};
 		rtTexDesc.Width = m_desc.width;
 		rtTexDesc.Height = m_desc.height;
 		rtTexDesc.MipLevels = 1;
 		rtTexDesc.ArraySize = 1;
-		rtTexDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+		rtTexDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		rtTexDesc.SampleDesc.Count = 1;
 		rtTexDesc.SampleDesc.Quality = 0;
 		rtTexDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -69,7 +69,7 @@ namespace d3dcore
 		dsTexDesc.Height = m_desc.height;
 		dsTexDesc.MipLevels = 1;
 		dsTexDesc.ArraySize = 1;
-		dsTexDesc.Format = DXGI_FORMAT_D32_FLOAT;
+		dsTexDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 		dsTexDesc.SampleDesc.Count = 1;
 		dsTexDesc.SampleDesc.Quality = 0;
 		dsTexDesc.Usage = D3D11_USAGE_DEFAULT;

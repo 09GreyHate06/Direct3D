@@ -174,28 +174,28 @@ void RenderingSystem::Render(const d3dcore::utils::Camera& camera)
 
 	Renderer::ClearBuffer(0.1f, 0.1f, 0.1f, 1.0f);
 
-	D3D11_DEPTH_STENCIL_DESC dsDesc = { CD3D11_DEPTH_STENCIL_DESC(CD3D11_DEFAULT()) };
-	dsDesc.DepthEnable = TRUE;
-	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
-	dsDesc.StencilEnable = TRUE;
-	dsDesc.StencilWriteMask = 0xff;
-	dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-	dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
-	dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_REPLACE;
-	dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	Renderer::SetDepthStencilState(dsDesc);
+	//D3D11_DEPTH_STENCIL_DESC dsDesc = CD3D11_DEPTH_STENCIL_DESC(CD3D11_DEFAULT());
+	//dsDesc.DepthEnable = TRUE;
+	//dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	//dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	//dsDesc.StencilEnable = TRUE;
+	//dsDesc.StencilWriteMask = 0xff;
+	//dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	//dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
+	//dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_REPLACE;
+	//dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	//Renderer::SetDepthStencilState(dsDesc);
 	Render_(camera);
+	
 
-
-	dsDesc.DepthEnable = FALSE;
-	dsDesc.StencilEnable = TRUE;
-	dsDesc.StencilReadMask = 0xff;
-	dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_NOT_EQUAL;
-	dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	Renderer::SetDepthStencilState(dsDesc);
-	Render_Outlined(camera);
+	//dsDesc.DepthEnable = FALSE;
+	//dsDesc.StencilEnable = TRUE;
+	//dsDesc.StencilReadMask = 0xff;
+	//dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_NOT_EQUAL;
+	//dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	//dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	//Renderer::SetDepthStencilState(dsDesc);
+	//Render_Outlined(camera);
 
 	Renderer::SetFramebuffer(nullptr);
 }
@@ -296,48 +296,48 @@ void RenderingSystem::Render_(const d3dcore::utils::Camera& camera)
 	}
 }
 
-void RenderingSystem::Render_Outlined(const d3dcore::utils::Camera& camera)
-{
-	{
-		auto view = GetSceneRegistry().view<TransformComponent, RelationshipComponent, MeshComponent, MeshRendererComponent, MaterialComponent, MeshOutlinerComponent>();
-		for (auto& entity : view)
-		{
-			auto& [transform, relationship, mesh, renderer, mat, outliner] =
-				view.get<TransformComponent, RelationshipComponent, MeshComponent, MeshRendererComponent, MaterialComponent, MeshOutlinerComponent>(entity);
-
-			mesh.vBuffer->Bind();
-			mesh.iBuffer->Bind();
-			Renderer::SetTopology(renderer.topology);
-
-			m_textureShader->Bind();
-
-			m_textureVSSysCBuf->VSBind(m_textureShader->GetVSResBinding("VSSystemCBuf"));
-			m_textureVSEntityCBuf->VSBind(m_textureShader->GetVSResBinding("VSEntityCBuf"));
-			m_texturePSEntityCBuf->PSBind(m_textureShader->GetPSResBinding("PSEntityCBuf"));
-
-			m_defaultTexture->PSBind(m_textureShader->GetPSResBinding("tex"));
-
-			cbufs::TextureVSSystemCBuf vsSysCBuf = {};
-			XMStoreFloat4x4(&vsSysCBuf.view, XMMatrixTranspose(camera.GetViewMatrix()));
-			XMStoreFloat4x4(&vsSysCBuf.projection, XMMatrixTranspose(camera.GetProjectionMatrix()));
-			m_textureVSSysCBuf->SetData(&vsSysCBuf);
-
-			cbufs::TextureVSEntityCBuf vsEntityCBuf = {};
-			XMFLOAT3 oldScale = transform.scale;
-			transform.scale = transform.scale * outliner.outlineMult;
-			XMStoreFloat4x4(&vsEntityCBuf.transform, XMMatrixTranspose(transform.GetTransform() * GetEntityParentsTransform(relationship)));
-			transform.scale = oldScale;
-			m_textureVSEntityCBuf->SetData(&vsEntityCBuf);
-
-			cbufs::TexturePSEntityCBuf psEntityCBuf = {};
-			psEntityCBuf.color = outliner.color;
-			psEntityCBuf.tiling = { 1.0f, 1.0f };
-			m_texturePSEntityCBuf->SetData(&psEntityCBuf);
-
-			Renderer::DrawIndexed(mesh.iBuffer->GetCount());
-		}
-	}
-}
+//void RenderingSystem::Render_Outlined(const d3dcore::utils::Camera& camera)
+//{
+//	{
+//		auto view = GetSceneRegistry().view<TransformComponent, RelationshipComponent, MeshComponent, MeshRendererComponent, MaterialComponent, MeshOutlinerComponent>();
+//		for (auto& entity : view)
+//		{
+//			auto& [transform, relationship, mesh, renderer, mat, outliner] =
+//				view.get<TransformComponent, RelationshipComponent, MeshComponent, MeshRendererComponent, MaterialComponent, MeshOutlinerComponent>(entity);
+//
+//			mesh.vBuffer->Bind();
+//			mesh.iBuffer->Bind();
+//			Renderer::SetTopology(renderer.topology);
+//
+//			m_textureShader->Bind();
+//
+//			m_textureVSSysCBuf->VSBind(m_textureShader->GetVSResBinding("VSSystemCBuf"));
+//			m_textureVSEntityCBuf->VSBind(m_textureShader->GetVSResBinding("VSEntityCBuf"));
+//			m_texturePSEntityCBuf->PSBind(m_textureShader->GetPSResBinding("PSEntityCBuf"));
+//
+//			m_defaultTexture->PSBind(m_textureShader->GetPSResBinding("tex"));
+//
+//			cbufs::TextureVSSystemCBuf vsSysCBuf = {};
+//			XMStoreFloat4x4(&vsSysCBuf.view, XMMatrixTranspose(camera.GetViewMatrix()));
+//			XMStoreFloat4x4(&vsSysCBuf.projection, XMMatrixTranspose(camera.GetProjectionMatrix()));
+//			m_textureVSSysCBuf->SetData(&vsSysCBuf);
+//
+//			cbufs::TextureVSEntityCBuf vsEntityCBuf = {};
+//			XMFLOAT3 oldScale = transform.scale;
+//			transform.scale = transform.scale * outliner.outlineMult;
+//			XMStoreFloat4x4(&vsEntityCBuf.transform, XMMatrixTranspose(transform.GetTransform() * GetEntityParentsTransform(relationship)));
+//			transform.scale = oldScale;
+//			m_textureVSEntityCBuf->SetData(&vsEntityCBuf);
+//
+//			cbufs::TexturePSEntityCBuf psEntityCBuf = {};
+//			psEntityCBuf.color = outliner.color;
+//			psEntityCBuf.tiling = { 1.0f, 1.0f };
+//			m_texturePSEntityCBuf->SetData(&psEntityCBuf);
+//
+//			Renderer::DrawIndexed(mesh.iBuffer->GetCount());
+//		}
+//	}
+//}
 
 void RenderingSystem::SetLigths()
 {

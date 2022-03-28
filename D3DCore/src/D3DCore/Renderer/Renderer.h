@@ -28,8 +28,6 @@ namespace d3dcore
 	class Renderer
 	{
 	public:
-		static void Init();
-		static void Shutdown();
 
 		static void ClearBuffer(float r, float g, float b, float a);
 		static void SwapBuffers(uint32_t syncInterval);
@@ -39,6 +37,7 @@ namespace d3dcore
 		static void SetViewport(ViewportDesc vp);
 		static void SetDepthStencilState(const D3D11_DEPTH_STENCIL_DESC& dsDesc);
 		static void SetBlendState(const D3D11_BLEND_DESC& bsDesc, std::optional<float> blendFactor = {});
+		static void SetRasterizerState(const D3D11_RASTERIZER_DESC& rsDesc);
 
 		// SetFramebuffer doesn't increment shared ptr ref count
 		static void SetFramebuffer(const std::shared_ptr<Framebuffer>& fb);
@@ -46,17 +45,19 @@ namespace d3dcore
 		static const ViewportDesc& GetViewport() { return s_viewport; }
 
 	private:
+		static void Init(uint32_t sampleCount, uint32_t sampleQuality);
+		static void Shutdown();
 		static void ResizeDefRTV();
 
 		static ID3D11RenderTargetView* s_activeRTV;
 		static ID3D11DepthStencilView* s_activeDSV;
 		static bool s_usingDefRTV;
 
-		static Microsoft::WRL::ComPtr<ID3D11DepthStencilState> s_depthStencilState;
-		static Microsoft::WRL::ComPtr<ID3D11BlendState> s_blendState;
 		static Microsoft::WRL::ComPtr<ID3D11RenderTargetView> s_defRTV;
 		static Microsoft::WRL::ComPtr<ID3D11DepthStencilView> s_defDSV;
 
 		static ViewportDesc s_viewport;
+
+		friend class Application;
 	};
 }

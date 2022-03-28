@@ -13,16 +13,14 @@ namespace d3dcore
 	ID3D11DepthStencilView* Renderer::s_activeDSV = nullptr;
 	bool Renderer::s_usingDefRTV = true;
 
-	ComPtr<ID3D11BlendState> Renderer::s_blendState;
-	ComPtr<ID3D11DepthStencilState> Renderer::s_depthStencilState;
 	ComPtr<ID3D11RenderTargetView> Renderer::s_defRTV;
 	ComPtr<ID3D11DepthStencilView> Renderer::s_defDSV;
 
 	ViewportDesc Renderer::s_viewport;
 
-	void Renderer::Init()
+	void Renderer::Init(uint32_t sampleCount, uint32_t sampleQuality)
 	{
-		D3DContext::Init(Application::Get().GetWindow().GetNativeWindow());
+		D3DContext::Init(Application::Get().GetWindow().GetNativeWindow(), sampleCount, sampleQuality);
 
 		s_viewport.width = static_cast<float>(Application::Get().GetWindow().GetWidth());
 		s_viewport.height = static_cast<float>(Application::Get().GetWindow().GetHeight());
@@ -84,20 +82,30 @@ namespace d3dcore
 	void Renderer::SetDepthStencilState(const D3D11_DEPTH_STENCIL_DESC& dsDesc)
 	{
 		HRESULT hr;
-		D3DC_CONTEXT_THROW_INFO(ctx::GetDevice()->CreateDepthStencilState(&dsDesc, &s_depthStencilState));
-		ctx::GetDeviceContext()->OMSetDepthStencilState(s_depthStencilState.Get(), 0xff);
+		ComPtr<ID3D11DepthStencilState> dsState = nullptr;
+		D3DC_CONTEXT_THROW_INFO(ctx::GetDevice()->CreateDepthStencilState(&dsDesc, &dsState));
+		ctx::GetDeviceContext()->OMSetDepthStencilState(dsState.Get(), 0xff);
 	}
 
 	void Renderer::SetBlendState(const D3D11_BLEND_DESC& bsDesc, std::optional<float> blendFactor)
 	{
 		HRESULT hr;
-		D3DC_CONTEXT_THROW_INFO(ctx::GetDevice()->CreateBlendState(&bsDesc, &s_blendState));
+		ComPtr<ID3D11BlendState> blendState = nullptr;
+		D3DC_CONTEXT_THROW_INFO(ctx::GetDevice()->CreateBlendState(&bsDesc, &blendState));
 		std::array<float, 4> factor = { 0.0f, 0.0f, 0.0f, 0.0f };
 		if (blendFactor)
 		{
 			std::fill(factor.begin(), factor.end(), blendFactor.value());
 		}
-		ctx::GetDeviceContext()->OMSetBlendState(s_blendState.Get(), factor.data(), 0xffffffff);
+		ctx::GetDeviceContext()->OMSetBlendState(blendState.Get(), factor.data(), 0xffffffff);
+	}
+
+	void Renderer::SetRasterizerState(const D3D11_RASTERIZER_DESC& rsDesc)
+	{
+		HRESULT hr;
+		ComPtr<ID3D11RasterizerState> rsState = nullptr;
+		D3DC_CONTEXT_THROW_INFO(ctx::GetDevice()->CreateRasterizerState(&rsDesc, &rsState));
+		ctx::GetDeviceContext()->RSSetState(rsState.Get());
 	}
 
 	void Renderer::SetFramebuffer(const std::shared_ptr<Framebuffer>& fb)
@@ -131,8 +139,8 @@ namespace d3dcore
 		dsTextureDesc.MipLevels = 1;
 		dsTextureDesc.ArraySize = 1;
 		dsTextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		dsTextureDesc.SampleDesc.Count = 1;
-		dsTextureDesc.SampleDesc.Quality = 0;
+		dsTextureDesc.SampleDesc.Count = D3DContext::GetSampleCount();
+		dsTextureDesc.SampleDesc.Quality = D3DContext::GetSampleQuality();
 		dsTextureDesc.Usage = D3D11_USAGE_DEFAULT;
 		dsTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 		D3DC_CONTEXT_THROW_INFO(ctx::GetDevice()->CreateTexture2D(&dsTextureDesc, nullptr, &dsTexture));
@@ -140,9 +148,12 @@ namespace d3dcore
 		// create view of depth stencil texture
 		D3D11_DEPTH_STENCIL_VIEW_DESC dsViewDesc = {};
 		dsViewDesc.Format = dsTextureDesc.Format;
-		dsViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+		dsViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
 		dsViewDesc.Texture2D.MipSlice = 0;
 		D3DC_CONTEXT_THROW_INFO(ctx::GetDevice()->CreateDepthStencilView(dsTexture.Get(), &dsViewDesc, &s_defDSV));
+
+		D3D11_RASTERIZER_DESC rsDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT());
+		SetRasterizerState(rsDesc);
 
 		// bind view to om
 		if (s_usingDefRTV)

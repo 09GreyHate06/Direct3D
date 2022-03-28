@@ -32,8 +32,8 @@ namespace d3dcore
 		rtTexDesc.MipLevels = 1;
 		rtTexDesc.ArraySize = 1;
 		rtTexDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		rtTexDesc.SampleDesc.Count = 1;
-		rtTexDesc.SampleDesc.Quality = 0;
+		rtTexDesc.SampleDesc.Count = D3DContext::GetSampleCount();
+		rtTexDesc.SampleDesc.Quality = D3DContext::GetSampleQuality();
 		rtTexDesc.Usage = D3D11_USAGE_DEFAULT;
 		rtTexDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 		rtTexDesc.CPUAccessFlags = 0;
@@ -47,7 +47,7 @@ namespace d3dcore
 		// Setup the description of the render target view.
 		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
 		rtvDesc.Format = rtTexDesc.Format;
-		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
 		rtvDesc.Texture2D.MipSlice = 0;
 
 		// Create the render target view.
@@ -56,7 +56,7 @@ namespace d3dcore
 		// Setup the description of the shader resource view.
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 		srvDesc.Format = rtTexDesc.Format;
-		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
 		srvDesc.Texture2D.MostDetailedMip = 0;
 		srvDesc.Texture2D.MipLevels = 1;
 
@@ -70,8 +70,8 @@ namespace d3dcore
 		dsTexDesc.MipLevels = 1;
 		dsTexDesc.ArraySize = 1;
 		dsTexDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		dsTexDesc.SampleDesc.Count = 1;
-		dsTexDesc.SampleDesc.Quality = 0;
+		dsTexDesc.SampleDesc.Count = D3DContext::GetSampleCount();
+		dsTexDesc.SampleDesc.Quality = D3DContext::GetSampleQuality();
 		dsTexDesc.Usage = D3D11_USAGE_DEFAULT;
 		dsTexDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
@@ -81,7 +81,7 @@ namespace d3dcore
 		// create view of depth stencil texture
 		D3D11_DEPTH_STENCIL_VIEW_DESC dsViewDesc = {};
 		dsViewDesc.Format = dsTexDesc.Format;
-		dsViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+		dsViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
 		dsViewDesc.Texture2D.MipSlice = 0;
 		D3DC_CONTEXT_THROW_INFO(D3DContext::GetDevice()->CreateDepthStencilView(m_depthStencilTexture.Get(), &dsViewDesc, &m_depthStencilView));
 	}

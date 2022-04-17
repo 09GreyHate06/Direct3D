@@ -10,9 +10,9 @@ namespace d3dcore
 	class D3DContext
 	{
 	public:
-		static ID3D11Device* GetDevice() { return s_device; }
-		static ID3D11DeviceContext* GetDeviceContext() { return s_deviceContext; }
-		static IDXGISwapChain* GetSwapChain() { return s_swapChain; }
+		static ID3D11Device* const GetDevice() { return s_device; }
+		static ID3D11DeviceContext* const GetDeviceContext() { return s_deviceContext; }
+		static IDXGISwapChain* const GetSwapChain() { return s_swapChain; }
 
 		static uint32_t GetSampleCount() { return s_sampleCount; }
 		static uint32_t GetSampleQuality() { return s_sampleQuality; }

@@ -1,5 +1,6 @@
 #pragma once
 #include "D3DCore/Core/D3DCWindows.h"
+#include <DirectXMath.h>
 #include <d3d11.h>
 #include <wrl.h>
 

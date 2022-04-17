@@ -48,9 +48,9 @@ struct SpotLight
     float3 direction;
     float attLinear;
     
-    float3 diffuse;
-    float attQuadratic;
     float3 ambient;
+    float attQuadratic;
+    float3 diffuse;
     float innerCutOff; // cos
     float3 specular;
     float outerCutOff; // cos

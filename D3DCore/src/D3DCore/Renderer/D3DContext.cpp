@@ -65,10 +65,6 @@ namespace d3dcore
 			nullptr,
 			&s_deviceContext
 		));
-
-		UINT quality;
-		s_device->CheckMultisampleQualityLevels(scDesc.BufferDesc.Format, 4, &quality);
-		D3DC_CORE_LOG_INFO("Quality msaa: {0}", quality);
 	}
 
 	void D3DContext::Shutdown()

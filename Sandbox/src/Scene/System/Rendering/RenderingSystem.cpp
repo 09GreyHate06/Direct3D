@@ -1,6 +1,7 @@
 #pragma once
 #include "RenderingSystem.h"
 #include "Scene/Components/Components.h"
+#include "Utils/ShaderCBufs.h"
 
 #include <stack>
 
@@ -18,115 +19,29 @@ static XMFLOAT3 operator* (const float s, const XMFLOAT3& v)
 	return { v.x * s, v.y * s, v.z * s };
 }
 
-namespace cbufs
-{
-	static constexpr uint32_t s_lightMaxCount = 32;
-
-	struct LightVSSystemCBuf
-	{
-		struct
-		{
-			DirectX::XMFLOAT4X4 view;
-			DirectX::XMFLOAT4X4 projection;
-			DirectX::XMFLOAT3 viewPos;
-			float p0;
-		} camera;
-	};
-
-	struct LightVSEntityCBuf
-	{
-		struct 
-		{
-			DirectX::XMFLOAT4X4 transformMatrix;
-			DirectX::XMFLOAT4X4 normalMatrix;
-		} entity;
-	};
-
-	struct LightPSSystemCbuf
-	{
-		struct
-		{
-			DirectX::XMFLOAT3 direction;
-			float p0;
-			DirectX::XMFLOAT3 ambient;
-			float p1;
-			DirectX::XMFLOAT3 diffuse;
-			float p2;
-			DirectX::XMFLOAT3 specular;
-			float p3;
-		} dirLights[s_lightMaxCount];
-
-		struct 
-		{
-			DirectX::XMFLOAT3 position;
-			float p0;
-			DirectX::XMFLOAT3 ambient;
-			float constant;
-			DirectX::XMFLOAT3 diffuse;
-			float linear;
-			DirectX::XMFLOAT3 specular;
-			float quadratic;
-		} pointLights[s_lightMaxCount];
-
-		struct 
-		{
-			DirectX::XMFLOAT3 position;
-			float constant;
-
-			DirectX::XMFLOAT3 direction;
-			float linear;
-
-			DirectX::XMFLOAT3 ambient;
-			float quadratic;
-
-			DirectX::XMFLOAT3 diffuse;
-			float innerCutOffAngle;
-
-			DirectX::XMFLOAT3 specular;
-			float outerCutOffAngle;
-		} spotLights[s_lightMaxCount];
-
-		uint32_t activeDirLight;
-		uint32_t activePointLight;
-		uint32_t activeSpotLight;
-		uint32_t p0;
-	};
-
-	struct LightPSEntityCBuf
-	{
-		struct
-		{
-			DirectX::XMFLOAT4 diffuseCol;
-			DirectX::XMFLOAT2 tiling;
-			float shininess;
-			BOOL enableNormalMap;
-
-		} material;
-	};
-
-	struct TextureVSSystemCBuf
-	{
-		DirectX::XMFLOAT4X4 view;
-		DirectX::XMFLOAT4X4 projection;
-	};
-
-	struct TextureVSEntityCBuf
-	{
-		DirectX::XMFLOAT4X4 transform;
-	};
-
-	struct TexturePSEntityCBuf
-	{
-		DirectX::XMFLOAT4 color;
-		DirectX::XMFLOAT2 tiling;
-		float p1;
-		float p2;
-	};
-}
-
 RenderingSystem::RenderingSystem(d3dcore::Scene* scene)
 	: System(scene)
 {
+	D3D11_DEPTH_STENCIL_DESC dsDesc = CD3D11_DEPTH_STENCIL_DESC(CD3D11_DEFAULT());
+	dsDesc.DepthEnable = TRUE;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	Renderer::SetDepthStencilState(dsDesc);
+
+	D3D11_BLEND_DESC blendDesc = CD3D11_BLEND_DESC(CD3D11_DEFAULT());
+	blendDesc.AlphaToCoverageEnable = FALSE;
+	blendDesc.IndependentBlendEnable = FALSE;
+	auto& brt = blendDesc.RenderTarget[0];
+	brt.BlendEnable = TRUE;
+	brt.SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	brt.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	brt.BlendOp = D3D11_BLEND_OP_ADD;
+	brt.SrcBlendAlpha = D3D11_BLEND_ZERO;
+	brt.DestBlendAlpha = D3D11_BLEND_ONE;
+	brt.BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	brt.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	Renderer::SetBlendState(blendDesc);
+
 	m_textureShader = Shader::Create("res/shaders/texture.vs.hlsl", "res/shaders/texture.ps.hlsl");
 	m_lightShader = Shader::Create("res/shaders/light.vs.hlsl", "res/shaders/light.ps.hlsl");
 
@@ -137,14 +52,14 @@ RenderingSystem::RenderingSystem(d3dcore::Scene* scene)
 	uint32_t white = 0xffffffff;
 	m_defaultTexture = Texture2D::Create(&white, defTexDesc);
 
-	m_lightVSSysCBuf = ConstantBuffer::Create(sizeof(cbufs::LightVSSystemCBuf));
-	m_lightVSEntityCBuf = ConstantBuffer::Create(sizeof(cbufs::LightVSEntityCBuf));
-	m_lightPSSysCBuf = ConstantBuffer::Create(sizeof(cbufs::LightPSSystemCbuf));
-	m_lightPSEntityCBuf = ConstantBuffer::Create(sizeof(cbufs::LightPSEntityCBuf));
+	m_lightVSSysCBuf = ConstantBuffer::Create(sizeof(cbufs::light::VSSystemCBuf));
+	m_lightVSEntityCBuf = ConstantBuffer::Create(sizeof(cbufs::light::VSEntityCBuf));
+	m_lightPSSysCBuf = ConstantBuffer::Create(sizeof(cbufs::light::PSSystemCbuf));
+	m_lightPSEntityCBuf = ConstantBuffer::Create(sizeof(cbufs::light::PSEntityCBuf));
 
-	m_textureVSSysCBuf = ConstantBuffer::Create(sizeof(cbufs::TextureVSSystemCBuf));
-	m_textureVSEntityCBuf = ConstantBuffer::Create(sizeof(cbufs::TextureVSEntityCBuf));
-	m_texturePSEntityCBuf = ConstantBuffer::Create(sizeof(cbufs::TexturePSEntityCBuf));
+	m_textureVSSysCBuf = ConstantBuffer::Create(sizeof(cbufs::texture::VSSystemCBuf));
+	m_textureVSEntityCBuf = ConstantBuffer::Create(sizeof(cbufs::texture::VSEntityCBuf));
+	m_texturePSEntityCBuf = ConstantBuffer::Create(sizeof(cbufs::texture::PSEntityCBuf));
 
 	auto& window = Application::Get().GetWindow();
 	FramebufferDesc fbDesc = {};
@@ -160,42 +75,36 @@ RenderingSystem::RenderingSystem()
 
 void RenderingSystem::Render(const d3dcore::utils::Camera& camera)
 {
-	Renderer::ClearBuffer(0.1f, 0.1f, 0.1f, 1.0f);
-
 	Renderer::SetFramebuffer(m_framebuffer);
-	ViewportDesc vpDesc = {};
-	vpDesc.width = static_cast<float>(m_framebuffer->GetDesc().width);
-	vpDesc.height = static_cast<float>(m_framebuffer->GetDesc().height);
-	vpDesc.topLeftX = 0.0f;
-	vpDesc.topLeftY = 0.0f;
-	vpDesc.minDepth = 0.0f;
-	vpDesc.maxDepth = 1.0f;
+	D3D11_VIEWPORT vpDesc = {};
+	vpDesc.Width = static_cast<float>(m_framebuffer->GetDesc().width);
+	vpDesc.Height = static_cast<float>(m_framebuffer->GetDesc().height);
+	vpDesc.TopLeftX = 0.0f;
+	vpDesc.TopLeftY = 0.0f;
+	vpDesc.MinDepth = 0.0f;
+	vpDesc.MaxDepth = 1.0f;
 	Renderer::SetViewport(vpDesc);
 
 	Renderer::ClearBuffer(0.1f, 0.1f, 0.1f, 1.0f);
 
-	//D3D11_DEPTH_STENCIL_DESC dsDesc = CD3D11_DEPTH_STENCIL_DESC(CD3D11_DEFAULT());
-	//dsDesc.DepthEnable = TRUE;
-	//dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	//dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
-	//dsDesc.StencilEnable = TRUE;
-	//dsDesc.StencilWriteMask = 0xff;
-	//dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-	//dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
-	//dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_REPLACE;
-	//dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	//Renderer::SetDepthStencilState(dsDesc);
+	D3D11_DEPTH_STENCIL_DESC dsDesc = CD3D11_DEPTH_STENCIL_DESC(CD3D11_DEFAULT());
+	dsDesc.DepthEnable = TRUE;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	dsDesc.StencilEnable = TRUE;
+	dsDesc.StencilWriteMask = 0xff;
+	dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS; // always pass
+	dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE; // replace the value to the reference value
+	Renderer::SetDepthStencilState(dsDesc);
 	Render_(camera);
-	
 
-	//dsDesc.DepthEnable = FALSE;
-	//dsDesc.StencilEnable = TRUE;
-	//dsDesc.StencilReadMask = 0xff;
-	//dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_NOT_EQUAL;
-	//dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	//dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	//Renderer::SetDepthStencilState(dsDesc);
-	//Render_Outlined(camera);
+	dsDesc.DepthEnable = FALSE;
+	dsDesc.StencilEnable = TRUE;
+	dsDesc.StencilWriteMask = 0xff;
+	dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_NOT_EQUAL;
+	dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP; // keep the value
+	Renderer::SetDepthStencilState(dsDesc);
+	Render_Outline(camera);
 
 	Renderer::SetFramebuffer(nullptr);
 }
@@ -244,19 +153,19 @@ void RenderingSystem::Render_(const d3dcore::utils::Camera& camera)
 				else
 					m_defaultTexture->PSBind(m_lightShader->GetPSResBinding("normalMap"));
 
-				cbufs::LightVSSystemCBuf vsSysCBuf = {};
+				cbufs::light::VSSystemCBuf vsSysCBuf = {};
 				XMStoreFloat4x4(&vsSysCBuf.camera.view, XMMatrixTranspose(camera.GetViewMatrix()));
 				XMStoreFloat4x4(&vsSysCBuf.camera.projection, XMMatrixTranspose(camera.GetProjectionMatrix()));
 				vsSysCBuf.camera.viewPos = camera.GetDesc().position;
 				m_lightVSSysCBuf->SetData(&vsSysCBuf);
 
 				XMMATRIX transformMatrix = transform.GetTransform() * GetEntityParentsTransform(relationship);
-				cbufs::LightVSEntityCBuf vsEntityCBuf = {};
+				cbufs::light::VSEntityCBuf vsEntityCBuf = {};
 				XMStoreFloat4x4(&vsEntityCBuf.entity.transformMatrix, XMMatrixTranspose(transformMatrix));
 				XMStoreFloat4x4(&vsEntityCBuf.entity.normalMatrix, XMMatrixInverse(nullptr, transformMatrix));
 				m_lightVSEntityCBuf->SetData(&vsEntityCBuf);
 
-				cbufs::LightPSEntityCBuf psEntityCBuf = {};
+				cbufs::light::PSEntityCBuf psEntityCBuf = {};
 				psEntityCBuf.material.diffuseCol = mat.diffuseCol;
 				psEntityCBuf.material.tiling = mat.tiling;
 				psEntityCBuf.material.shininess = mat.shininess;
@@ -276,16 +185,16 @@ void RenderingSystem::Render_(const d3dcore::utils::Camera& camera)
 				else
 					m_defaultTexture->PSBind(m_textureShader->GetPSResBinding("tex"));
 
-				cbufs::TextureVSSystemCBuf vsSysCBuf = {};
+				cbufs::texture::VSSystemCBuf vsSysCBuf = {};
 				XMStoreFloat4x4(&vsSysCBuf.view, XMMatrixTranspose(camera.GetViewMatrix()));
 				XMStoreFloat4x4(&vsSysCBuf.projection, XMMatrixTranspose(camera.GetProjectionMatrix()));
 				m_textureVSSysCBuf->SetData(&vsSysCBuf);
 
-				cbufs::TextureVSEntityCBuf vsEntityCBuf = {};
+				cbufs::texture::VSEntityCBuf vsEntityCBuf = {};
 				XMStoreFloat4x4(&vsEntityCBuf.transform, XMMatrixTranspose(transform.GetTransform() * GetEntityParentsTransform(relationship)));
 				m_textureVSEntityCBuf->SetData(&vsEntityCBuf);
 
-				cbufs::TexturePSEntityCBuf psEntityCBuf = {};
+				cbufs::texture::PSEntityCBuf psEntityCBuf = {};
 				psEntityCBuf.color = mat.diffuseCol;
 				psEntityCBuf.tiling = mat.tiling;
 				m_texturePSEntityCBuf->SetData(&psEntityCBuf);
@@ -296,52 +205,50 @@ void RenderingSystem::Render_(const d3dcore::utils::Camera& camera)
 	}
 }
 
-//void RenderingSystem::Render_Outlined(const d3dcore::utils::Camera& camera)
-//{
-//	{
-//		auto view = GetSceneRegistry().view<TransformComponent, RelationshipComponent, MeshComponent, MeshRendererComponent, MaterialComponent, MeshOutlinerComponent>();
-//		for (auto& entity : view)
-//		{
-//			auto& [transform, relationship, mesh, renderer, mat, outliner] =
-//				view.get<TransformComponent, RelationshipComponent, MeshComponent, MeshRendererComponent, MaterialComponent, MeshOutlinerComponent>(entity);
-//
-//			mesh.vBuffer->Bind();
-//			mesh.iBuffer->Bind();
-//			Renderer::SetTopology(renderer.topology);
-//
-//			m_textureShader->Bind();
-//
-//			m_textureVSSysCBuf->VSBind(m_textureShader->GetVSResBinding("VSSystemCBuf"));
-//			m_textureVSEntityCBuf->VSBind(m_textureShader->GetVSResBinding("VSEntityCBuf"));
-//			m_texturePSEntityCBuf->PSBind(m_textureShader->GetPSResBinding("PSEntityCBuf"));
-//
-//			m_defaultTexture->PSBind(m_textureShader->GetPSResBinding("tex"));
-//
-//			cbufs::TextureVSSystemCBuf vsSysCBuf = {};
-//			XMStoreFloat4x4(&vsSysCBuf.view, XMMatrixTranspose(camera.GetViewMatrix()));
-//			XMStoreFloat4x4(&vsSysCBuf.projection, XMMatrixTranspose(camera.GetProjectionMatrix()));
-//			m_textureVSSysCBuf->SetData(&vsSysCBuf);
-//
-//			cbufs::TextureVSEntityCBuf vsEntityCBuf = {};
-//			XMFLOAT3 oldScale = transform.scale;
-//			transform.scale = transform.scale * outliner.outlineMult;
-//			XMStoreFloat4x4(&vsEntityCBuf.transform, XMMatrixTranspose(transform.GetTransform() * GetEntityParentsTransform(relationship)));
-//			transform.scale = oldScale;
-//			m_textureVSEntityCBuf->SetData(&vsEntityCBuf);
-//
-//			cbufs::TexturePSEntityCBuf psEntityCBuf = {};
-//			psEntityCBuf.color = outliner.color;
-//			psEntityCBuf.tiling = { 1.0f, 1.0f };
-//			m_texturePSEntityCBuf->SetData(&psEntityCBuf);
-//
-//			Renderer::DrawIndexed(mesh.iBuffer->GetCount());
-//		}
-//	}
-//}
+void RenderingSystem::Render_Outline(const d3dcore::utils::Camera& camera)
+{
+	auto view = GetSceneRegistry().view<TransformComponent, RelationshipComponent, MeshComponent, MeshRendererComponent, MaterialComponent>();
+	for (auto& entity : view)
+	{
+		auto& [transform, relationship, mesh, renderer, mat] =
+			view.get<TransformComponent, RelationshipComponent, MeshComponent, MeshRendererComponent, MaterialComponent>(entity);
+
+		mesh.vBuffer->Bind();
+		mesh.iBuffer->Bind();
+		Renderer::SetTopology(renderer.topology);
+
+		m_textureShader->Bind();
+
+		m_textureVSSysCBuf->VSBind(m_textureShader->GetVSResBinding("VSSystemCBuf"));
+		m_textureVSEntityCBuf->VSBind(m_textureShader->GetVSResBinding("VSEntityCBuf"));
+		m_texturePSEntityCBuf->PSBind(m_textureShader->GetPSResBinding("PSEntityCBuf"));
+
+		m_defaultTexture->PSBind(m_textureShader->GetPSResBinding("tex"));
+
+		cbufs::texture::VSSystemCBuf vsSysCBuf = {};
+		XMStoreFloat4x4(&vsSysCBuf.view, XMMatrixTranspose(camera.GetViewMatrix()));
+		XMStoreFloat4x4(&vsSysCBuf.projection, XMMatrixTranspose(camera.GetProjectionMatrix()));
+		m_textureVSSysCBuf->SetData(&vsSysCBuf);
+
+		cbufs::texture::VSEntityCBuf vsEntityCBuf = {};
+		TransformComponent oldTransform = transform;
+		transform.scale = transform.scale * 1.1f;
+		XMStoreFloat4x4(&vsEntityCBuf.transform, XMMatrixTranspose(transform.GetTransform() * GetEntityParentsTransform(relationship)));
+		m_textureVSEntityCBuf->SetData(&vsEntityCBuf);
+		transform = oldTransform;
+
+		cbufs::texture::PSEntityCBuf psEntityCBuf = {};
+		psEntityCBuf.color = { 1.0f, 0.0f, 1.0f, 1.0f };
+		psEntityCBuf.tiling = mat.tiling;
+		m_texturePSEntityCBuf->SetData(&psEntityCBuf);
+
+		Renderer::DrawIndexed(mesh.iBuffer->GetCount());
+	}
+}
 
 void RenderingSystem::SetLigths()
 {
-	cbufs::LightPSSystemCbuf psSysCBuf = {};
+	cbufs::light::PSSystemCbuf psSysCBuf = {};
 	uint32_t index = 0;
 	{
 		auto view = GetSceneRegistry().view<TransformComponent, RelationshipComponent, DirectionalLightComponent>();

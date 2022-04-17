@@ -1,4 +1,5 @@
 #pragma once
+#define D3DC_INTERNALS
 #include "D3DCore.h"
 
 class RenderingSystem : public d3dcore::System
@@ -12,7 +13,7 @@ public:
 
 private:
 	void Render_(const d3dcore::utils::Camera& camera);
-	//void Render_Outlined(const d3dcore::utils::Camera& camera);
+	void Render_Outline(const d3dcore::utils::Camera& camera);
 
 	void SetLigths();
 	DirectX::XMMATRIX GetEntityParentsTransform(d3dcore::RelationshipComponent& relationship);

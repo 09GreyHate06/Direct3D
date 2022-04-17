@@ -20,6 +20,8 @@ namespace d3dcore
 		bool IsBlockingEvents() const { return m_blockEvents; }
 
 	private:
+		void SetDarkMode();
+
 		bool m_blockEvents = true;
 	};
 }

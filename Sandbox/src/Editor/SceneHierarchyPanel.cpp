@@ -50,6 +50,88 @@ static void DrawComponent(const std::string& name, Entity entity, Func func)
 	}
 }
 
+//static bool LoadTexture(std::shared_ptr<Texture2D>& tex)
+//{
+//	static Texture2DDesc desc = {};
+//	int filterIndex = 0;
+//	const char* filters[3] = { "Anisotropic", "Linear", "Point" };
+//	
+//	switch (desc.filter)
+//	{
+//	case D3D11_FILTER_ANISOTROPIC:        filterIndex = 0; break;
+//	case D3D11_FILTER_MIN_MAG_MIP_LINEAR: filterIndex = 1; break;
+//	case D3D11_FILTER_MIN_MAG_MIP_POINT:  filterIndex = 2; break;
+//	}
+//
+//	if (ImGui::Combo("Filter", &filterIndex, filters, IM_ARRAYSIZE(filters)))
+//	{
+//		switch (filterIndex)
+//		{
+//		case 0: desc.filter = D3D11_FILTER_ANISOTROPIC;        break;
+//		case 1: desc.filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR; break;
+//		case 2: desc.filter = D3D11_FILTER_MIN_MAG_MIP_POINT;  break;
+//		}
+//	}
+//	const char* addresses[5] = { "Wrap", "Border", "Clamp", "Mirror", "Mirror once" };
+//	int addressUIndex = 0;
+//	int addressVIndex = 0;
+//	switch (desc.addressU)
+//	{
+//	case D3D11_TEXTURE_ADDRESS_WRAP:         addressUIndex = 0; break;
+//	case D3D11_TEXTURE_ADDRESS_BORDER:		 addressUIndex = 1; break;
+//	case D3D11_TEXTURE_ADDRESS_CLAMP:		 addressUIndex = 2; break;
+//	case D3D11_TEXTURE_ADDRESS_MIRROR:		 addressUIndex = 3; break;
+//	case D3D11_TEXTURE_ADDRESS_MIRROR_ONCE:	 addressUIndex = 4; break;
+//	}
+//	switch (desc.addressV)
+//	{
+//	case D3D11_TEXTURE_ADDRESS_WRAP:         addressVIndex = 0; break;
+//	case D3D11_TEXTURE_ADDRESS_BORDER:		 addressVIndex = 1; break;
+//	case D3D11_TEXTURE_ADDRESS_CLAMP:		 addressVIndex = 2; break;
+//	case D3D11_TEXTURE_ADDRESS_MIRROR:		 addressVIndex = 3; break;
+//	case D3D11_TEXTURE_ADDRESS_MIRROR_ONCE:	 addressVIndex = 4; break;
+//	}
+//
+//	if (ImGui::Combo("Address U", &addressUIndex, addresses, IM_ARRAYSIZE(addresses)))
+//	{
+//		switch (addressUIndex)
+//		{
+//		case 0:  desc.addressU = D3D11_TEXTURE_ADDRESS_WRAP;        break;
+//		case 1:  desc.addressU = D3D11_TEXTURE_ADDRESS_BORDER;	    break;
+//		case 2:  desc.addressU = D3D11_TEXTURE_ADDRESS_CLAMP;	    break;
+//		case 3:  desc.addressU = D3D11_TEXTURE_ADDRESS_MIRROR;	    break;
+//		case 4:  desc.addressU = D3D11_TEXTURE_ADDRESS_MIRROR_ONCE; break;
+//		}
+//	}
+//
+//	if (ImGui::Combo("Address V", &addressUIndex, addresses, IM_ARRAYSIZE(addresses)))
+//	{
+//		switch (addressVIndex)
+//		{
+//		case 0:  desc.addressV = D3D11_TEXTURE_ADDRESS_WRAP;        break;
+//		case 1:  desc.addressV = D3D11_TEXTURE_ADDRESS_BORDER;      break;
+//		case 2:  desc.addressV = D3D11_TEXTURE_ADDRESS_CLAMP;       break;
+//		case 3:  desc.addressV = D3D11_TEXTURE_ADDRESS_MIRROR;      break;
+//		case 4:  desc.addressV = D3D11_TEXTURE_ADDRESS_MIRROR_ONCE; break;
+//		}
+//	}
+//	static std::string filepath = "N/A";
+//	ImGui::PushItemWidth(-1);
+//	if (ImGui::Button("Browse"))
+//		filepath = FileDialog::OpenFileDialog("Image Files (*.png, *.jpg, *.jpeg, *.tga)\0*.png; *.jpg; *.jpeg; *.tga");
+//	
+//	ImGui::LabelText("Texture", filepath.c_str());
+//
+//	if (ImGui::Button("Apply") && filepath != "N/A" || !filepath.empty())
+//	{
+//		tex = Texture2D::Create(filepath, false, desc);
+//		filepath = "N/A";
+//		desc = {};
+//	}
+//
+//	ImGui::PopItemWidth();
+//}
+
 SceneHierarchyPanel::SceneHierarchyPanel(Scene* scene)
 {
 	SetContext(scene);

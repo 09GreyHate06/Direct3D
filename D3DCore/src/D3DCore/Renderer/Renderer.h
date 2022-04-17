@@ -15,16 +15,6 @@ namespace d3dcore
 		TriangleStrip = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP,
 	};
 
-	struct ViewportDesc
-	{
-		float topLeftX = 0.0f;
-		float topLeftY = 0.0f;
-		float width = 0.0f;
-		float height = 0.0f; 
-		float minDepth = 0.0f;
-		float maxDepth = 1.0f;
-	};
-
 	class Renderer
 	{
 	public:
@@ -34,7 +24,7 @@ namespace d3dcore
 		static void DrawIndexed(uint32_t count);
 
 		static void SetTopology(Topology topology);
-		static void SetViewport(ViewportDesc vp);
+		static void SetViewport(const D3D11_VIEWPORT& vp);
 		static void SetDepthStencilState(const D3D11_DEPTH_STENCIL_DESC& dsDesc);
 		static void SetBlendState(const D3D11_BLEND_DESC& bsDesc, std::optional<float> blendFactor = {});
 		static void SetRasterizerState(const D3D11_RASTERIZER_DESC& rsDesc);
@@ -42,7 +32,8 @@ namespace d3dcore
 		// SetFramebuffer doesn't increment shared ptr ref count
 		static void SetFramebuffer(const std::shared_ptr<Framebuffer>& fb);
 
-		static const ViewportDesc& GetViewport() { return s_viewport; }
+		static const D3D11_VIEWPORT& GetViewport() { return s_viewport; }
+
 
 	private:
 		static void Init(uint32_t sampleCount, uint32_t sampleQuality);
@@ -56,7 +47,7 @@ namespace d3dcore
 		static Microsoft::WRL::ComPtr<ID3D11RenderTargetView> s_defRTV;
 		static Microsoft::WRL::ComPtr<ID3D11DepthStencilView> s_defDSV;
 
-		static ViewportDesc s_viewport;
+		static D3D11_VIEWPORT s_viewport;
 
 		friend class Application;
 	};

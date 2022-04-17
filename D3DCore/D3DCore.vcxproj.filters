@@ -50,6 +50,8 @@
     <ClInclude Include="src\D3DCore\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\D3DCore\Utils\Camera.h" />
     <ClInclude Include="src\D3DCore\Utils\FPSCamController.h" />
+    <ClInclude Include="src\D3DCore\Renderer\DynamicBuffer.h" />
+    <ClInclude Include="src\D3DCore\Utils\ShaderBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\d3dcpch.cpp" />
@@ -76,6 +78,8 @@
     <ClCompile Include="src\D3DCore\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\D3DCore\Utils\Camera.cpp" />
     <ClCompile Include="src\D3DCore\Utils\FPSCamController.cpp" />
+    <ClCompile Include="src\D3DCore\Renderer\DynamicBuffer.cpp" />
+    <ClCompile Include="src\D3DCore\Utils\ShaderBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\D3DCore\Renderer\DXError\DXGetErrorDescription.inl" />

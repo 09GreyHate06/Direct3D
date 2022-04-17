@@ -33,6 +33,7 @@
 #include "D3DCore/Utils/Camera.h"
 #include "D3DCore/Utils/EditorCamController.h"
 #include "D3DCore/Utils/FPSCamController.h"
+#include "D3DCore/Utils/ShaderBuffer.h"
 
 #include <entt/entt.hpp>
 #include <d3d11.h>
@@ -42,3 +43,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
+
+#ifdef D3DC_INTERNALS
+#include "D3DCore/Renderer/D3DContext.h"
+#endif // D3DC_INTERNAL

@@ -1,6 +1,6 @@
 #pragma once
 #include "D3DCore.h"
-#include "Scene/System/RenderingSystem.h"
+#include "Scene/System/Rendering/RenderingSystem.h"
 #include "SceneHierarchyPanel.h"
 
 class EditorLayer : public d3dcore::Layer

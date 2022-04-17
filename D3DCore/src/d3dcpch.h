@@ -14,5 +14,6 @@
 #include <unordered_set>
 #include <filesystem>
 #include <algorithm>
+#include <optional>
 
 #include "D3DCore/Core/Log.h"

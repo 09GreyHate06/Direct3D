@@ -113,6 +113,7 @@
     <ClInclude Include="src\D3DCore\Renderer\D3DContext.h" />
     <ClInclude Include="src\D3DCore\Renderer\DXError\dxerr.h" />
     <ClInclude Include="src\D3DCore\Renderer\DXError\DxgiInfoManager.h" />
+    <ClInclude Include="src\D3DCore\Renderer\DynamicBuffer.h" />
     <ClInclude Include="src\D3DCore\Renderer\Framebuffer.h" />
     <ClInclude Include="src\D3DCore\Renderer\Renderer.h" />
     <ClInclude Include="src\D3DCore\Renderer\Shader.h" />
@@ -123,6 +124,7 @@
     <ClInclude Include="src\D3DCore\Scene\Scene.h" />
     <ClInclude Include="src\D3DCore\Scene\System.h" />
     <ClInclude Include="src\D3DCore\Utils\BasicMesh.h" />
+    <ClInclude Include="src\D3DCore\Utils\ShaderBuffer.h" />
     <ClInclude Include="src\D3DCore\Utils\Camera.h" />
     <ClInclude Include="src\D3DCore\Utils\EditorCamController.h" />
     <ClInclude Include="src\D3DCore\Utils\FPSCamController.h" />
@@ -145,6 +147,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\D3DCore\Renderer\DXError\DxgiInfoManager.cpp" />
+    <ClCompile Include="src\D3DCore\Renderer\DynamicBuffer.cpp" />
     <ClCompile Include="src\D3DCore\Renderer\Framebuffer.cpp" />
     <ClCompile Include="src\D3DCore\Renderer\Renderer.cpp" />
     <ClCompile Include="src\D3DCore\Renderer\Shader.cpp" />
@@ -152,6 +155,7 @@
     <ClCompile Include="src\D3DCore\Renderer\Texture.cpp" />
     <ClCompile Include="src\D3DCore\Scene\Scene.cpp" />
     <ClCompile Include="src\D3DCore\Utils\BasicMesh.cpp" />
+    <ClCompile Include="src\D3DCore\Utils\ShaderBuffer.cpp" />
     <ClCompile Include="src\D3DCore\Utils\Camera.cpp" />
     <ClCompile Include="src\D3DCore\Utils\EditorCamController.cpp" />
     <ClCompile Include="src\D3DCore\Utils\FPSCamController.cpp" />

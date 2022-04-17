@@ -16,18 +16,18 @@ namespace d3dcore
 	ComPtr<ID3D11RenderTargetView> Renderer::s_defRTV;
 	ComPtr<ID3D11DepthStencilView> Renderer::s_defDSV;
 
-	ViewportDesc Renderer::s_viewport;
+	D3D11_VIEWPORT Renderer::s_viewport;
 
 	void Renderer::Init(uint32_t sampleCount, uint32_t sampleQuality)
 	{
 		D3DContext::Init(Application::Get().GetWindow().GetNativeWindow(), sampleCount, sampleQuality);
 
-		s_viewport.width = static_cast<float>(Application::Get().GetWindow().GetWidth());
-		s_viewport.height = static_cast<float>(Application::Get().GetWindow().GetHeight());
-		s_viewport.topLeftX = 0.0f;
-		s_viewport.topLeftY = 0.0f;
-		s_viewport.minDepth = 0.0f;
-		s_viewport.maxDepth = 1.0f;
+		s_viewport.Width = static_cast<float>(Application::Get().GetWindow().GetWidth());
+		s_viewport.Height = static_cast<float>(Application::Get().GetWindow().GetHeight());
+		s_viewport.TopLeftX = 0.0f;
+		s_viewport.TopLeftY = 0.0f;
+		s_viewport.MinDepth = 0.0f;
+		s_viewport.MaxDepth = 1.0f;
 		SetViewport(s_viewport);
 
 		s_usingDefRTV = true;
@@ -43,7 +43,7 @@ namespace d3dcore
 	{
 		float color[] = { r, g, b, a };
 		ctx::GetDeviceContext()->ClearRenderTargetView(s_activeRTV, color);
-		ctx::GetDeviceContext()->ClearDepthStencilView(s_activeDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, s_viewport.maxDepth, 0);
+		ctx::GetDeviceContext()->ClearDepthStencilView(s_activeDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, s_viewport.MaxDepth, 0);
 	}
 
 	void Renderer::SwapBuffers(uint32_t syncInterval)
@@ -69,14 +69,14 @@ namespace d3dcore
 		ctx::GetDeviceContext()->IASetPrimitiveTopology(static_cast<D3D11_PRIMITIVE_TOPOLOGY>(topology));
 	}
 
-	void Renderer::SetViewport(ViewportDesc vp)
+	void Renderer::SetViewport(const D3D11_VIEWPORT& vp)
 	{
 		s_viewport = vp;
 
 		if(s_usingDefRTV)
 			ResizeDefRTV();
 
-		ctx::GetDeviceContext()->RSSetViewports(1, reinterpret_cast<D3D11_VIEWPORT*>(&s_viewport));
+		ctx::GetDeviceContext()->RSSetViewports(1, &s_viewport);
 	}
 
 	void Renderer::SetDepthStencilState(const D3D11_DEPTH_STENCIL_DESC& dsDesc)
@@ -122,7 +122,7 @@ namespace d3dcore
 		s_defRTV.Reset();
 		s_defDSV.Reset();
 
-		ctx::GetSwapChain()->ResizeBuffers(1, static_cast<uint32_t>(s_viewport.width), static_cast<uint32_t>(s_viewport.height), DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+		ctx::GetSwapChain()->ResizeBuffers(1, static_cast<uint32_t>(s_viewport.Width), static_cast<uint32_t>(s_viewport.Height), DXGI_FORMAT_R8G8B8A8_UNORM, 0);
 
 		HRESULT hr;
 
@@ -134,8 +134,8 @@ namespace d3dcore
 		// create depth stencil texture
 		ComPtr<ID3D11Texture2D> dsTexture = nullptr;
 		D3D11_TEXTURE2D_DESC dsTextureDesc = {};
-		dsTextureDesc.Width = static_cast<uint32_t>(s_viewport.width);
-		dsTextureDesc.Height = s_viewport.height ? static_cast<uint32_t>(s_viewport.height) : 1;
+		dsTextureDesc.Width = s_viewport.Width ? static_cast<uint32_t>(s_viewport.Width) : 1;
+		dsTextureDesc.Height = s_viewport.Height ? static_cast<uint32_t>(s_viewport.Height) : 1;
 		dsTextureDesc.MipLevels = 1;
 		dsTextureDesc.ArraySize = 1;
 		dsTextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;

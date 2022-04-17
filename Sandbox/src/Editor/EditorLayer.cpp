@@ -25,27 +25,6 @@ void EditorLayer::OnAttach()
 	m_renderingSystem = std::make_unique<RenderingSystem>(m_scene.get());
 	m_sceneHierarchyPanel.SetContext(m_scene.get());
 
-	D3D11_DEPTH_STENCIL_DESC dsDesc = {};
-	dsDesc.DepthEnable = TRUE;
-	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
-	Renderer::SetDepthStencilState(dsDesc);
-
-	D3D11_BLEND_DESC blendDesc = CD3D11_BLEND_DESC(CD3D11_DEFAULT());
-	blendDesc.AlphaToCoverageEnable = FALSE;
-	blendDesc.IndependentBlendEnable = FALSE;
-	auto& brt = blendDesc.RenderTarget[0];
-	brt.BlendEnable = TRUE;
-	brt.SrcBlend = D3D11_BLEND_SRC_ALPHA;
-	brt.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-	brt.BlendOp = D3D11_BLEND_OP_ADD;
-	brt.SrcBlendAlpha = D3D11_BLEND_ZERO;
-	brt.DestBlendAlpha = D3D11_BLEND_ONE;
-	brt.BlendOpAlpha = D3D11_BLEND_OP_ADD;
-	brt.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-	Renderer::SetBlendState(blendDesc);
-
-
 	Entity dirLight = m_scene->CreateEntity("Directional Light");
 
 	dirLight.GetComponent<TransformComponent>().rotation = { 50.0f, -30.0f, 0.0f };
@@ -95,13 +74,13 @@ void EditorLayer::OnEvent(d3dcore::Event& event)
 		auto& e = static_cast<WindowResizeEvent&>(event);
 		if (e.GetWidth() > 0 && e.GetHeight() > 0)
 		{
-			ViewportDesc vpDesc = {};
-			vpDesc.width = static_cast<float>(e.GetWidth());
-			vpDesc.height = static_cast<float>(e.GetHeight());
-			vpDesc.topLeftX = 0.0f;
-			vpDesc.topLeftY = 0.0f;
-			vpDesc.minDepth = 0.0f;
-			vpDesc.maxDepth = 1.0f;
+			D3D11_VIEWPORT vpDesc = {};
+			vpDesc.Width = static_cast<float>(e.GetWidth());
+			vpDesc.Height = static_cast<float>(e.GetHeight());
+			vpDesc.TopLeftX = 0.0f;
+			vpDesc.TopLeftY = 0.0f;
+			vpDesc.MinDepth = 0.0f;
+			vpDesc.MaxDepth = 1.0f;
 			Renderer::SetViewport(vpDesc);
 		}
 	}

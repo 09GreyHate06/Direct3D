@@ -76,10 +76,10 @@ namespace d3dcore
 		void SetData(const uint32_t* data);
 		uint32_t GetCount() const { return m_count; }
 		
-		static std::shared_ptr<IndexBuffer> Create(const void* data, const IndexBufferDesc& desc);
+		static std::shared_ptr<IndexBuffer> Create(const uint32_t* data, const IndexBufferDesc& desc);
 
 	private:
-		IndexBuffer(const void* data, const IndexBufferDesc& desc);
+		IndexBuffer(const uint32_t* data, const IndexBufferDesc& desc);
 
 		Microsoft::WRL::ComPtr<ID3D11Buffer> m_indexBuffer;
 		uint32_t m_size;

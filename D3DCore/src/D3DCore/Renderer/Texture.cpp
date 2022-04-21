@@ -6,7 +6,7 @@
 namespace d3dcore
 {
 	Texture2D::Texture2D(const std::string& filename, const bool flipImageY, const Texture2DDesc& desc)
-		: m_path(filename)
+		: m_path(filename), m_desc(desc)
 	{
 		HRESULT hr;
 		constexpr uint32_t reqComponents = 4;
@@ -62,9 +62,8 @@ namespace d3dcore
 	}
 
 	Texture2D::Texture2D(const void* pixels, const Texture2DDesc& desc)
+		: m_path(std::filesystem::path()), m_desc(desc)
 	{
-		m_path = std::filesystem::path();
-
 		HRESULT hr;
 
 		// create texture resource

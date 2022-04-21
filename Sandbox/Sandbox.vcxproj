@@ -99,6 +99,8 @@
     <ClCompile Include="src\Scene\System\Rendering\Passes\StencilWritePass.cpp" />
     <ClCompile Include="src\Scene\System\Rendering\RenderingSystem.cpp" />
     <ClInclude Include="src\Scene\System\Rendering\Passes\StencilOutlineEffectPass.h" />
+    <ClInclude Include="src\Scene\System\Rendering\Passes\TestPass.h" />
+    <ClInclude Include="src\Utils\Asset.h" />
     <ClInclude Include="src\Utils\ComponentUtils.h" />
     <ClCompile Include="src\Utils\FileDialog.cpp" />
     <ClCompile Include="src\Utils\GlobalAsset.cpp" />
@@ -110,6 +112,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="res\shaders\fullscreen.vs.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="res\shaders\fullscreen_blur.ps.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="res\shaders\fullscreen_invert.ps.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="res\shaders\light.ps.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>

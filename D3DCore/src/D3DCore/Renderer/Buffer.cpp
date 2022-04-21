@@ -126,7 +126,7 @@ namespace d3dcore
 
 
 
-	IndexBuffer::IndexBuffer(const void* data, const IndexBufferDesc& desc)
+	IndexBuffer::IndexBuffer(const uint32_t* data, const IndexBufferDesc& desc)
 		: m_size(static_cast<uint32_t>(desc.count * sizeof(uint32_t))), m_count(desc.count)
 	{
 		HRESULT hr;
@@ -151,7 +151,7 @@ namespace d3dcore
 		}
 	}
 
-	std::shared_ptr<IndexBuffer> IndexBuffer::Create(const void* data, const IndexBufferDesc& desc)
+	std::shared_ptr<IndexBuffer> IndexBuffer::Create(const uint32_t* data, const IndexBufferDesc& desc)
 	{
 		return std::shared_ptr<IndexBuffer>(new IndexBuffer(data, desc));
 	}

@@ -181,6 +181,24 @@ namespace d3dcore
 		return std::shared_ptr<Framebuffer>(new Framebuffer(desc));
 	}
 
+	void Framebuffer::SetColorAttSampler(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressU, D3D11_TEXTURE_ADDRESS_MODE addressV, float borderColor[4])
+	{
+		D3D11_SAMPLER_DESC desc = {};
+		desc.Filter = filter;
+		desc.AddressU = addressU;
+		desc.AddressV = addressV;
+		desc.AddressW = addressV;
+		desc.MipLODBias = 0.0f;
+		desc.MaxAnisotropy = D3D11_REQ_MAXANISOTROPY;
+		desc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+		if(borderColor)
+			memcpy(desc.BorderColor, borderColor, 4 * sizeof(float));
+		desc.MinLOD = 0.0f;
+		desc.MaxLOD = D3D11_FLOAT32_MAX;
+		HRESULT hr;
+		D3DC_CONTEXT_THROW_INFO(D3DContext::GetDevice()->CreateSamplerState(&desc, &m_colorAttSampler));
+	}
+
 	void Framebuffer::Resize(uint32_t width, uint32_t height)
 	{
 		m_desc.width = width;
@@ -257,13 +275,15 @@ namespace d3dcore
 		}
 	}
 
-	void Framebuffer::VSBindAsTexture2D(uint32_t slot)
+	void Framebuffer::VSBindColorAttAsTexture2D(uint32_t slot) const
 	{
+		D3DContext::GetDeviceContext()->VSSetSamplers(slot, 1, m_colorAttSampler.GetAddressOf());
 		D3DContext::GetDeviceContext()->VSSetShaderResources(slot, 1, m_renderTargetSrv.GetAddressOf());
 	}
 
-	void Framebuffer::PSBindAsTexture2D(uint32_t slot)
+	void Framebuffer::PSBindColorAttAsTexture2D(uint32_t slot) const
 	{
+		D3DContext::GetDeviceContext()->PSSetSamplers(slot, 1, m_colorAttSampler.GetAddressOf());
 		D3DContext::GetDeviceContext()->PSSetShaderResources(slot, 1, m_renderTargetSrv.GetAddressOf());
 	}
 }

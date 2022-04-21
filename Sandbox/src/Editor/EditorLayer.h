@@ -28,11 +28,6 @@ private:
 	std::unique_ptr<RenderingSystem> m_renderingSystem;
 	SceneHierarchyPanel m_sceneHierarchyPanel;
 
-	std::shared_ptr<d3dcore::VertexBuffer> m_cubeVB;
-	std::shared_ptr<d3dcore::VertexBuffer> m_planeVB;
-	std::shared_ptr<d3dcore::IndexBuffer> m_cubeIB;
-	std::shared_ptr<d3dcore::IndexBuffer> m_planeIB;
-
 	bool m_viewportFocus = true;
 	float m_sceneViewportWidth = 1280.0f;
 	float m_sceneViewportHeight = 720.0f;

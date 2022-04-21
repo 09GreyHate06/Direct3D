@@ -2,6 +2,8 @@
 #include "Scene/Components/Components.h"
 #include "Utils/ModelLoader.h"
 #include "Utils/FileDialog.h"
+#include "Utils/GlobalAsset.h"
+#include "Utils/Asset.h"
 #include "D3DCore/Utils/BasicMesh.h"
 
 using namespace d3dcore;
@@ -26,46 +28,17 @@ void EditorLayer::OnAttach()
 	m_renderingSystem = std::make_unique<RenderingSystem>(m_scene.get());
 	m_sceneHierarchyPanel.SetContext(m_scene.get());
 
-	Entity dirLight = m_scene->CreateEntity("Directional Light");
+	Asset::LoadAssets();
 
+
+
+	Entity dirLight = m_scene->CreateEntity("Directional Light");
 	dirLight.GetComponent<TransformComponent>().rotation = { 50.0f, -30.0f, 0.0f };
 	auto& light = dirLight.AddComponent<DirectionalLightComponent>();
 	light.color = { 1.0f, 1.0f, 1.0f };
 	light.ambientIntensity = 0.2f;
 	light.diffuseIntensity = 0.8f;
 	light.specularIntensity = 1.0f;
-
-
-	auto cubeVertices = utils::CreateCubeVerticesEx();
-	auto cubeIndices = utils::CreateCubeIndicesEx();
-	auto planeVertices = utils::CreatePlaneVerticesEx();
-	auto planeIndices = utils::CreatePlaneIndicesEx();
-
-	VertexBufferDesc cubeVBDesc = {};
-	cubeVBDesc.size = (uint32_t)cubeVertices.size() * sizeof(utils::Vertex);
-	cubeVBDesc.stride = sizeof(utils::Vertex);
-	cubeVBDesc.usage = D3D11_USAGE_DEFAULT;
-	cubeVBDesc.cpuAccessFlag = 0;
-	m_cubeVB = VertexBuffer::Create(cubeVertices.data(), cubeVBDesc);
-
-	IndexBufferDesc cubeIBDesc = {};
-	cubeIBDesc.count = (uint32_t)cubeIndices.size();
-	cubeIBDesc.usage = D3D11_USAGE_DEFAULT;
-	cubeIBDesc.cpuAccessFlag = 0;
-	m_cubeIB = IndexBuffer::Create(cubeIndices.data(), cubeIBDesc);
-
-	VertexBufferDesc planeVBDesc = {};
-	planeVBDesc.size = (uint32_t)planeVertices.size() * sizeof(utils::Vertex);
-	planeVBDesc.stride = sizeof(utils::Vertex);
-	planeVBDesc.usage = D3D11_USAGE_DEFAULT;
-	planeVBDesc.cpuAccessFlag = 0;
-	m_planeVB = VertexBuffer::Create(planeVertices.data(), planeVBDesc);
-
-	IndexBufferDesc planeIBDesc = {};
-	planeIBDesc.count = (uint32_t)planeIndices.size();
-	planeIBDesc.usage = D3D11_USAGE_DEFAULT;
-	planeIBDesc.cpuAccessFlag = 0;
-	m_planeIB = IndexBuffer::Create(planeIndices.data(), planeIBDesc);
 }
 
 void EditorLayer::OnEvent(d3dcore::Event& event)
@@ -202,7 +175,7 @@ void EditorLayer::OnImGuiRender()
 	m_sceneViewportWidth = viewportPanelSize.x;
 	m_sceneViewportHeight = viewportPanelSize.y;
 	
-	ImGui::Image(m_renderingSystem->GetFramebuffer()->GetView(), { m_sceneViewportWidth, m_sceneViewportHeight });
+	ImGui::Image(m_renderingSystem->GetFramebuffer()->GetColorAttView(), { m_sceneViewportWidth, m_sceneViewportHeight });
 	ImGui::End();	
 	ImGui::PopStyleVar();
 
@@ -214,8 +187,8 @@ d3dcore::Entity EditorLayer::CreateCube()
 {
 	Entity entity = m_scene->CreateEntity("Cube");
 	auto& mc = entity.AddComponent<MeshComponent>();
-	mc.vBuffer = m_cubeVB;
-	mc.iBuffer = m_cubeIB;
+	mc.vBuffer = GlobalAsset::GetVertexBuffer("cube_vb");
+	mc.iBuffer = GlobalAsset::GetIndexBuffer("cube_ib");;
 	auto& mat = entity.AddComponent<MaterialComponent>();
 	mat.diffuseMap = nullptr;
 	mat.specularMap = nullptr;
@@ -231,8 +204,8 @@ d3dcore::Entity EditorLayer::CreatePlane()
 {
 	Entity entity = m_scene->CreateEntity("Plane");
 	auto& mc = entity.AddComponent<MeshComponent>();
-	mc.vBuffer = m_planeVB;
-	mc.iBuffer = m_planeIB;
+	mc.vBuffer = GlobalAsset::GetVertexBuffer("plane_vb");;
+	mc.iBuffer = GlobalAsset::GetIndexBuffer("plane_ib");;
 	auto& mat = entity.AddComponent<MaterialComponent>();
 	mat.diffuseMap = nullptr;
 	mat.specularMap = nullptr;

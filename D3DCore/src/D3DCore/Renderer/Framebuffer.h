@@ -19,10 +19,11 @@ namespace d3dcore
 		~Framebuffer() = default;
 
 		const FramebufferDesc& GetDesc() const { return m_desc; }
+		void SetColorAttSampler(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressU, D3D11_TEXTURE_ADDRESS_MODE addressV, float borderColor[4]);
 		void Resize(uint32_t width, uint32_t height);
-		ID3D11ShaderResourceView* GetView() const { return m_renderTargetSrv.Get(); }
-		void VSBindAsTexture2D(uint32_t slot = 0);
-		void PSBindAsTexture2D(uint32_t slot = 0);
+		ID3D11ShaderResourceView* GetColorAttView() const { return m_renderTargetSrv.Get(); }
+		void VSBindColorAttAsTexture2D(uint32_t slot = 0) const;
+		void PSBindColorAttAsTexture2D(uint32_t slot = 0) const;
 
 		//static void Blit(Framebuffer* dst, Framebuffer* src);
 		// src = non MSAA; dst = MSAA
@@ -37,6 +38,8 @@ namespace d3dcore
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_renderTargetSrv;
 		Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depthStencilView;
 		Microsoft::WRL::ComPtr<ID3D11Texture2D> m_depthStencilTexture;
+
+		Microsoft::WRL::ComPtr<ID3D11SamplerState> m_colorAttSampler;
 
 	private:
 		friend class Renderer;

@@ -28,36 +28,6 @@ RenderingSystem::RenderingSystem(d3dcore::Scene* scene)
 	brt.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	Renderer::SetBlendState(blendDesc);
 
-	GlobalAsset::LoadAndAddShader("basic", "res/shaders/basic.vs.hlsl", "res/shaders/basic.ps.hlsl");
-	GlobalAsset::LoadAndAddShader("lighting", "res/shaders/light.vs.hlsl", "res/shaders/light.ps.hlsl");
-	GlobalAsset::LoadAndAddShader("nullps", "res/shaders/basic.vs.hlsl");
-
-	Texture2DDesc defTexDesc = {};
-	defTexDesc.width = 1;
-	defTexDesc.height = 1;
-
-	uint32_t white = 0xffffffff;
-	GlobalAsset::LoadAndAddTexture("default", &white, defTexDesc);
-
-	//std::cout << sizeof(cbufs::light::VSSystemCBuf) << '\n';
-	//std::cout << sizeof(cbufs::light::VSEntityCBuf)	<< '\n';
-	//std::cout << sizeof(cbufs::light::PSSystemCbuf)	<< '\n';
-	//std::cout << sizeof(cbufs::light::PSEntityCBuf)	<< '\n';
-
-	//std::cout << sizeof(cbufs::basic::VSSystemCBuf) << '\n';
-	//std::cout << sizeof(cbufs::basic::VSEntityCBuf) << '\n';
-	//std::cout << sizeof(cbufs::basic::PSEntityCBuf) << '\n';
-
-
-	GlobalAsset::LoadAndAddCBuf("light_vs_system", sizeof(cbufs::light::VSSystemCBuf));
-	GlobalAsset::LoadAndAddCBuf("light_vs_entity", sizeof(cbufs::light::VSEntityCBuf));
-	GlobalAsset::LoadAndAddCBuf("light_ps_system", sizeof(cbufs::light::PSSystemCbuf));
-	GlobalAsset::LoadAndAddCBuf("light_ps_entity", sizeof(cbufs::light::PSEntityCBuf));
-	
-	GlobalAsset::LoadAndAddCBuf("basic_vs_system", sizeof(cbufs::basic::VSSystemCBuf));
-	GlobalAsset::LoadAndAddCBuf("basic_vs_entity", sizeof(cbufs::basic::VSEntityCBuf));
-	GlobalAsset::LoadAndAddCBuf("basic_ps_entity", sizeof(cbufs::basic::PSEntityCBuf));
-
 	auto& window = Application::Get().GetWindow();
 	FramebufferDesc fbDesc = {};
 	fbDesc.width = window.GetWidth();
@@ -71,6 +41,7 @@ RenderingSystem::RenderingSystem(d3dcore::Scene* scene)
 	fbDesc.sampleQuality = 0;
 	fbDesc.hasDepth = true;
 	m_framebuffer = Framebuffer::Create(fbDesc);
+	m_framebuffer->SetColorAttSampler(D3D11_FILTER_MIN_MAG_MIP_POINT, D3D11_TEXTURE_ADDRESS_CLAMP, D3D11_TEXTURE_ADDRESS_CLAMP, nullptr);
 }
 
 RenderingSystem::RenderingSystem()
@@ -142,6 +113,8 @@ void RenderingSystem::Render_()
 	m_normalPass.Execute();
 	m_stencilWritePass.Execute();
 	m_stencilOutlinePass.Execute();
+	Framebuffer::Resolve(m_framebuffer.get(), m_msFramebuffer.get());
+	m_testPass.Execute(m_framebuffer.get());
 }
 
 void RenderingSystem::SetLigths()

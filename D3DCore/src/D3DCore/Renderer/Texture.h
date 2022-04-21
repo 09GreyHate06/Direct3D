@@ -24,6 +24,7 @@ namespace d3dcore
 		//void Set(const std::string& filename, const bool flipImageY, const Texture2DDesc& desc);
 		//void Set(const void* pixels, const Texture2DDesc& desc);
 
+		const Texture2DDesc& GetDesc() const { return m_desc; }
 
 		void VSBind(uint32_t slot = 0) const;
 		void PSBind(uint32_t slot = 0) const;
@@ -43,6 +44,8 @@ namespace d3dcore
 		Microsoft::WRL::ComPtr<ID3D11Texture2D> m_texture;
 		Microsoft::WRL::ComPtr<ID3D11SamplerState> m_samplerState;
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureView;
+
+		Texture2DDesc m_desc;
 
 		std::filesystem::path m_path;
 	};

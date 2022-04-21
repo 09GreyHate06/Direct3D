@@ -59,8 +59,8 @@ void SceneHierarchyPanel::SetContext(d3dcore::Scene* scene)
 {
 	m_context = scene;
 
-	if (m_selectedEntity)
-		m_selectedEntity.RemoveComponent<OutlineComponent>();
+	//if (m_selectedEntity)
+	//	m_selectedEntity.RemoveComponent<OutlineComponent>();
 
 	m_selectedEntity = {};
 }
@@ -99,8 +99,8 @@ void SceneHierarchyPanel::OnImGuiRender()
 
 		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
 		{
-			if (m_selectedEntity)
-				m_selectedEntity.RemoveComponent<OutlineComponent>();
+			//if (m_selectedEntity)
+			//	m_selectedEntity.RemoveComponent<OutlineComponent>();
 
 			m_selectedEntity = {};
 		}
@@ -129,11 +129,11 @@ void SceneHierarchyPanel::OnImGuiRender()
 
 void SceneHierarchyPanel::SetSelectedEntity(d3dcore::Entity entity)
 {
-	if (m_selectedEntity)
-		m_selectedEntity.RemoveComponent<OutlineComponent>();
+	//if (m_selectedEntity)
+	//	m_selectedEntity.RemoveComponent<OutlineComponent>();
 
 	m_selectedEntity = entity;
-	m_selectedEntity.AddComponent<OutlineComponent>().color = { 1.0f, 0.41f, 0.21f, 1.0f };
+	//m_selectedEntity.AddComponent<OutlineComponent>().color = { 1.0f, 0.41f, 0.21f, 1.0f };
 }
 
 void SceneHierarchyPanel::DrawEntityNode(d3dcore::Entity entity, bool child)
@@ -150,11 +150,7 @@ void SceneHierarchyPanel::DrawEntityNode(d3dcore::Entity entity, bool child)
 	bool opened = ImGui::TreeNodeEx(reinterpret_cast<void*>(static_cast<uint64_t>(static_cast<uint32_t>(entity))), flags, tag.c_str());
 	if (ImGui::IsItemClicked())
 	{
-		if (m_selectedEntity)
-			m_selectedEntity.RemoveComponent<OutlineComponent>();
-
-		m_selectedEntity = entity;
-		m_selectedEntity.AddComponent<OutlineComponent>().color = { 1.0f, 0.41f, 0.21f, 1.0f };
+		SetSelectedEntity(entity);
 	}
 
 	if (ImGui::BeginDragDropSource())

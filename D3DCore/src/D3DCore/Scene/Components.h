@@ -34,7 +34,8 @@ namespace d3dcore
 			: position(position), rotation(rotation), scale(scale)
 		{
 		}
-		DirectX::XMMATRIX GetTransform()
+
+		DirectX::XMMATRIX GetTransform() const
 		{
 			using namespace DirectX;
 			XMVECTOR quat = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(rotation.x), XMConvertToRadians(rotation.y), XMConvertToRadians(rotation.z));
@@ -44,17 +45,17 @@ namespace d3dcore
 				XMMatrixTranslation(position.x, position.y, position.z);
 		}
 
-		DirectX::XMVECTOR GetForward()
+		DirectX::XMVECTOR GetForward() const
 		{
 			return DirectX::XMVector4Transform(DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), GetTransform());
 		}
 
-		DirectX::XMVECTOR GetRight()
+		DirectX::XMVECTOR GetRight() const
 		{
 			return DirectX::XMVector4Transform(DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), GetTransform());
 		}
 
-		DirectX::XMVECTOR GetUp()
+		DirectX::XMVECTOR GetUp() const
 		{
 			return DirectX::XMVector4Transform(DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), GetTransform());
 		}

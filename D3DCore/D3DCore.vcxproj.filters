@@ -45,13 +45,13 @@
     <ClInclude Include="src\D3DCore\Scene\Entity.h" />
     <ClInclude Include="src\D3DCore\Scene\Scene.h" />
     <ClInclude Include="src\D3DCore\Scene\Components.h" />
-    <ClInclude Include="src\D3DCore\Scene\System.h" />
     <ClInclude Include="src\D3DCore\Core\Time.h" />
     <ClInclude Include="src\D3DCore\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\D3DCore\Utils\Camera.h" />
     <ClInclude Include="src\D3DCore\Utils\FPSCamController.h" />
     <ClInclude Include="src\D3DCore\Renderer\DynamicBuffer.h" />
     <ClInclude Include="src\D3DCore\Utils\ShaderBuffer.h" />
+    <ClInclude Include="src\D3DCore\Utils\D3DCXM.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\d3dcpch.cpp" />

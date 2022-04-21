@@ -23,6 +23,7 @@ namespace d3dcore
 
 		bool IsValid(Entity entity);
 		const entt::registry& GetRegistry() const { return m_registry; }
+		entt::registry& GetRegistry() { return m_registry; }
 
 	private:
 		entt::registry m_registry;

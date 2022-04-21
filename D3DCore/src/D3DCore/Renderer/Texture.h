@@ -21,6 +21,9 @@ namespace d3dcore
 	{
 	public:
 		~Texture2D() = default;
+		//void Set(const std::string& filename, const bool flipImageY, const Texture2DDesc& desc);
+		//void Set(const void* pixels, const Texture2DDesc& desc);
+
 
 		void VSBind(uint32_t slot = 0) const;
 		void PSBind(uint32_t slot = 0) const;
@@ -31,6 +34,7 @@ namespace d3dcore
 
 		static std::shared_ptr<Texture2D> Create(const std::string& filename, const bool flipImageY, const Texture2DDesc& desc);
 		static std::shared_ptr<Texture2D> Create(const void* pixels, const Texture2DDesc& desc);
+		//static std::shared_ptr<Texture2D> CreateEmpty();
 
 	private:
 		Texture2D(const std::string& filename, const bool flipImageY, const Texture2DDesc& desc);

@@ -18,9 +18,11 @@ namespace d3dcore
 		uint32_t GetPSResBinding(const std::string& name);
 
 		static std::shared_ptr<Shader> Create(const std::string& vertexFilename, const std::string& pixelFilename);
+		static std::shared_ptr<Shader> Create(const std::string& vertexFilename);
 
 	private:
 		Shader(const std::string& vertexFilename, const std::string& pixelFilename);
+		Shader(const std::string& vertexFilename);
 
 		void CreateInputLayout();
 

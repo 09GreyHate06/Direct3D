@@ -1,35 +1,33 @@
 #pragma once
 #define D3DC_INTERNALS
 #include "D3DCore.h"
+#include "D3DCore/Utils/Camera.h"
+#include "Passes/NormalPass.h"
+#include "Passes/StencilWritePass.h"
+#include "Passes/StencilOutlineEffectPass.h"
+#include <queue>
 
-class RenderingSystem : public d3dcore::System
+class RenderingSystem
 {
 public:
 	RenderingSystem(d3dcore::Scene* scene);
 	RenderingSystem();
 
+	void SetScene(d3dcore::Scene* scene);
 	void Render(const d3dcore::utils::Camera& camera);
 	const std::shared_ptr<d3dcore::Framebuffer> GetFramebuffer() const { return m_framebuffer; }
 
 private:
-	void Render_(const d3dcore::utils::Camera& camera);
-	void Render_Outline(const d3dcore::utils::Camera& camera);
+	d3dcore::Scene* m_scene;
+
+	void Render_();
 
 	void SetLigths();
-	DirectX::XMMATRIX GetEntityParentsTransform(d3dcore::RelationshipComponent& relationship);
 
-	std::shared_ptr<d3dcore::Shader> m_lightShader;
-	std::shared_ptr<d3dcore::Shader> m_textureShader;
+	NormalPass m_normalPass;
+	StencilWritePass m_stencilWritePass;
+	StencilOutlineEffectPass m_stencilOutlinePass;
 
-	std::shared_ptr<d3dcore::ConstantBuffer> m_lightVSSysCBuf;
-	std::shared_ptr<d3dcore::ConstantBuffer> m_lightVSEntityCBuf;
-	std::shared_ptr<d3dcore::ConstantBuffer> m_lightPSSysCBuf;
-	std::shared_ptr<d3dcore::ConstantBuffer> m_lightPSEntityCBuf;
-
-	std::shared_ptr<d3dcore::ConstantBuffer> m_textureVSSysCBuf;
-	std::shared_ptr<d3dcore::ConstantBuffer> m_textureVSEntityCBuf;
-	std::shared_ptr<d3dcore::ConstantBuffer> m_texturePSEntityCBuf;
-
-	std::shared_ptr<d3dcore::Texture2D> m_defaultTexture;
+	std::shared_ptr<d3dcore::Framebuffer> m_msFramebuffer;
 	std::shared_ptr<d3dcore::Framebuffer> m_framebuffer;
 };

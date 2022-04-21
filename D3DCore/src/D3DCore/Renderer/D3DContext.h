@@ -14,16 +14,13 @@ namespace d3dcore
 		static ID3D11DeviceContext* const GetDeviceContext() { return s_deviceContext; }
 		static IDXGISwapChain* const GetSwapChain() { return s_swapChain; }
 
-		static uint32_t GetSampleCount() { return s_sampleCount; }
-		static uint32_t GetSampleQuality() { return s_sampleQuality; }
-
 #ifdef D3DC_DEBUG
 		static DxgiInfoManager& GetInfoManager() { return s_infoManager; }
 #endif // D3DC_DEBUG
 
 
 	private:
-		static void Init(HWND hWnd, uint32_t sampleCount, uint32_t sampleQuality);
+		static void Init(HWND hWnd);
 		static void Shutdown();
 
 #ifdef D3DC_DEBUG

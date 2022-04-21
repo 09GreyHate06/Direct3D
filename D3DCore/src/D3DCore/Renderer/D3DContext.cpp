@@ -19,12 +19,9 @@ namespace d3dcore
 	uint32_t D3DContext::s_sampleCount;
 	uint32_t D3DContext::s_sampleQuality;
 
-	void D3DContext::Init(HWND hWnd, uint32_t sampleCount, uint32_t sampleQuality)
+	void D3DContext::Init(HWND hWnd)
 	{
 		D3DC_CORE_ASSERT(IsWindow(hWnd), "Window cannot be null");
-
-		s_sampleCount = sampleCount;
-		s_sampleQuality = sampleQuality;
 
 		DXGI_SWAP_CHAIN_DESC scDesc = {};
 		scDesc.BufferDesc.Width = 0;
@@ -34,8 +31,8 @@ namespace d3dcore
 		scDesc.BufferDesc.RefreshRate.Denominator = 0;
 		scDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 		scDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-		scDesc.SampleDesc.Count = s_sampleCount;
-		scDesc.SampleDesc.Quality = s_sampleQuality;
+		scDesc.SampleDesc.Count = 1;
+		scDesc.SampleDesc.Quality = 0;
 		scDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		scDesc.BufferCount = 1;
 		scDesc.OutputWindow = hWnd;

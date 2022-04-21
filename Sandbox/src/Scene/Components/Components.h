@@ -59,7 +59,7 @@ struct SpotLightComponent
 	float outerCutOffAngle = 15.0f;
 };
 
-struct MeshOutlinerComponent
+struct OutlineComponent
 {
 	float outlineMult = 1.1f;
 	DirectX::XMFLOAT4 color = { 1.0f, 1.0f, 1.0f, 1.0f };

@@ -25,7 +25,7 @@ namespace d3dcore
 
 		static void SetTopology(Topology topology);
 		static void SetViewport(const D3D11_VIEWPORT& vp);
-		static void SetDepthStencilState(const D3D11_DEPTH_STENCIL_DESC& dsDesc);
+		static void SetDepthStencilState(const D3D11_DEPTH_STENCIL_DESC& dsDesc, uint32_t stencilRef = 1);
 		static void SetBlendState(const D3D11_BLEND_DESC& bsDesc, std::optional<float> blendFactor = {});
 		static void SetRasterizerState(const D3D11_RASTERIZER_DESC& rsDesc);
 
@@ -36,7 +36,7 @@ namespace d3dcore
 
 
 	private:
-		static void Init(uint32_t sampleCount, uint32_t sampleQuality);
+		static void Init();
 		static void Shutdown();
 		static void ResizeDefRTV();
 

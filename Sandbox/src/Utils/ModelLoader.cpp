@@ -37,6 +37,13 @@ d3dcore::Entity ModelLoader::LoadModel(const std::string& filename, Scene* appSc
 Entity ModelLoader::ProcessNode(aiNode* node, const aiScene* scene, d3dcore::Entity parent, Scene* appScene)
 {
     Entity nodeEntity = appScene->CreateEntity(node->mName.C_Str(), parent);
+    auto& nTransform = nodeEntity.GetComponent<TransformComponent>();
+    XMMATRIX matT_ = XMMatrixTranspose(XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&node->mTransformation)));
+    XMFLOAT4X4 matT;
+    XMStoreFloat4x4(&matT, matT_);
+    nTransform.position = d3dcore::utils::ExtractTranslation(matT);
+    nTransform.rotation = d3dcore::utils::ExtractEulerAngles(matT);
+    nTransform.scale = d3dcore::utils::ExtractScale(matT);
 
     for (uint32_t i = 0; i < node->mNumMeshes; i++)
     {

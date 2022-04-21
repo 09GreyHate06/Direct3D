@@ -50,88 +50,6 @@ static void DrawComponent(const std::string& name, Entity entity, Func func)
 	}
 }
 
-//static bool LoadTexture(std::shared_ptr<Texture2D>& tex)
-//{
-//	static Texture2DDesc desc = {};
-//	int filterIndex = 0;
-//	const char* filters[3] = { "Anisotropic", "Linear", "Point" };
-//	
-//	switch (desc.filter)
-//	{
-//	case D3D11_FILTER_ANISOTROPIC:        filterIndex = 0; break;
-//	case D3D11_FILTER_MIN_MAG_MIP_LINEAR: filterIndex = 1; break;
-//	case D3D11_FILTER_MIN_MAG_MIP_POINT:  filterIndex = 2; break;
-//	}
-//
-//	if (ImGui::Combo("Filter", &filterIndex, filters, IM_ARRAYSIZE(filters)))
-//	{
-//		switch (filterIndex)
-//		{
-//		case 0: desc.filter = D3D11_FILTER_ANISOTROPIC;        break;
-//		case 1: desc.filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR; break;
-//		case 2: desc.filter = D3D11_FILTER_MIN_MAG_MIP_POINT;  break;
-//		}
-//	}
-//	const char* addresses[5] = { "Wrap", "Border", "Clamp", "Mirror", "Mirror once" };
-//	int addressUIndex = 0;
-//	int addressVIndex = 0;
-//	switch (desc.addressU)
-//	{
-//	case D3D11_TEXTURE_ADDRESS_WRAP:         addressUIndex = 0; break;
-//	case D3D11_TEXTURE_ADDRESS_BORDER:		 addressUIndex = 1; break;
-//	case D3D11_TEXTURE_ADDRESS_CLAMP:		 addressUIndex = 2; break;
-//	case D3D11_TEXTURE_ADDRESS_MIRROR:		 addressUIndex = 3; break;
-//	case D3D11_TEXTURE_ADDRESS_MIRROR_ONCE:	 addressUIndex = 4; break;
-//	}
-//	switch (desc.addressV)
-//	{
-//	case D3D11_TEXTURE_ADDRESS_WRAP:         addressVIndex = 0; break;
-//	case D3D11_TEXTURE_ADDRESS_BORDER:		 addressVIndex = 1; break;
-//	case D3D11_TEXTURE_ADDRESS_CLAMP:		 addressVIndex = 2; break;
-//	case D3D11_TEXTURE_ADDRESS_MIRROR:		 addressVIndex = 3; break;
-//	case D3D11_TEXTURE_ADDRESS_MIRROR_ONCE:	 addressVIndex = 4; break;
-//	}
-//
-//	if (ImGui::Combo("Address U", &addressUIndex, addresses, IM_ARRAYSIZE(addresses)))
-//	{
-//		switch (addressUIndex)
-//		{
-//		case 0:  desc.addressU = D3D11_TEXTURE_ADDRESS_WRAP;        break;
-//		case 1:  desc.addressU = D3D11_TEXTURE_ADDRESS_BORDER;	    break;
-//		case 2:  desc.addressU = D3D11_TEXTURE_ADDRESS_CLAMP;	    break;
-//		case 3:  desc.addressU = D3D11_TEXTURE_ADDRESS_MIRROR;	    break;
-//		case 4:  desc.addressU = D3D11_TEXTURE_ADDRESS_MIRROR_ONCE; break;
-//		}
-//	}
-//
-//	if (ImGui::Combo("Address V", &addressUIndex, addresses, IM_ARRAYSIZE(addresses)))
-//	{
-//		switch (addressVIndex)
-//		{
-//		case 0:  desc.addressV = D3D11_TEXTURE_ADDRESS_WRAP;        break;
-//		case 1:  desc.addressV = D3D11_TEXTURE_ADDRESS_BORDER;      break;
-//		case 2:  desc.addressV = D3D11_TEXTURE_ADDRESS_CLAMP;       break;
-//		case 3:  desc.addressV = D3D11_TEXTURE_ADDRESS_MIRROR;      break;
-//		case 4:  desc.addressV = D3D11_TEXTURE_ADDRESS_MIRROR_ONCE; break;
-//		}
-//	}
-//	static std::string filepath = "N/A";
-//	ImGui::PushItemWidth(-1);
-//	if (ImGui::Button("Browse"))
-//		filepath = FileDialog::OpenFileDialog("Image Files (*.png, *.jpg, *.jpeg, *.tga)\0*.png; *.jpg; *.jpeg; *.tga");
-//	
-//	ImGui::LabelText("Texture", filepath.c_str());
-//
-//	if (ImGui::Button("Apply") && filepath != "N/A" || !filepath.empty())
-//	{
-//		tex = Texture2D::Create(filepath, false, desc);
-//		filepath = "N/A";
-//		desc = {};
-//	}
-//
-//	ImGui::PopItemWidth();
-//}
-
 SceneHierarchyPanel::SceneHierarchyPanel(Scene* scene)
 {
 	SetContext(scene);
@@ -140,6 +58,10 @@ SceneHierarchyPanel::SceneHierarchyPanel(Scene* scene)
 void SceneHierarchyPanel::SetContext(d3dcore::Scene* scene)
 {
 	m_context = scene;
+
+	if (m_selectedEntity)
+		m_selectedEntity.RemoveComponent<OutlineComponent>();
+
 	m_selectedEntity = {};
 }
 
@@ -176,7 +98,12 @@ void SceneHierarchyPanel::OnImGuiRender()
 		});
 
 		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
+		{
+			if (m_selectedEntity)
+				m_selectedEntity.RemoveComponent<OutlineComponent>();
+
 			m_selectedEntity = {};
+		}
 
 		ImGui::BeginChild("abc");
 		if (ImGui::BeginPopupContextWindow(0, 1, false))
@@ -202,7 +129,11 @@ void SceneHierarchyPanel::OnImGuiRender()
 
 void SceneHierarchyPanel::SetSelectedEntity(d3dcore::Entity entity)
 {
+	if (m_selectedEntity)
+		m_selectedEntity.RemoveComponent<OutlineComponent>();
+
 	m_selectedEntity = entity;
+	m_selectedEntity.AddComponent<OutlineComponent>().color = { 1.0f, 0.41f, 0.21f, 1.0f };
 }
 
 void SceneHierarchyPanel::DrawEntityNode(d3dcore::Entity entity, bool child)
@@ -219,7 +150,11 @@ void SceneHierarchyPanel::DrawEntityNode(d3dcore::Entity entity, bool child)
 	bool opened = ImGui::TreeNodeEx(reinterpret_cast<void*>(static_cast<uint64_t>(static_cast<uint32_t>(entity))), flags, tag.c_str());
 	if (ImGui::IsItemClicked())
 	{
+		if (m_selectedEntity)
+			m_selectedEntity.RemoveComponent<OutlineComponent>();
+
 		m_selectedEntity = entity;
+		m_selectedEntity.AddComponent<OutlineComponent>().color = { 1.0f, 0.41f, 0.21f, 1.0f };
 	}
 
 	if (ImGui::BeginDragDropSource())
@@ -346,13 +281,15 @@ void SceneHierarchyPanel::DrawComponents(d3dcore::Entity entity)
 			ImGui::CloseCurrentPopup();
 		}
 
-		if (ImGui::MenuItem("Mesh Outliner"))
-		{
-			if (!entity.HasComponent<MeshOutlinerComponent>())
-				m_selectedEntity.AddComponent<MeshOutlinerComponent>();
-			else
-				D3DC_LOG_WARN(entity.GetComponent<TagComponent>().tag + " already have Mesh Outliner Component");
-		}
+		//if (ImGui::MenuItem("Outline"))
+		//{
+		//	if (!entity.HasComponent<OutlineComponent>())
+		//		m_selectedEntity.AddComponent<OutlineComponent>();
+		//	else
+		//		D3DC_LOG_WARN(entity.GetComponent<TagComponent>().tag + " already have Outline Component");
+
+		//	ImGui::CloseCurrentPopup();
+		//}
 
 		ImGui::EndPopup();
 	}
@@ -534,9 +471,9 @@ void SceneHierarchyPanel::DrawComponents(d3dcore::Entity entity)
 		ImGui::DragFloat("Outer cutoff angle", &component.outerCutOffAngle, s_dragSpeed);
 	});
 
-	DrawComponent<MeshOutlinerComponent>("Mesh Outliner", entity, [](auto& component)
-	{
-		ImGui::DragFloat("Outline multiplier", &component.outlineMult, s_dragSpeed);
-		ImGui::ColorEdit4("Color", &component.color.x);
-	});
+	//DrawComponent<OutlineComponent>("Mesh Outliner", entity, [](auto& component)
+	//{
+	//	ImGui::DragFloat("Outline multiplier", &component.outlineMult, s_dragSpeed);
+	//	ImGui::ColorEdit4("Color", &component.color.x);
+	//});
 }

@@ -2,6 +2,7 @@
 #include "Scene/Components/Components.h"
 #include "Utils/ModelLoader.h"
 #include "Utils/FileDialog.h"
+#include "D3DCore/Utils/BasicMesh.h"
 
 using namespace d3dcore;
 using namespace DirectX;
@@ -241,4 +242,14 @@ d3dcore::Entity EditorLayer::CreatePlane()
 	entity.AddComponent<MeshRendererComponent>();
 
 	return entity;
+}
+
+void EditorLayer::ShowRenderer()
+{
+	// todo how?
+}
+
+void EditorLayer::ShowRendererSettings()
+{
+	// todo 
 }

@@ -18,7 +18,7 @@ namespace d3dcore
 		m_window = std::make_unique<Window>(1280, 720, "D3DCore");
 		m_window->SetEventCallback(D3DC_BIND_EVENT_FN(Application::OnEvent));
 
-		Renderer::Init(4, 1);
+		Renderer::Init();
 
 		m_imGuiLayer = new ImGuiLayer();
 		PushOverlay(m_imGuiLayer);

@@ -93,7 +93,7 @@ namespace cbufs
 	}
 
 
-	namespace texture
+	namespace basic
 	{
 		struct VSSystemCBuf
 		{

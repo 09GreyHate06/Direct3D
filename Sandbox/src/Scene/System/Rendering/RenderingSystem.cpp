@@ -2,6 +2,8 @@
 #include "RenderingSystem.h"
 #include "Scene/Components/Components.h"
 #include "Utils/ShaderCBufs.h"
+#include "Utils/GlobalAsset.h"
+#include "Utils/ComponentUtils.h"
 
 #include <stack>
 
@@ -9,25 +11,9 @@ using namespace d3dcore;
 using namespace d3dcore::utils;
 using namespace DirectX;
 
-static XMFLOAT3 operator* (const XMFLOAT3& v, const float s)
-{
-	return { v.x * s, v.y * s, v.z * s };
-}
-
-static XMFLOAT3 operator* (const float s, const XMFLOAT3& v)
-{
-	return { v.x * s, v.y * s, v.z * s };
-}
-
 RenderingSystem::RenderingSystem(d3dcore::Scene* scene)
-	: System(scene)
+	: m_scene(scene)
 {
-	D3D11_DEPTH_STENCIL_DESC dsDesc = CD3D11_DEPTH_STENCIL_DESC(CD3D11_DEFAULT());
-	dsDesc.DepthEnable = TRUE;
-	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
-	Renderer::SetDepthStencilState(dsDesc);
-
 	D3D11_BLEND_DESC blendDesc = CD3D11_BLEND_DESC(CD3D11_DEFAULT());
 	blendDesc.AlphaToCoverageEnable = FALSE;
 	blendDesc.IndependentBlendEnable = FALSE;
@@ -42,29 +28,48 @@ RenderingSystem::RenderingSystem(d3dcore::Scene* scene)
 	brt.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	Renderer::SetBlendState(blendDesc);
 
-	m_textureShader = Shader::Create("res/shaders/texture.vs.hlsl", "res/shaders/texture.ps.hlsl");
-	m_lightShader = Shader::Create("res/shaders/light.vs.hlsl", "res/shaders/light.ps.hlsl");
+	GlobalAsset::LoadAndAddShader("basic", "res/shaders/basic.vs.hlsl", "res/shaders/basic.ps.hlsl");
+	GlobalAsset::LoadAndAddShader("lighting", "res/shaders/light.vs.hlsl", "res/shaders/light.ps.hlsl");
+	GlobalAsset::LoadAndAddShader("nullps", "res/shaders/basic.vs.hlsl");
 
 	Texture2DDesc defTexDesc = {};
 	defTexDesc.width = 1;
 	defTexDesc.height = 1;
-	
+
 	uint32_t white = 0xffffffff;
-	m_defaultTexture = Texture2D::Create(&white, defTexDesc);
+	GlobalAsset::LoadAndAddTexture("default", &white, defTexDesc);
 
-	m_lightVSSysCBuf = ConstantBuffer::Create(sizeof(cbufs::light::VSSystemCBuf));
-	m_lightVSEntityCBuf = ConstantBuffer::Create(sizeof(cbufs::light::VSEntityCBuf));
-	m_lightPSSysCBuf = ConstantBuffer::Create(sizeof(cbufs::light::PSSystemCbuf));
-	m_lightPSEntityCBuf = ConstantBuffer::Create(sizeof(cbufs::light::PSEntityCBuf));
+	//std::cout << sizeof(cbufs::light::VSSystemCBuf) << '\n';
+	//std::cout << sizeof(cbufs::light::VSEntityCBuf)	<< '\n';
+	//std::cout << sizeof(cbufs::light::PSSystemCbuf)	<< '\n';
+	//std::cout << sizeof(cbufs::light::PSEntityCBuf)	<< '\n';
 
-	m_textureVSSysCBuf = ConstantBuffer::Create(sizeof(cbufs::texture::VSSystemCBuf));
-	m_textureVSEntityCBuf = ConstantBuffer::Create(sizeof(cbufs::texture::VSEntityCBuf));
-	m_texturePSEntityCBuf = ConstantBuffer::Create(sizeof(cbufs::texture::PSEntityCBuf));
+	//std::cout << sizeof(cbufs::basic::VSSystemCBuf) << '\n';
+	//std::cout << sizeof(cbufs::basic::VSEntityCBuf) << '\n';
+	//std::cout << sizeof(cbufs::basic::PSEntityCBuf) << '\n';
+
+
+	GlobalAsset::LoadAndAddCBuf("light_vs_system", sizeof(cbufs::light::VSSystemCBuf));
+	GlobalAsset::LoadAndAddCBuf("light_vs_entity", sizeof(cbufs::light::VSEntityCBuf));
+	GlobalAsset::LoadAndAddCBuf("light_ps_system", sizeof(cbufs::light::PSSystemCbuf));
+	GlobalAsset::LoadAndAddCBuf("light_ps_entity", sizeof(cbufs::light::PSEntityCBuf));
+	
+	GlobalAsset::LoadAndAddCBuf("basic_vs_system", sizeof(cbufs::basic::VSSystemCBuf));
+	GlobalAsset::LoadAndAddCBuf("basic_vs_entity", sizeof(cbufs::basic::VSEntityCBuf));
+	GlobalAsset::LoadAndAddCBuf("basic_ps_entity", sizeof(cbufs::basic::PSEntityCBuf));
 
 	auto& window = Application::Get().GetWindow();
 	FramebufferDesc fbDesc = {};
 	fbDesc.width = window.GetWidth();
 	fbDesc.height = window.GetHeight();
+	fbDesc.samples = 4;
+	fbDesc.sampleQuality = 1;
+	fbDesc.hasDepth = true;
+	m_msFramebuffer = Framebuffer::Create(fbDesc);
+
+	fbDesc.samples = 1;
+	fbDesc.sampleQuality = 0;
+	fbDesc.hasDepth = true;
 	m_framebuffer = Framebuffer::Create(fbDesc);
 }
 
@@ -73,12 +78,17 @@ RenderingSystem::RenderingSystem()
 {
 }
 
+void RenderingSystem::SetScene(d3dcore::Scene* scene)
+{
+	m_scene = scene;
+}
+
 void RenderingSystem::Render(const d3dcore::utils::Camera& camera)
 {
-	Renderer::SetFramebuffer(m_framebuffer);
+	Renderer::SetFramebuffer(m_msFramebuffer);
 	D3D11_VIEWPORT vpDesc = {};
-	vpDesc.Width = static_cast<float>(m_framebuffer->GetDesc().width);
-	vpDesc.Height = static_cast<float>(m_framebuffer->GetDesc().height);
+	vpDesc.Width = static_cast<float>(m_msFramebuffer->GetDesc().width);
+	vpDesc.Height = static_cast<float>(m_msFramebuffer->GetDesc().height);
 	vpDesc.TopLeftX = 0.0f;
 	vpDesc.TopLeftY = 0.0f;
 	vpDesc.MinDepth = 0.0f;
@@ -87,163 +97,51 @@ void RenderingSystem::Render(const d3dcore::utils::Camera& camera)
 
 	Renderer::ClearBuffer(0.1f, 0.1f, 0.1f, 1.0f);
 
-	D3D11_DEPTH_STENCIL_DESC dsDesc = CD3D11_DEPTH_STENCIL_DESC(CD3D11_DEFAULT());
-	dsDesc.DepthEnable = TRUE;
-	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
-	dsDesc.StencilEnable = TRUE;
-	dsDesc.StencilWriteMask = 0xff;
-	dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS; // always pass
-	dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE; // replace the value to the reference value
-	Renderer::SetDepthStencilState(dsDesc);
-	Render_(camera);
+	SetLigths();
 
-	dsDesc.DepthEnable = FALSE;
-	dsDesc.StencilEnable = TRUE;
-	dsDesc.StencilWriteMask = 0xff;
-	dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_NOT_EQUAL;
-	dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP; // keep the value
-	Renderer::SetDepthStencilState(dsDesc);
-	Render_Outline(camera);
+	cbufs::light::VSSystemCBuf vsLightSysCBuf = {};
+	XMStoreFloat4x4(&vsLightSysCBuf.camera.view, XMMatrixTranspose(camera.GetViewMatrix()));
+	XMStoreFloat4x4(&vsLightSysCBuf.camera.projection, XMMatrixTranspose(camera.GetProjectionMatrix()));
+	vsLightSysCBuf.camera.viewPos = camera.GetDesc().position;
+	GlobalAsset::GetCBuf("light_vs_system")->SetData(&vsLightSysCBuf);
 
+
+	cbufs::basic::VSSystemCBuf vsTexSysCBuf = {};
+	XMStoreFloat4x4(&vsTexSysCBuf.view, XMMatrixTranspose(camera.GetViewMatrix()));
+	XMStoreFloat4x4(&vsTexSysCBuf.projection, XMMatrixTranspose(camera.GetProjectionMatrix()));
+	GlobalAsset::GetCBuf("basic_vs_system")->SetData(&vsTexSysCBuf);
+
+	{
+		const auto view = m_scene->GetRegistry().view<TransformComponent, RelationshipComponent, MeshComponent, MeshRendererComponent, MaterialComponent>();
+		for (auto& entity : view)
+		{
+			const auto& [transform, relationship, mesh, renderer, mat] =
+				view.get<TransformComponent, RelationshipComponent, MeshComponent, MeshRendererComponent, MaterialComponent>(entity);
+
+			XMMATRIX transformMatrixXM = transform.GetTransform() * GetEntityParentsTransform(relationship);
+			XMFLOAT4X4 transformMatrix;
+			XMStoreFloat4x4(&transformMatrix, transformMatrixXM);
+
+			m_normalPass.Add({ transformMatrix, mesh, renderer, mat });
+
+			if (m_scene->GetRegistry().any_of<OutlineComponent>(entity))
+			{
+				m_stencilWritePass.Add({ transformMatrix, mesh, renderer });
+				m_stencilOutlinePass.Add({ transformMatrix, mesh, renderer, m_scene->GetRegistry().get<OutlineComponent>(entity) });
+			}
+		}
+	}
+
+	Render_();
+	Framebuffer::Resolve(m_framebuffer.get(), m_msFramebuffer.get());
 	Renderer::SetFramebuffer(nullptr);
 }
 
-void RenderingSystem::Render_(const d3dcore::utils::Camera& camera)
+void RenderingSystem::Render_()
 {
-	SetLigths();
-
-	{
-		auto view = GetSceneRegistry().view<TransformComponent, RelationshipComponent, MeshComponent, MeshRendererComponent, MaterialComponent>();
-		for (auto& entity : view)
-		{
-			auto& [transform, relationship, mesh, renderer, mat] =
-				view.get<TransformComponent, RelationshipComponent, MeshComponent, MeshRendererComponent, MaterialComponent>(entity);
-
-			mesh.vBuffer->Bind();
-			mesh.iBuffer->Bind();
-			Renderer::SetTopology(renderer.topology);
-
-			if (renderer.receiveLight)
-			{
-				BOOL enableNormalMap = FALSE;
-
-				m_lightShader->Bind();
-
-				m_lightVSSysCBuf->VSBind(m_lightShader->GetVSResBinding("VSSystemCBuf"));
-				m_lightVSEntityCBuf->VSBind(m_lightShader->GetVSResBinding("VSEntityCBuf"));
-				m_lightPSSysCBuf->PSBind(m_lightShader->GetPSResBinding("PSSystemCBuf"));
-				m_lightPSEntityCBuf->PSBind(m_lightShader->GetPSResBinding("PSEntityCBuf"));
-
-				if (mat.diffuseMap)
-					mat.diffuseMap->PSBind(m_lightShader->GetPSResBinding("diffuseMap"));
-				else
-					m_defaultTexture->PSBind(m_lightShader->GetPSResBinding("diffuseMap"));
-
-				if (mat.specularMap)
-					mat.specularMap->PSBind(m_lightShader->GetPSResBinding("specularMap"));
-				else
-					m_defaultTexture->PSBind(m_lightShader->GetPSResBinding("specularMap"));
-
-				if (mat.normalMap)
-				{
-					mat.normalMap->PSBind(m_lightShader->GetPSResBinding("normalMap"));
-					enableNormalMap = TRUE;
-				}
-				else
-					m_defaultTexture->PSBind(m_lightShader->GetPSResBinding("normalMap"));
-
-				cbufs::light::VSSystemCBuf vsSysCBuf = {};
-				XMStoreFloat4x4(&vsSysCBuf.camera.view, XMMatrixTranspose(camera.GetViewMatrix()));
-				XMStoreFloat4x4(&vsSysCBuf.camera.projection, XMMatrixTranspose(camera.GetProjectionMatrix()));
-				vsSysCBuf.camera.viewPos = camera.GetDesc().position;
-				m_lightVSSysCBuf->SetData(&vsSysCBuf);
-
-				XMMATRIX transformMatrix = transform.GetTransform() * GetEntityParentsTransform(relationship);
-				cbufs::light::VSEntityCBuf vsEntityCBuf = {};
-				XMStoreFloat4x4(&vsEntityCBuf.entity.transformMatrix, XMMatrixTranspose(transformMatrix));
-				XMStoreFloat4x4(&vsEntityCBuf.entity.normalMatrix, XMMatrixInverse(nullptr, transformMatrix));
-				m_lightVSEntityCBuf->SetData(&vsEntityCBuf);
-
-				cbufs::light::PSEntityCBuf psEntityCBuf = {};
-				psEntityCBuf.material.diffuseCol = mat.diffuseCol;
-				psEntityCBuf.material.tiling = mat.tiling;
-				psEntityCBuf.material.shininess = mat.shininess;
-				psEntityCBuf.material.enableNormalMap = enableNormalMap;
-				m_lightPSEntityCBuf->SetData(&psEntityCBuf);
-			}
-			else
-			{
-				m_textureShader->Bind();
-
-				m_textureVSSysCBuf->VSBind(m_textureShader->GetVSResBinding("VSSystemCBuf"));
-				m_textureVSEntityCBuf->VSBind(m_textureShader->GetVSResBinding("VSEntityCBuf"));
-				m_texturePSEntityCBuf->PSBind(m_textureShader->GetPSResBinding("PSEntityCBuf"));
-
-				if (mat.diffuseMap)
-					mat.diffuseMap->PSBind(m_textureShader->GetPSResBinding("tex"));
-				else
-					m_defaultTexture->PSBind(m_textureShader->GetPSResBinding("tex"));
-
-				cbufs::texture::VSSystemCBuf vsSysCBuf = {};
-				XMStoreFloat4x4(&vsSysCBuf.view, XMMatrixTranspose(camera.GetViewMatrix()));
-				XMStoreFloat4x4(&vsSysCBuf.projection, XMMatrixTranspose(camera.GetProjectionMatrix()));
-				m_textureVSSysCBuf->SetData(&vsSysCBuf);
-
-				cbufs::texture::VSEntityCBuf vsEntityCBuf = {};
-				XMStoreFloat4x4(&vsEntityCBuf.transform, XMMatrixTranspose(transform.GetTransform() * GetEntityParentsTransform(relationship)));
-				m_textureVSEntityCBuf->SetData(&vsEntityCBuf);
-
-				cbufs::texture::PSEntityCBuf psEntityCBuf = {};
-				psEntityCBuf.color = mat.diffuseCol;
-				psEntityCBuf.tiling = mat.tiling;
-				m_texturePSEntityCBuf->SetData(&psEntityCBuf);
-			}
-
-			Renderer::DrawIndexed(mesh.iBuffer->GetCount());
-		}
-	}
-}
-
-void RenderingSystem::Render_Outline(const d3dcore::utils::Camera& camera)
-{
-	auto view = GetSceneRegistry().view<TransformComponent, RelationshipComponent, MeshComponent, MeshRendererComponent, MaterialComponent>();
-	for (auto& entity : view)
-	{
-		auto& [transform, relationship, mesh, renderer, mat] =
-			view.get<TransformComponent, RelationshipComponent, MeshComponent, MeshRendererComponent, MaterialComponent>(entity);
-
-		mesh.vBuffer->Bind();
-		mesh.iBuffer->Bind();
-		Renderer::SetTopology(renderer.topology);
-
-		m_textureShader->Bind();
-
-		m_textureVSSysCBuf->VSBind(m_textureShader->GetVSResBinding("VSSystemCBuf"));
-		m_textureVSEntityCBuf->VSBind(m_textureShader->GetVSResBinding("VSEntityCBuf"));
-		m_texturePSEntityCBuf->PSBind(m_textureShader->GetPSResBinding("PSEntityCBuf"));
-
-		m_defaultTexture->PSBind(m_textureShader->GetPSResBinding("tex"));
-
-		cbufs::texture::VSSystemCBuf vsSysCBuf = {};
-		XMStoreFloat4x4(&vsSysCBuf.view, XMMatrixTranspose(camera.GetViewMatrix()));
-		XMStoreFloat4x4(&vsSysCBuf.projection, XMMatrixTranspose(camera.GetProjectionMatrix()));
-		m_textureVSSysCBuf->SetData(&vsSysCBuf);
-
-		cbufs::texture::VSEntityCBuf vsEntityCBuf = {};
-		TransformComponent oldTransform = transform;
-		transform.scale = transform.scale * 1.1f;
-		XMStoreFloat4x4(&vsEntityCBuf.transform, XMMatrixTranspose(transform.GetTransform() * GetEntityParentsTransform(relationship)));
-		m_textureVSEntityCBuf->SetData(&vsEntityCBuf);
-		transform = oldTransform;
-
-		cbufs::texture::PSEntityCBuf psEntityCBuf = {};
-		psEntityCBuf.color = { 1.0f, 0.0f, 1.0f, 1.0f };
-		psEntityCBuf.tiling = mat.tiling;
-		m_texturePSEntityCBuf->SetData(&psEntityCBuf);
-
-		Renderer::DrawIndexed(mesh.iBuffer->GetCount());
-	}
+	m_normalPass.Execute();
+	m_stencilWritePass.Execute();
+	m_stencilOutlinePass.Execute();
 }
 
 void RenderingSystem::SetLigths()
@@ -251,7 +149,7 @@ void RenderingSystem::SetLigths()
 	cbufs::light::PSSystemCbuf psSysCBuf = {};
 	uint32_t index = 0;
 	{
-		auto view = GetSceneRegistry().view<TransformComponent, RelationshipComponent, DirectionalLightComponent>();
+		auto view = m_scene->GetRegistry().view<TransformComponent, RelationshipComponent, DirectionalLightComponent>();
 		for (auto& entity : view)
 		{
 			auto& [transform, relationship, light] = view.get<TransformComponent, RelationshipComponent, DirectionalLightComponent>(entity);
@@ -270,11 +168,11 @@ void RenderingSystem::SetLigths()
 		}
 
 		psSysCBuf.activeDirLight = static_cast<uint32_t>(view.size_hint());
-	} 
+	}
 
 	index = 0;
 	{
-		auto view = GetSceneRegistry().view<TransformComponent, RelationshipComponent, PointLightComponent>();
+		auto view = m_scene->GetRegistry().view<TransformComponent, RelationshipComponent, PointLightComponent>();
 		for (auto& entity : view)
 		{
 			auto& [transform, relationship, light] = view.get<TransformComponent, RelationshipComponent, PointLightComponent>(entity);
@@ -298,7 +196,7 @@ void RenderingSystem::SetLigths()
 
 	index = 0;
 	{
-		auto view = GetSceneRegistry().view<TransformComponent, RelationshipComponent, SpotLightComponent>();
+		auto view = m_scene->GetRegistry().view<TransformComponent, RelationshipComponent, SpotLightComponent>();
 		for (auto& entity : view)
 		{
 			auto& [transform, relationship, light] = view.get<TransformComponent, RelationshipComponent, SpotLightComponent>(entity);
@@ -328,28 +226,7 @@ void RenderingSystem::SetLigths()
 		psSysCBuf.activeSpotLight = static_cast<uint32_t>(view.size_hint());
 	}
 
-	m_lightPSSysCBuf->SetData(&psSysCBuf);
+	GlobalAsset::GetCBuf("light_ps_system")->SetData(&psSysCBuf);
 }
 
-DirectX::XMMATRIX RenderingSystem::GetEntityParentsTransform(d3dcore::RelationshipComponent& relationship)
-{
-	XMMATRIX result = XMMatrixIdentity();
 
-	if (Entity current = relationship.parent)
-	{
-		std::stack<XMMATRIX> parentsTransform;
-		while (current)
-		{
-			parentsTransform.push(current.GetComponent<TransformComponent>().GetTransform());
-			current = current.GetComponent<RelationshipComponent>().parent;
-		}
-
-		while (!parentsTransform.empty())
-		{
-			result *= parentsTransform.top();
-			parentsTransform.pop();
-		}
-	}
-
-	return result;
-}

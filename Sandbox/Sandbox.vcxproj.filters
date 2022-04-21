@@ -33,10 +33,22 @@
     <ClCompile Include="src\Utils\ModelLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Utils\GlobalAsset.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\System\Rendering\Passes\NormalPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\System\Rendering\Passes\StencilWritePass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\System\Rendering\Passes\StencilOutlineEffectPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="res\shaders\texture.vs.hlsl" />
-    <FxCompile Include="res\shaders\texture.ps.hlsl" />
+    <FxCompile Include="res\shaders\basic.vs.hlsl" />
+    <FxCompile Include="res\shaders\basic.ps.hlsl" />
     <FxCompile Include="res\shaders\light.vs.hlsl" />
     <FxCompile Include="res\shaders\light.ps.hlsl" />
   </ItemGroup>
@@ -60,6 +72,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Utils\ShaderCBufs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\GlobalAsset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\System\Rendering\Passes\NormalPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\System\Rendering\Passes\StencilWritePass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\ComponentUtils.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\System\Rendering\Passes\StencilOutlineEffectPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

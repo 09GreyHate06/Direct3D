@@ -122,8 +122,8 @@
     <ClInclude Include="src\D3DCore\Scene\Components.h" />
     <ClInclude Include="src\D3DCore\Scene\Entity.h" />
     <ClInclude Include="src\D3DCore\Scene\Scene.h" />
-    <ClInclude Include="src\D3DCore\Scene\System.h" />
     <ClInclude Include="src\D3DCore\Utils\BasicMesh.h" />
+    <ClInclude Include="src\D3DCore\Utils\D3DCXM.h" />
     <ClInclude Include="src\D3DCore\Utils\ShaderBuffer.h" />
     <ClInclude Include="src\D3DCore\Utils\Camera.h" />
     <ClInclude Include="src\D3DCore\Utils\EditorCamController.h" />

@@ -31,9 +31,35 @@ namespace d3dcore
 		CreateInputLayout();
 	}
 
+	Shader::Shader(const std::string& vertexFilename)
+	{
+		HRESULT hr;
+
+		std::string vsSource = utils::LoadTextFile(vertexFilename);
+
+		ComPtr<ID3DBlob> errorBlob;
+		if (FAILED(hr = D3DCompile(vsSource.data(), vsSource.size(), nullptr, nullptr, nullptr, "main", "vs_4_0", 0, 0, &m_vsByteCode, &errorBlob)))
+			throw D3DC_SHADER_COMPILATION_EXCEPT(hr, static_cast<const char*>(errorBlob->GetBufferPointer()));
+
+		D3DC_CONTEXT_THROW_INFO(D3DContext::GetDevice()->CreateVertexShader(m_vsByteCode->GetBufferPointer(), m_vsByteCode->GetBufferSize(), nullptr, &m_vShader));
+
+		D3DC_CONTEXT_THROW_INFO(D3DReflect(m_vsByteCode->GetBufferPointer(), m_vsByteCode->GetBufferSize(), __uuidof(ID3D11ShaderReflection), &m_vsReflection));
+
+		m_pShader = nullptr;
+		m_psByteCode = nullptr;
+		m_psReflection = nullptr;
+
+		CreateInputLayout();
+	}
+
 	std::shared_ptr<Shader> Shader::Create(const std::string& vertexFilename, const std::string& pixelFilename)
 	{
 		return std::shared_ptr<Shader>(new Shader(vertexFilename, pixelFilename));
+	}
+
+	std::shared_ptr<Shader> Shader::Create(const std::string& vertexFilename)
+	{
+		return std::shared_ptr<Shader>(new Shader(vertexFilename));
 	}
 
 	void Shader::Bind()

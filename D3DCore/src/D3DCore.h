@@ -26,18 +26,18 @@
 #include "D3DCore/Scene/Components.h"
 #include "D3DCore/Scene/Entity.h"
 #include "D3DCore/Scene/Scene.h"
-#include "D3DCore/Scene/System.h"
 
-#include "D3DCore/Utils/BasicMesh.h"
-#include "D3DCore/Utils/Loader.h"
-#include "D3DCore/Utils/Camera.h"
-#include "D3DCore/Utils/EditorCamController.h"
-#include "D3DCore/Utils/FPSCamController.h"
-#include "D3DCore/Utils/ShaderBuffer.h"
+//#include "D3DCore/Utils/BasicMesh.h"
+//#include "D3DCore/Utils/Loader.h"
+//#include "D3DCore/Utils/Camera.h"
+//#include "D3DCore/Utils/EditorCamController.h"
+//#include "D3DCore/Utils/FPSCamController.h"
+//#include "D3DCore/Utils/ShaderBuffer.h"
+
 
 #include <entt/entt.hpp>
 #include <d3d11.h>
-#include <DirectXMath.h>
+#include "D3DCore/Utils/D3DCXM.h"
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <assimp/Importer.hpp>

@@ -21,8 +21,9 @@ private:
 		GlobalAsset::CreateAndAddShader("basic", "res/shaders/basic.vs.hlsl", "res/shaders/basic.ps.hlsl");
 		GlobalAsset::CreateAndAddShader("lighting", "res/shaders/light.vs.hlsl", "res/shaders/light.ps.hlsl");
 		GlobalAsset::CreateAndAddShader("nullps", "res/shaders/basic.vs.hlsl");
-		GlobalAsset::CreateAndAddShader("fullscreen_invert", "res/shaders/fullscreen.vs.hlsl", "res/shaders/fullscreen_invert.ps.hlsl");
-		GlobalAsset::CreateAndAddShader("fullscreen_blur", "res/shaders/fullscreen.vs.hlsl", "res/shaders/fullscreen_blur.ps.hlsl");
+		GlobalAsset::CreateAndAddShader("fullscreen_invert", "res/shaders/fullscreen.vs.hlsl", "res/shaders/invert.ps.hlsl");
+		GlobalAsset::CreateAndAddShader("fullscreen_blur", "res/shaders/fullscreen.vs.hlsl", "res/shaders/blur.ps.hlsl");
+		GlobalAsset::CreateAndAddShader("screenspace_outline", "res/shaders/basic.vs.hlsl", "res/shaders/blur.ps.hlsl");
 	}
 
 	inline static void LoadTextures()

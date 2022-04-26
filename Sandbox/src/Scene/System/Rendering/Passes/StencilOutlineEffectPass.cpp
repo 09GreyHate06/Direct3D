@@ -13,16 +13,6 @@ void StencilOutlineEffectPass::Add(const std::tuple<DirectX::XMFLOAT4X4, MeshCom
 
 void StencilOutlineEffectPass::Execute()
 {
-	D3D11_DEPTH_STENCIL_DESC dsDesc = CD3D11_DEPTH_STENCIL_DESC(CD3D11_DEFAULT());
-	dsDesc.DepthEnable = FALSE;
-	dsDesc.StencilEnable = TRUE;
-	dsDesc.StencilReadMask = 0xff;
-	dsDesc.StencilWriteMask = 0;
-	dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_NOT_EQUAL;
-	dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	Renderer::SetDepthStencilState(dsDesc);
-
 	for (const auto& components : m_components)
 	{
 		const auto& [transform, mesh, renderer, outliner] = components;
@@ -40,29 +30,9 @@ void StencilOutlineEffectPass::Execute()
 
 		GlobalAsset::GetTexture("default")->PSBind(basicShader->GetPSResBinding("tex"));
 
-		XMFLOAT3 position = utils::ExtractTranslation(transform);
-		XMFLOAT3 rotation = utils::ExtractEulerAngles(transform);
-		XMFLOAT3 scale = utils::ExtractScale(transform);
-
-		//if (rotation.x < 0.0f)
-		//	rotation.x += XMConvertToRadians(360.0f);
-
-		//if (rotation.y < 0.0f)
-		//	rotation.y += XMConvertToRadians(360.0f);
-
-		//if (rotation.z < 0.0f)
-		//	rotation.z += XMConvertToRadians(360.0f);
-
-		std::cout << scale.x << ", " << scale.y << ", " << scale.z << '\n';
-		XMVECTOR quat = XMQuaternionRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
-		XMMATRIX scaledTransform =
-			XMMatrixScaling(scale.x, scale.y, scale.z) *
-			XMMatrixRotationQuaternion(quat) *
-			XMMatrixTranslation(position.x, position.y, position.z);
-
 		cbufs::basic::VSEntityCBuf vsEntityCBuf = {};
-		
-		XMStoreFloat4x4(&vsEntityCBuf.transform, XMMatrixTranspose(scaledTransform));
+		XMMATRIX transformXM = XMLoadFloat4x4(&transform);
+		XMStoreFloat4x4(&vsEntityCBuf.transform, XMMatrixTranspose(transformXM));
 		GlobalAsset::GetCBuf("basic_vs_entity")->SetData(&vsEntityCBuf);
 
 		cbufs::basic::PSEntityCBuf psEntityCBuf = {};

@@ -39,6 +39,10 @@ void EditorLayer::OnAttach()
 	light.ambientIntensity = 0.2f;
 	light.diffuseIntensity = 0.8f;
 	light.specularIntensity = 1.0f;
+
+	//CreateCube();
+	//auto e = CreateCube();
+	//e.AddComponent<OutlineComponent>().color = { 1.0f, 0.0f, 0.0f, 1.0f };
 }
 
 void EditorLayer::OnEvent(d3dcore::Event& event)
@@ -73,7 +77,7 @@ void EditorLayer::OnUpdate()
 		m_sceneViewportWidth > 0.0f && m_sceneViewportHeight > 0.0f &&
 		(desc.width != m_sceneViewportWidth || desc.height != m_sceneViewportHeight))
 	{
-		m_renderingSystem->GetFramebuffer()->Resize(static_cast<uint32_t>(m_sceneViewportWidth), static_cast<uint32_t>(m_sceneViewportHeight));
+		m_renderingSystem->SetViewport(m_sceneViewportWidth, m_sceneViewportHeight);
 		m_editorCamController.SetViewportSize(m_sceneViewportWidth, m_sceneViewportHeight);
 	}
 

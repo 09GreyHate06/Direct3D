@@ -124,15 +124,18 @@ namespace d3dcore
 		rtTexDesc.SampleDesc.Count = dst->m_desc.samples;
 		rtTexDesc.SampleDesc.Quality = dst->m_desc.sampleQuality;
 		rtTexDesc.Usage = D3D11_USAGE_DEFAULT;
-		rtTexDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+		rtTexDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;  
 		rtTexDesc.CPUAccessFlags = 0;
 		rtTexDesc.MiscFlags = 0;
+
+		dst->m_desc.width = src->m_desc.width;
+		dst->m_desc.height = src->m_desc.height;
 
 		HRESULT hr;
 
 		D3DC_CONTEXT_THROW_INFO(dev->CreateTexture2D(&rtTexDesc, nullptr, &dst->m_renderTargetTexture));
 
-		D3DC_CONTEXT_THROW_INFO_ONLY(ctx->ResolveSubresource(dst->m_renderTargetTexture.Get(), 0, src->m_renderTargetTexture.Get(), 0, rtTexDesc.Format));
+		D3DC_CONTEXT_THROW_INFO_ONLY(ctx->ResolveSubresource(dst->m_renderTargetTexture.Get(), D3D11CalcSubresource(0, 0, 1), src->m_renderTargetTexture.Get(), D3D11CalcSubresource(0, 0, 1), rtTexDesc.Format));
 
 		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
 		rtvDesc.Format = rtTexDesc.Format;

@@ -115,10 +115,10 @@
     <FxCompile Include="res\shaders\fullscreen.vs.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="res\shaders\fullscreen_blur.ps.hlsl">
+    <FxCompile Include="res\shaders\blur.ps.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="res\shaders\fullscreen_invert.ps.hlsl">
+    <FxCompile Include="res\shaders\invert.ps.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="res\shaders\light.ps.hlsl">

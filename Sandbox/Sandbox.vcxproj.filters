@@ -52,8 +52,8 @@
     <FxCompile Include="res\shaders\light.vs.hlsl" />
     <FxCompile Include="res\shaders\light.ps.hlsl" />
     <FxCompile Include="res\shaders\fullscreen.vs.hlsl" />
-    <FxCompile Include="res\shaders\fullscreen_invert.ps.hlsl" />
-    <FxCompile Include="res\shaders\fullscreen_blur.ps.hlsl" />
+    <FxCompile Include="res\shaders\invert.ps.hlsl" />
+    <FxCompile Include="res\shaders\blur.ps.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Scene\System\Rendering\RenderingSystem.h">

@@ -18,6 +18,8 @@ public:
 	void Render(const d3dcore::utils::Camera& camera);
 	const std::shared_ptr<d3dcore::Framebuffer> GetFramebuffer() const { return m_framebuffer; }
 
+	void SetViewport(float viewportWidth, float viewportHeight);
+
 private:
 	d3dcore::Scene* m_scene;
 
@@ -31,5 +33,6 @@ private:
 	TestPass m_testPass;
 
 	std::shared_ptr<d3dcore::Framebuffer> m_msFramebuffer;
+	std::shared_ptr<d3dcore::Framebuffer> m_msBlurFramebuffer;
 	std::shared_ptr<d3dcore::Framebuffer> m_framebuffer;
 };

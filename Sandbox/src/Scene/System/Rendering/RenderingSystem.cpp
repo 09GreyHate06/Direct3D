@@ -22,11 +22,12 @@ RenderingSystem::RenderingSystem(d3dcore::Scene* scene)
 	brt.SrcBlend = D3D11_BLEND_SRC_ALPHA;
 	brt.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 	brt.BlendOp = D3D11_BLEND_OP_ADD;
-	brt.SrcBlendAlpha = D3D11_BLEND_ZERO;
+	brt.SrcBlendAlpha = D3D11_BLEND_ONE;
 	brt.DestBlendAlpha = D3D11_BLEND_ONE;
 	brt.BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	brt.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	Renderer::SetBlendState(blendDesc);
+
 
 	auto& window = Application::Get().GetWindow();
 	FramebufferDesc fbDesc = {};
@@ -36,10 +37,12 @@ RenderingSystem::RenderingSystem(d3dcore::Scene* scene)
 	fbDesc.sampleQuality = 1;
 	fbDesc.hasDepth = true;
 	m_msFramebuffer = Framebuffer::Create(fbDesc);
+	m_msBlurFramebuffer = Framebuffer::Create(fbDesc);
+
 
 	fbDesc.samples = 1;
 	fbDesc.sampleQuality = 0;
-	fbDesc.hasDepth = true;
+	fbDesc.hasDepth = false;
 	m_framebuffer = Framebuffer::Create(fbDesc);
 	m_framebuffer->SetColorAttSampler(D3D11_FILTER_MIN_MAG_MIP_POINT, D3D11_TEXTURE_ADDRESS_CLAMP, D3D11_TEXTURE_ADDRESS_CLAMP, nullptr);
 }
@@ -56,18 +59,6 @@ void RenderingSystem::SetScene(d3dcore::Scene* scene)
 
 void RenderingSystem::Render(const d3dcore::utils::Camera& camera)
 {
-	Renderer::SetFramebuffer(m_msFramebuffer);
-	D3D11_VIEWPORT vpDesc = {};
-	vpDesc.Width = static_cast<float>(m_msFramebuffer->GetDesc().width);
-	vpDesc.Height = static_cast<float>(m_msFramebuffer->GetDesc().height);
-	vpDesc.TopLeftX = 0.0f;
-	vpDesc.TopLeftY = 0.0f;
-	vpDesc.MinDepth = 0.0f;
-	vpDesc.MaxDepth = 1.0f;
-	Renderer::SetViewport(vpDesc);
-
-	Renderer::ClearBuffer(0.1f, 0.1f, 0.1f, 1.0f);
-
 	SetLigths();
 
 	cbufs::light::VSSystemCBuf vsLightSysCBuf = {};
@@ -108,13 +99,61 @@ void RenderingSystem::Render(const d3dcore::utils::Camera& camera)
 	Renderer::SetFramebuffer(nullptr);
 }
 
+void RenderingSystem::SetViewport(float viewportWidth, float viewportHeight)
+{
+	m_msFramebuffer->Resize((uint32_t)viewportWidth, (uint32_t)viewportHeight);
+	m_msBlurFramebuffer->Resize((uint32_t)viewportWidth, (uint32_t)viewportHeight);
+	//m_framebuffer->Resize((uint32_t)viewportWidth, (uint32_t)viewportHeight);
+
+	Renderer::SetFramebuffer(m_msFramebuffer.get());
+	D3D11_VIEWPORT vpDesc = {};
+	vpDesc.Width = static_cast<float>(m_msFramebuffer->GetDesc().width);
+	vpDesc.Height = static_cast<float>(m_msFramebuffer->GetDesc().height);
+	vpDesc.TopLeftX = 0.0f;
+	vpDesc.TopLeftY = 0.0f;
+	vpDesc.MinDepth = 0.0f;
+	vpDesc.MaxDepth = 1.0f;
+	Renderer::SetViewport(vpDesc);
+
+
+	Renderer::SetFramebuffer(m_msBlurFramebuffer.get());
+	Renderer::SetViewport(vpDesc);
+
+	Renderer::SetFramebuffer(nullptr);
+}
+
 void RenderingSystem::Render_()
 {
+	Renderer::SetFramebuffer(m_msFramebuffer.get());
+	Renderer::ClearBuffer(0.0f, 0.0f, 0.0f, 0.0f);
+
+	Renderer::SetDepthStencilState(DepthStencilMode::Default);
 	m_normalPass.Execute();
+	Renderer::SetDepthStencilState(DepthStencilMode::Write);
 	m_stencilWritePass.Execute();
+
+
+	Renderer::SetFramebuffer(m_msBlurFramebuffer.get());
+	Renderer::ClearBuffer(0.0f, 0.0f, 0.0f, 0.0f);
+
+	Renderer::SetFramebuffer(m_msBlurFramebuffer.get());
+	Renderer::SetDepthStencilState(DepthStencilMode::Mask);
 	m_stencilOutlinePass.Execute();
-	Framebuffer::Resolve(m_framebuffer.get(), m_msFramebuffer.get());
-	m_testPass.Execute(m_framebuffer.get());
+
+
+	// full screen blur pass
+	Renderer::SetFramebuffer(m_msFramebuffer.get());
+
+	auto blurShader = GlobalAsset::GetShader("fullscreen_blur");
+	blurShader->Bind();
+	GlobalAsset::GetVertexBuffer("screen_vb")->Bind();
+	GlobalAsset::GetIndexBuffer("screen_ib")->Bind();
+	Framebuffer::Resolve(m_framebuffer.get(), m_msBlurFramebuffer.get());
+	m_framebuffer->PSBindColorAttAsTexture2D(blurShader->GetPSResBinding("tex"));
+
+	Renderer::SetTopology(Topology::TriangleList);
+	Renderer::SetDepthStencilState(DepthStencilMode::Mask);
+	Renderer::DrawIndexed(GlobalAsset::GetIndexBuffer("screen_ib")->GetCount());
 }
 
 void RenderingSystem::SetLigths()
@@ -201,5 +240,3 @@ void RenderingSystem::SetLigths()
 
 	GlobalAsset::GetCBuf("light_ps_system")->SetData(&psSysCBuf);
 }
-
-

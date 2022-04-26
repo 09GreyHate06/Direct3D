@@ -15,6 +15,14 @@ namespace d3dcore
 		TriangleStrip = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP,
 	};
 
+	enum class DepthStencilMode
+	{
+		Default,
+		Write,
+		Mask,
+		DepthOff,
+	};
+
 	class Renderer
 	{
 	public:
@@ -25,12 +33,15 @@ namespace d3dcore
 
 		static void SetTopology(Topology topology);
 		static void SetViewport(const D3D11_VIEWPORT& vp);
-		static void SetDepthStencilState(const D3D11_DEPTH_STENCIL_DESC& dsDesc, uint32_t stencilRef = 1);
+		static void SetDepthStencilState(const D3D11_DEPTH_STENCIL_DESC& dsDesc, uint32_t stencilRef = 0xff);
+		static void SetDepthStencilState(DepthStencilMode mode, uint32_t stencilRef = 0xff);
 		static void SetBlendState(const D3D11_BLEND_DESC& bsDesc, std::optional<float> blendFactor = {});
+		static void SetBlendState(bool blend, std::optional<float> blendFactor = {});
 		static void SetRasterizerState(const D3D11_RASTERIZER_DESC& rsDesc);
 
-		// SetFramebuffer doesn't increment shared ptr ref count
-		static void SetFramebuffer(const std::shared_ptr<Framebuffer>& fb);
+		static void SetFramebuffer(const Framebuffer* fb);
+		static void SetRenderTarget(const Framebuffer* fbRT);
+		static void SetDepthStencil(const Framebuffer* fbDS);
 
 		static const D3D11_VIEWPORT& GetViewport() { return s_viewport; }
 
@@ -39,6 +50,9 @@ namespace d3dcore
 		static void Init();
 		static void Shutdown();
 		static void ResizeDefRTV();
+
+		static std::vector<Microsoft::WRL::ComPtr<ID3D11BlendState>> m_blendStates;
+		static std::vector<Microsoft::WRL::ComPtr<ID3D11DepthStencilState>> m_depthStencilStates;
 
 		static ID3D11RenderTargetView* s_activeRTV;
 		static ID3D11DepthStencilView* s_activeDSV;

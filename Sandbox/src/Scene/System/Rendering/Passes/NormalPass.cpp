@@ -15,12 +15,6 @@ void NormalPass::Add(const std::tuple<DirectX::XMFLOAT4X4, MeshComponent, MeshRe
 
 void NormalPass::Execute()
 {
-	D3D11_DEPTH_STENCIL_DESC dsDesc = CD3D11_DEPTH_STENCIL_DESC(CD3D11_DEFAULT());
-	dsDesc.DepthEnable = TRUE;
-	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
-	Renderer::SetDepthStencilState(dsDesc);
-
 	for (const auto& components : m_components)
 	{
 		auto& [transform, mesh, renderer, mat] = components;
@@ -61,10 +55,10 @@ void NormalPass::Execute()
 
 
 
-			XMMATRIX transformMatrix = XMLoadFloat4x4(&transform);
+			XMMATRIX transformXM = XMLoadFloat4x4(&transform);
 			cbufs::light::VSEntityCBuf vsEntityCBuf = {};
-			XMStoreFloat4x4(&vsEntityCBuf.entity.transformMatrix, XMMatrixTranspose(transformMatrix));
-			XMStoreFloat4x4(&vsEntityCBuf.entity.normalMatrix, XMMatrixInverse(nullptr, transformMatrix));
+			XMStoreFloat4x4(&vsEntityCBuf.entity.transformMatrix, XMMatrixTranspose(transformXM));
+			XMStoreFloat4x4(&vsEntityCBuf.entity.normalMatrix, XMMatrixInverse(nullptr, transformXM));
 			GlobalAsset::GetCBuf("light_vs_entity")->SetData(&vsEntityCBuf);
 
 			cbufs::light::PSEntityCBuf psEntityCBuf = {};
@@ -89,8 +83,8 @@ void NormalPass::Execute()
 				GlobalAsset::GetTexture("default")->PSBind(basicShader->GetPSResBinding("tex"));
 
 			cbufs::basic::VSEntityCBuf vsEntityCBuf = {};
-			XMMATRIX transformMatrix = XMLoadFloat4x4(&transform);
-			XMStoreFloat4x4(&vsEntityCBuf.transform, XMMatrixTranspose(transformMatrix));
+			XMMATRIX transformXM = XMLoadFloat4x4(&transform);
+			XMStoreFloat4x4(&vsEntityCBuf.transform, XMMatrixTranspose(transformXM));
 			GlobalAsset::GetCBuf("basic_vs_entity")->SetData(&vsEntityCBuf);
 
 			cbufs::basic::PSEntityCBuf psEntityCBuf = {};

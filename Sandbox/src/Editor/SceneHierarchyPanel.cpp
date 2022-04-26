@@ -59,8 +59,8 @@ void SceneHierarchyPanel::SetContext(d3dcore::Scene* scene)
 {
 	m_context = scene;
 
-	//if (m_selectedEntity)
-	//	m_selectedEntity.RemoveComponent<OutlineComponent>();
+	if (m_selectedEntity)
+		m_selectedEntity.RemoveComponent<OutlineComponent>();
 
 	m_selectedEntity = {};
 }
@@ -99,10 +99,7 @@ void SceneHierarchyPanel::OnImGuiRender()
 
 		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
 		{
-			//if (m_selectedEntity)
-			//	m_selectedEntity.RemoveComponent<OutlineComponent>();
-
-			m_selectedEntity = {};
+			SetSelectedEntity(Entity());
 		}
 
 		ImGui::BeginChild("abc");
@@ -129,11 +126,12 @@ void SceneHierarchyPanel::OnImGuiRender()
 
 void SceneHierarchyPanel::SetSelectedEntity(d3dcore::Entity entity)
 {
-	//if (m_selectedEntity)
-	//	m_selectedEntity.RemoveComponent<OutlineComponent>();
+	if (m_selectedEntity)
+		m_selectedEntity.RemoveComponent<OutlineComponent>();
 
 	m_selectedEntity = entity;
-	//m_selectedEntity.AddComponent<OutlineComponent>().color = { 1.0f, 0.41f, 0.21f, 1.0f };
+	if(m_selectedEntity)
+		m_selectedEntity.AddComponent<OutlineComponent>().color = { 1.0f, 0.41f, 0.21f, 1.0f };
 }
 
 void SceneHierarchyPanel::DrawEntityNode(d3dcore::Entity entity, bool child)
@@ -467,9 +465,9 @@ void SceneHierarchyPanel::DrawComponents(d3dcore::Entity entity)
 		ImGui::DragFloat("Outer cutoff angle", &component.outerCutOffAngle, s_dragSpeed);
 	});
 
-	//DrawComponent<OutlineComponent>("Mesh Outliner", entity, [](auto& component)
-	//{
-	//	ImGui::DragFloat("Outline multiplier", &component.outlineMult, s_dragSpeed);
-	//	ImGui::ColorEdit4("Color", &component.color.x);
-	//});
+	DrawComponent<OutlineComponent>("Mesh Outliner", entity, [](auto& component)
+	{
+		ImGui::DragFloat("Outline multiplier", &component.outlineMult, s_dragSpeed);
+		ImGui::ColorEdit4("Color", &component.color.x);
+	});
 }

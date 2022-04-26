@@ -13,19 +13,6 @@ void StencilWritePass::Add(const std::tuple<DirectX::XMFLOAT4X4, MeshComponent, 
 
 void StencilWritePass::Execute()
 {
-	D3D11_DEPTH_STENCIL_DESC dsDesc = CD3D11_DEPTH_STENCIL_DESC(CD3D11_DEFAULT());
-	dsDesc.DepthEnable = TRUE;
-	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
-	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	dsDesc.StencilEnable = TRUE;
-	dsDesc.StencilWriteMask = 0xff;
-	dsDesc.StencilReadMask = 0;
-	dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-	dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
-	dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_REPLACE;
-	dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	Renderer::SetDepthStencilState(dsDesc);
-
 	for (const auto& components : m_components)
 	{
 		auto& [transform, mesh, renderer] = components;

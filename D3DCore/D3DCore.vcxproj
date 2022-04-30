@@ -93,77 +93,80 @@
   <ItemGroup>
     <ClInclude Include="src\D3DCore.h" />
     <ClInclude Include="src\D3DCore\Core\Application.h" />
-    <ClInclude Include="src\D3DCore\Core\Input.h" />
-    <ClInclude Include="src\D3DCore\Core\LayerStack.h" />
+    <ClInclude Include="src\D3DCore\Core\Base.h" />
     <ClInclude Include="src\D3DCore\Core\D3DCAssert.h" />
     <ClInclude Include="src\D3DCore\Core\D3DCException.h" />
     <ClInclude Include="src\D3DCore\Core\D3DCWindows.h" />
+    <ClInclude Include="src\D3DCore\Core\EntryPoint.h" />
+    <ClInclude Include="src\D3DCore\Core\Input.h" />
     <ClInclude Include="src\D3DCore\Core\KeyCodes.h" />
     <ClInclude Include="src\D3DCore\Core\Layer.h" />
+    <ClInclude Include="src\D3DCore\Core\LayerStack.h" />
     <ClInclude Include="src\D3DCore\Core\Log.h" />
-    <ClInclude Include="src\D3DCore\Core\Base.h" />
-    <ClInclude Include="src\D3DCore\Core\EntryPoint.h" />
     <ClInclude Include="src\D3DCore\Core\MouseCodes.h" />
     <ClInclude Include="src\D3DCore\Core\Time.h" />
+    <ClInclude Include="src\D3DCore\Core\Window.h" />
     <ClInclude Include="src\D3DCore\Events\ApplicationEvent.h" />
     <ClInclude Include="src\D3DCore\Events\Event.h" />
     <ClInclude Include="src\D3DCore\Events\KeyEvent.h" />
     <ClInclude Include="src\D3DCore\Events\MouseEvent.h" />
     <ClInclude Include="src\D3DCore\ImGui\ImGuiLayer.h" />
+    <ClInclude Include="src\D3DCore\Renderer\Buffer.h" />
     <ClInclude Include="src\D3DCore\Renderer\D3DContext.h" />
-    <ClInclude Include="src\D3DCore\Renderer\DXError\dxerr.h" />
+    <ClInclude Include="src\D3DCore\Renderer\DXError\DXGetErrorDescription.inl" />
+    <ClInclude Include="src\D3DCore\Renderer\DXError\DXGetErrorString.inl" />
+    <ClInclude Include="src\D3DCore\Renderer\DXError\DXTrace.inl" />
     <ClInclude Include="src\D3DCore\Renderer\DXError\DxgiInfoManager.h" />
+    <ClInclude Include="src\D3DCore\Renderer\DXError\dxerr.h" />
     <ClInclude Include="src\D3DCore\Renderer\DynamicBuffer.h" />
     <ClInclude Include="src\D3DCore\Renderer\Framebuffer.h" />
     <ClInclude Include="src\D3DCore\Renderer\Renderer.h" />
     <ClInclude Include="src\D3DCore\Renderer\Shader.h" />
-    <ClInclude Include="src\D3DCore\Renderer\Buffer.h" />
     <ClInclude Include="src\D3DCore\Renderer\Texture.h" />
     <ClInclude Include="src\D3DCore\Scene\Components.h" />
     <ClInclude Include="src\D3DCore\Scene\Entity.h" />
     <ClInclude Include="src\D3DCore\Scene\Scene.h" />
     <ClInclude Include="src\D3DCore\Utils\BasicMesh.h" />
-    <ClInclude Include="src\D3DCore\Utils\D3DCXM.h" />
-    <ClInclude Include="src\D3DCore\Utils\ShaderBuffer.h" />
     <ClInclude Include="src\D3DCore\Utils\Camera.h" />
+    <ClInclude Include="src\D3DCore\Utils\D3DCMath.h" />
+    <ClInclude Include="src\D3DCore\Utils\D3DCXM.h" />
     <ClInclude Include="src\D3DCore\Utils\EditorCamController.h" />
     <ClInclude Include="src\D3DCore\Utils\FPSCamController.h" />
     <ClInclude Include="src\D3DCore\Utils\Loader.h" />
+    <ClInclude Include="src\D3DCore\Utils\ShaderBuffer.h" />
     <ClInclude Include="src\d3dcpch.h" />
-    <ClInclude Include="src\D3DCore\Core\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\D3DCore\Core\Application.cpp" />
+    <ClCompile Include="src\D3DCore\Core\D3DCException.cpp" />
     <ClCompile Include="src\D3DCore\Core\Input.cpp" />
     <ClCompile Include="src\D3DCore\Core\LayerStack.cpp" />
-    <ClCompile Include="src\D3DCore\Core\D3DCException.cpp" />
     <ClCompile Include="src\D3DCore\Core\Log.cpp" />
     <ClCompile Include="src\D3DCore\Core\Time.cpp" />
+    <ClCompile Include="src\D3DCore\Core\Window.cpp" />
     <ClCompile Include="src\D3DCore\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\D3DCore\ImGui\ImGuiLayer.cpp" />
+    <ClCompile Include="src\D3DCore\Renderer\Buffer.cpp" />
     <ClCompile Include="src\D3DCore\Renderer\D3DContext.cpp" />
+    <ClCompile Include="src\D3DCore\Renderer\DXError\DxgiInfoManager.cpp" />
     <ClCompile Include="src\D3DCore\Renderer\DXError\dxerr.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\D3DCore\Renderer\DXError\DxgiInfoManager.cpp" />
     <ClCompile Include="src\D3DCore\Renderer\DynamicBuffer.cpp" />
     <ClCompile Include="src\D3DCore\Renderer\Framebuffer.cpp" />
     <ClCompile Include="src\D3DCore\Renderer\Renderer.cpp" />
     <ClCompile Include="src\D3DCore\Renderer\Shader.cpp" />
-    <ClCompile Include="src\D3DCore\Renderer\Buffer.cpp" />
     <ClCompile Include="src\D3DCore\Renderer\Texture.cpp" />
     <ClCompile Include="src\D3DCore\Scene\Scene.cpp" />
     <ClCompile Include="src\D3DCore\Utils\BasicMesh.cpp" />
-    <ClCompile Include="src\D3DCore\Utils\ShaderBuffer.cpp" />
     <ClCompile Include="src\D3DCore\Utils\Camera.cpp" />
     <ClCompile Include="src\D3DCore\Utils\EditorCamController.cpp" />
     <ClCompile Include="src\D3DCore\Utils\FPSCamController.cpp" />
     <ClCompile Include="src\D3DCore\Utils\Loader.cpp" />
+    <ClCompile Include="src\D3DCore\Utils\ShaderBuffer.cpp" />
     <ClCompile Include="src\d3dcpch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\D3DCore\Core\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="vendor\imgui\ImGui.vcxproj">
@@ -172,11 +175,6 @@
     <ProjectReference Include="vendor\assimp\assimp.vcxproj">
       <Project>{724885F2-5EEA-AFC8-47A5-C31C33E63619}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="src\D3DCore\Renderer\DXError\DXGetErrorDescription.inl" />
-    <None Include="src\D3DCore\Renderer\DXError\DXGetErrorString.inl" />
-    <None Include="src\D3DCore\Renderer\DXError\DXTrace.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

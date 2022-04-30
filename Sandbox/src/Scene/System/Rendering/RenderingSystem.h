@@ -26,13 +26,13 @@ private:
 	void Render_();
 
 	void SetLigths();
+	void SetBlurCBuf();
 
 	NormalPass m_normalPass;
 	StencilWritePass m_stencilWritePass;
 	StencilOutlineEffectPass m_stencilOutlinePass;
 	TestPass m_testPass;
 
-	std::shared_ptr<d3dcore::Framebuffer> m_msFramebuffer;
-	std::shared_ptr<d3dcore::Framebuffer> m_msBlurFramebuffer;
+	std::array<std::shared_ptr<d3dcore::Framebuffer>, 3> m_msFramebuffers;
 	std::shared_ptr<d3dcore::Framebuffer> m_framebuffer;
 };

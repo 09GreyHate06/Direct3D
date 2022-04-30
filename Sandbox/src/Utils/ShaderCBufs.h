@@ -114,4 +114,20 @@ namespace cbufs
 			float p2;
 		};
 	}
+
+	namespace blur
+	{
+		struct PSControlCBuf
+		{
+			BOOL horizontal;
+			float padding[3];
+		};
+
+		struct PSKernelCBuf
+		{
+			uint32_t nTaps;
+			float padding[3];
+			DirectX::XMFLOAT4 coefficients[35]; // float4 because of padding
+		};
+	}
 }

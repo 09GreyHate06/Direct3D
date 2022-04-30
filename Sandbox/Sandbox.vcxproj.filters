@@ -1,102 +1,101 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="Editor">
+      <UniqueIdentifier>{8C1A20B0-78BC-4A86-6177-5EDA4DB8D1D6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{B3F7140E-1F0C-3DBF-E88D-E01E546139F0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Scene\Components">
+      <UniqueIdentifier>{E8C60300-D4BF-2252-FDF1-07D7E949025E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\System">
+      <UniqueIdentifier>{67E35C92-5346-EC36-FCCB-24EDE80DB8B9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\System\Rendering">
+      <UniqueIdentifier>{7459555A-6053-7EAC-49C0-14BD3559E418}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\System\Rendering\Passes">
+      <UniqueIdentifier>{D2D7359D-3EF0-1CC7-079D-AC607374B160}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{F68B420E-62A0-6ABF-2B22-0E1F97F566F0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Sandbox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Scene\System\Rendering\RenderingSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Editor\EditorLayer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Editor\SceneHierarchyPanel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Utils\FileDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Utils\ModelLoader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Utils\GlobalAsset.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Scene\System\Rendering\Passes\NormalPass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Scene\System\Rendering\Passes\StencilWritePass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Scene\System\Rendering\Passes\StencilOutlineEffectPass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="res\shaders\basic.vs.hlsl" />
-    <FxCompile Include="res\shaders\basic.ps.hlsl" />
-    <FxCompile Include="res\shaders\light.vs.hlsl" />
-    <FxCompile Include="res\shaders\light.ps.hlsl" />
-    <FxCompile Include="res\shaders\fullscreen.vs.hlsl" />
-    <FxCompile Include="res\shaders\invert.ps.hlsl" />
-    <FxCompile Include="res\shaders\blur.ps.hlsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\Scene\System\Rendering\RenderingSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scene\Components\Components.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Editor\EditorLayer.h">
-      <Filter>Header Files</Filter>
+      <Filter>Editor</Filter>
     </ClInclude>
     <ClInclude Include="src\Editor\SceneHierarchyPanel.h">
-      <Filter>Header Files</Filter>
+      <Filter>Editor</Filter>
     </ClInclude>
-    <ClInclude Include="src\Utils\FileDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Utils\ModelLoader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Utils\ShaderCBufs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Utils\GlobalAsset.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\Scene\Components\Components.h">
+      <Filter>Scene\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\System\Rendering\Passes\NormalPass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scene\System\Rendering\Passes\StencilWritePass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Utils\ComponentUtils.h">
-      <Filter>Source Files</Filter>
+      <Filter>Scene\System\Rendering\Passes</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\System\Rendering\Passes\StencilOutlineEffectPass.h">
-      <Filter>Header Files</Filter>
+      <Filter>Scene\System\Rendering\Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\System\Rendering\Passes\StencilWritePass.h">
+      <Filter>Scene\System\Rendering\Passes</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\System\Rendering\Passes\TestPass.h">
-      <Filter>Header Files</Filter>
+      <Filter>Scene\System\Rendering\Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\System\Rendering\RenderingSystem.h">
+      <Filter>Scene\System\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="src\Utils\Asset.h">
-      <Filter>Header Files</Filter>
+      <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\Utils\ComponentUtils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\FileDialog.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\GlobalAsset.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\ModelLoader.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\ShaderCBufs.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\GaussianBlurPack.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Editor\EditorLayer.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Editor\SceneHierarchyPanel.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Sandbox.cpp" />
+    <ClCompile Include="src\Scene\System\Rendering\Passes\NormalPass.cpp">
+      <Filter>Scene\System\Rendering\Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\System\Rendering\Passes\StencilOutlineEffectPass.cpp">
+      <Filter>Scene\System\Rendering\Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\System\Rendering\Passes\StencilWritePass.cpp">
+      <Filter>Scene\System\Rendering\Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\System\Rendering\RenderingSystem.cpp">
+      <Filter>Scene\System\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utils\FileDialog.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utils\GlobalAsset.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utils\ModelLoader.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

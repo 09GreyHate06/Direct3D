@@ -155,8 +155,8 @@ namespace d3dcore
 		{
 			auto& brt = bsDesc.RenderTarget[0];
 			brt.BlendEnable = TRUE;
-			brt.SrcBlend = D3D11_BLEND_ONE; // to preserve alpha value
-			brt.DestBlendAlpha = D3D11_BLEND_ONE; // to preserve alpha value
+			//brt.SrcBlendAlpha = D3D11_BLEND_ONE; // to preserve alpha value
+			//brt.DestBlendAlpha = D3D11_BLEND_ONE; // to preserve alpha value
 
 			if (blendFactor)
 			{

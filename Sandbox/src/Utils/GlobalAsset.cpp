@@ -101,13 +101,13 @@ std::shared_ptr<d3dcore::ConstantBuffer> GlobalAsset::AddCBuf(const std::string&
 
 std::shared_ptr<d3dcore::ConstantBuffer> GlobalAsset::GetCBuf(const std::string& key)
 {
-	D3DC_ASSERT(s_cbufMap.find(key) != s_cbufMap.end(), "Texture does not exist!");
+	D3DC_ASSERT(s_cbufMap.find(key) != s_cbufMap.end(), "CBuf does not exist!");
 	return s_cbufMap[key];
 }
 
 void GlobalAsset::RemoveCBuf(const std::string& key)
 {
-	D3DC_ASSERT(s_cbufMap.find(key) != s_cbufMap.end(), "Texture does not exist!");
+	D3DC_ASSERT(s_cbufMap.find(key) != s_cbufMap.end(), "CBuf does not exist!");
 	s_cbufMap.erase(key);
 }
 

@@ -23,7 +23,7 @@ private:
 		GlobalAsset::CreateAndAddShader("nullps", "res/shaders/basic.vs.hlsl");
 		GlobalAsset::CreateAndAddShader("fullscreen_invert", "res/shaders/fullscreen.vs.hlsl", "res/shaders/invert.ps.hlsl");
 		GlobalAsset::CreateAndAddShader("fullscreen_blur", "res/shaders/fullscreen.vs.hlsl", "res/shaders/blur.ps.hlsl");
-		GlobalAsset::CreateAndAddShader("screenspace_outline", "res/shaders/basic.vs.hlsl", "res/shaders/blur.ps.hlsl");
+		//GlobalAsset::CreateAndAddShader("screenspace_outline", "res/shaders/basic.vs.hlsl", "res/shaders/blur.ps.hlsl");
 	}
 
 	inline static void LoadTextures()
@@ -117,5 +117,8 @@ private:
 		GlobalAsset::CreateAndAddCBuf("basic_vs_system", sizeof(cbufs::basic::VSSystemCBuf));
 		GlobalAsset::CreateAndAddCBuf("basic_vs_entity", sizeof(cbufs::basic::VSEntityCBuf));
 		GlobalAsset::CreateAndAddCBuf("basic_ps_entity", sizeof(cbufs::basic::PSEntityCBuf));
+
+		GlobalAsset::CreateAndAddCBuf("blur_ps_control", sizeof(cbufs::blur::PSControlCBuf));
+		GlobalAsset::CreateAndAddCBuf("blur_ps_kernel", sizeof(cbufs::blur::PSKernelCBuf));
 	}
 };

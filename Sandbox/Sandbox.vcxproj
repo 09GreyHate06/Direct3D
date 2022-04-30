@@ -91,6 +91,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Editor\EditorLayer.h" />
+    <ClInclude Include="src\Editor\SceneHierarchyPanel.h" />
+    <ClInclude Include="src\Scene\Components\Components.h" />
+    <ClInclude Include="src\Scene\System\Rendering\Passes\NormalPass.h" />
+    <ClInclude Include="src\Scene\System\Rendering\Passes\StencilOutlineEffectPass.h" />
+    <ClInclude Include="src\Scene\System\Rendering\Passes\StencilWritePass.h" />
+    <ClInclude Include="src\Scene\System\Rendering\Passes\TestPass.h" />
+    <ClInclude Include="src\Scene\System\Rendering\RenderingSystem.h" />
+    <ClInclude Include="src\Utils\Asset.h" />
+    <ClInclude Include="src\Utils\ComponentUtils.h" />
+    <ClInclude Include="src\Utils\FileDialog.h" />
+    <ClInclude Include="src\Utils\GaussianBlurPack.h" />
+    <ClInclude Include="src\Utils\GlobalAsset.h" />
+    <ClInclude Include="src\Utils\ModelLoader.h" />
+    <ClInclude Include="src\Utils\ShaderCBufs.h" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="src\Editor\EditorLayer.cpp" />
     <ClCompile Include="src\Editor\SceneHierarchyPanel.cpp" />
     <ClCompile Include="src\Sandbox.cpp" />
@@ -98,10 +115,6 @@
     <ClCompile Include="src\Scene\System\Rendering\Passes\StencilOutlineEffectPass.cpp" />
     <ClCompile Include="src\Scene\System\Rendering\Passes\StencilWritePass.cpp" />
     <ClCompile Include="src\Scene\System\Rendering\RenderingSystem.cpp" />
-    <ClInclude Include="src\Scene\System\Rendering\Passes\StencilOutlineEffectPass.h" />
-    <ClInclude Include="src\Scene\System\Rendering\Passes\TestPass.h" />
-    <ClInclude Include="src\Utils\Asset.h" />
-    <ClInclude Include="src\Utils\ComponentUtils.h" />
     <ClCompile Include="src\Utils\FileDialog.cpp" />
     <ClCompile Include="src\Utils\GlobalAsset.cpp" />
     <ClCompile Include="src\Utils\ModelLoader.cpp" />
@@ -110,49 +123,6 @@
     <ProjectReference Include="..\D3DCore\D3DCore.vcxproj">
       <Project>{A9FF23F2-15DF-A28D-1EF7-2D648A5509EF}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="res\shaders\fullscreen.vs.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="res\shaders\blur.ps.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="res\shaders\invert.ps.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="res\shaders\light.ps.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="res\shaders\light.vs.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="res\shaders\basic.ps.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="res\shaders\basic.vs.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\Editor\EditorLayer.h" />
-    <ClInclude Include="src\Editor\SceneHierarchyPanel.h" />
-    <ClInclude Include="src\Scene\Components\Components.h" />
-    <ClInclude Include="src\Scene\System\Rendering\Passes\NormalPass.h" />
-    <ClInclude Include="src\Scene\System\Rendering\Passes\StencilWritePass.h" />
-    <ClInclude Include="src\Scene\System\Rendering\RenderingSystem.h" />
-    <ClInclude Include="src\Utils\FileDialog.h" />
-    <ClInclude Include="src\Utils\GlobalAsset.h" />
-    <ClInclude Include="src\Utils\ModelLoader.h" />
-    <ClInclude Include="src\Utils\ShaderCBufs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

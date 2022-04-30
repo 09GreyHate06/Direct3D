@@ -4,6 +4,7 @@
 #include "Utils/ShaderCBufs.h"
 #include "Utils/GlobalAsset.h"
 #include "Utils/ComponentUtils.h"
+#include "D3DCore/Utils/D3DCMath.h"
 
 #include <stack>
 
@@ -23,7 +24,7 @@ RenderingSystem::RenderingSystem(d3dcore::Scene* scene)
 	brt.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 	brt.BlendOp = D3D11_BLEND_OP_ADD;
 	brt.SrcBlendAlpha = D3D11_BLEND_ONE;
-	brt.DestBlendAlpha = D3D11_BLEND_ONE;
+	brt.DestBlendAlpha = D3D11_BLEND_ZERO;
 	brt.BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	brt.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	Renderer::SetBlendState(blendDesc);
@@ -36,15 +37,25 @@ RenderingSystem::RenderingSystem(d3dcore::Scene* scene)
 	fbDesc.samples = 4;
 	fbDesc.sampleQuality = 1;
 	fbDesc.hasDepth = true;
-	m_msFramebuffer = Framebuffer::Create(fbDesc);
-	m_msBlurFramebuffer = Framebuffer::Create(fbDesc);
-
+	int i = 0;
+	for (auto& fb : m_msFramebuffers)
+	{
+		if (i != 0)
+		{
+			fbDesc.hasDepth = false;
+		}
+		fb = Framebuffer::Create(fbDesc);
+		i++;
+	}
 
 	fbDesc.samples = 1;
 	fbDesc.sampleQuality = 0;
 	fbDesc.hasDepth = false;
 	m_framebuffer = Framebuffer::Create(fbDesc);
 	m_framebuffer->SetColorAttSampler(D3D11_FILTER_MIN_MAG_MIP_POINT, D3D11_TEXTURE_ADDRESS_CLAMP, D3D11_TEXTURE_ADDRESS_CLAMP, nullptr);
+
+
+	SetBlurCBuf();
 }
 
 RenderingSystem::RenderingSystem()
@@ -95,65 +106,85 @@ void RenderingSystem::Render(const d3dcore::utils::Camera& camera)
 	}
 
 	Render_();
-	Framebuffer::Resolve(m_framebuffer.get(), m_msFramebuffer.get());
+	Framebuffer::Resolve(m_framebuffer.get(), m_msFramebuffers[0].get());
 	Renderer::SetFramebuffer(nullptr);
 }
 
 void RenderingSystem::SetViewport(float viewportWidth, float viewportHeight)
 {
-	m_msFramebuffer->Resize((uint32_t)viewportWidth, (uint32_t)viewportHeight);
-	m_msBlurFramebuffer->Resize((uint32_t)viewportWidth, (uint32_t)viewportHeight);
-	//m_framebuffer->Resize((uint32_t)viewportWidth, (uint32_t)viewportHeight);
-
-	Renderer::SetFramebuffer(m_msFramebuffer.get());
 	D3D11_VIEWPORT vpDesc = {};
-	vpDesc.Width = static_cast<float>(m_msFramebuffer->GetDesc().width);
-	vpDesc.Height = static_cast<float>(m_msFramebuffer->GetDesc().height);
+	vpDesc.Width = viewportWidth;
+	vpDesc.Height = viewportHeight;
 	vpDesc.TopLeftX = 0.0f;
 	vpDesc.TopLeftY = 0.0f;
 	vpDesc.MinDepth = 0.0f;
 	vpDesc.MaxDepth = 1.0f;
-	Renderer::SetViewport(vpDesc);
-
-
-	Renderer::SetFramebuffer(m_msBlurFramebuffer.get());
-	Renderer::SetViewport(vpDesc);
+	for (auto& fb : m_msFramebuffers)
+	{
+		Renderer::SetFramebuffer(fb.get());
+		fb->Resize((uint32_t)viewportWidth, (uint32_t)viewportHeight);
+		Renderer::SetViewport(vpDesc);
+	}
 
 	Renderer::SetFramebuffer(nullptr);
 }
 
 void RenderingSystem::Render_()
 {
-	Renderer::SetFramebuffer(m_msFramebuffer.get());
-	Renderer::ClearBuffer(0.0f, 0.0f, 0.0f, 0.0f);
-
+	// ms fb 0 = main
+	Renderer::SetFramebuffer(nullptr);
+	Renderer::ClearBuffer(0.07f,0.0f,0.12f, 0.0f);
+	Renderer::SetBlendState(false);
 	Renderer::SetDepthStencilState(DepthStencilMode::Default);
 	m_normalPass.Execute();
 	Renderer::SetDepthStencilState(DepthStencilMode::Write);
 	m_stencilWritePass.Execute();
 
-
-	Renderer::SetFramebuffer(m_msBlurFramebuffer.get());
+	Renderer::SetFramebuffer(m_msFramebuffers[1].get());
 	Renderer::ClearBuffer(0.0f, 0.0f, 0.0f, 0.0f);
-
-	Renderer::SetFramebuffer(m_msBlurFramebuffer.get());
-	Renderer::SetDepthStencilState(DepthStencilMode::Mask);
+	Renderer::SetDepthStencilState(DepthStencilMode::Default);
 	m_stencilOutlinePass.Execute();
 
 
-	// full screen blur pass
-	Renderer::SetFramebuffer(m_msFramebuffer.get());
+	// ----------------------- blur outline pass ---------------------------
 
 	auto blurShader = GlobalAsset::GetShader("fullscreen_blur");
 	blurShader->Bind();
 	GlobalAsset::GetVertexBuffer("screen_vb")->Bind();
 	GlobalAsset::GetIndexBuffer("screen_ib")->Bind();
-	Framebuffer::Resolve(m_framebuffer.get(), m_msBlurFramebuffer.get());
+	GlobalAsset::GetCBuf("blur_ps_kernel")->PSBind(blurShader->GetPSResBinding("Kernel"));
+	auto blurControl = GlobalAsset::GetCBuf("blur_ps_control");
+
+
+	// horizontal pass
+	Renderer::SetFramebuffer(m_msFramebuffers[2].get());
+	//Renderer::ClearBuffer(0.0f, 0.0f, 0.0f, 0.0f);
+
+	cbufs::blur::PSControlCBuf controlCbuf;
+	controlCbuf.horizontal = TRUE;
+	blurControl->SetData(&controlCbuf);
+	blurControl->PSBind(blurShader->GetPSResBinding("Control"));
+	Framebuffer::Resolve(m_framebuffer.get(), m_msFramebuffers[1].get());
+	m_framebuffer->PSBindColorAttAsTexture2D(blurShader->GetPSResBinding("tex"));
+
+	Renderer::SetTopology(Topology::TriangleList);
+	Renderer::DrawIndexed(GlobalAsset::GetIndexBuffer("screen_ib")->GetCount());
+
+	// vertical pass
+	Renderer::SetFramebuffer(nullptr);
+	controlCbuf.horizontal = FALSE;
+	blurControl->SetData(&controlCbuf);
+	blurControl->PSBind(blurShader->GetPSResBinding("Control"));
+	Framebuffer::Resolve(m_framebuffer.get(), m_msFramebuffers[2].get());
 	m_framebuffer->PSBindColorAttAsTexture2D(blurShader->GetPSResBinding("tex"));
 
 	Renderer::SetTopology(Topology::TriangleList);
 	Renderer::SetDepthStencilState(DepthStencilMode::Mask);
+	Renderer::SetBlendState(false);
 	Renderer::DrawIndexed(GlobalAsset::GetIndexBuffer("screen_ib")->GetCount());
+
+	// --------------------------- outline pass end -----------------------
+
 }
 
 void RenderingSystem::SetLigths()
@@ -239,4 +270,26 @@ void RenderingSystem::SetLigths()
 	}
 
 	GlobalAsset::GetCBuf("light_ps_system")->SetData(&psSysCBuf);
+}
+
+void RenderingSystem::SetBlurCBuf()
+{
+	int radius = 15;
+	float sigma = 5.2f;
+	cbufs::blur::PSKernelCBuf k;
+	k.nTaps = radius * 2 + 1;
+	float sum = 0.0f;
+	for (int i = 0; i < k.nTaps; i++)
+	{
+		const float x = i - radius;
+		const float gauss = utils::Gauss(x, sigma);
+		sum += gauss;
+		k.coefficients[i].x = gauss;
+	}
+	for (int i = 0; i < k.nTaps; i++)
+	{
+		k.coefficients[i].x /= sum;
+	}
+
+	GlobalAsset::GetCBuf("blur_ps_kernel")->SetData(&k);
 }

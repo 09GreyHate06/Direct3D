@@ -16,9 +16,9 @@ public:
 
 	void SetScene(d3dcore::Scene* scene);
 	void Render(const d3dcore::utils::Camera& camera);
-	const std::shared_ptr<d3dcore::Framebuffer> GetFramebuffer() const { return m_framebuffer; }
+	const std::shared_ptr<d3dcore::RenderTarget>& GetRenderTarget() const { return m_renderTarget; }
 
-	void SetViewport(float viewportWidth, float viewportHeight);
+	void SetRenderTargetSize(uint32_t width, uint32_t height);
 
 private:
 	d3dcore::Scene* m_scene;
@@ -26,13 +26,15 @@ private:
 	void Render_();
 
 	void SetLigths();
-	void SetBlurCBuf();
+	//void SetBlurCBuf();
 
 	NormalPass m_normalPass;
-	StencilWritePass m_stencilWritePass;
-	StencilOutlineEffectPass m_stencilOutlinePass;
-	TestPass m_testPass;
+	//StencilWritePass m_stencilWritePass;
+	//StencilOutlineEffectPass m_stencilOutlinePass;
+	//TestPass m_testPass;
 
-	std::array<std::shared_ptr<d3dcore::Framebuffer>, 3> m_msFramebuffers;
-	std::shared_ptr<d3dcore::Framebuffer> m_framebuffer;
+	std::shared_ptr<d3dcore::RenderTarget> m_msRenderTarget;
+	std::shared_ptr<d3dcore::DepthStencil> m_msDepthStencil;
+
+	std::shared_ptr<d3dcore::RenderTarget> m_renderTarget;
 };

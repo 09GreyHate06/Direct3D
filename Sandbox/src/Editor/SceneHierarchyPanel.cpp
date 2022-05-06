@@ -59,8 +59,8 @@ void SceneHierarchyPanel::SetContext(d3dcore::Scene* scene)
 {
 	m_context = scene;
 
-	if (m_selectedEntity)
-		m_selectedEntity.RemoveComponent<OutlineComponent>();
+	//if (m_selectedEntity)
+	//	m_selectedEntity.RemoveComponent<OutlineComponent>();
 
 	m_selectedEntity = {};
 }
@@ -126,12 +126,12 @@ void SceneHierarchyPanel::OnImGuiRender()
 
 void SceneHierarchyPanel::SetSelectedEntity(d3dcore::Entity entity)
 {
-	if (m_selectedEntity)
-		m_selectedEntity.RemoveComponent<OutlineComponent>();
+	//if (m_selectedEntity)
+	//	m_selectedEntity.RemoveComponent<OutlineComponent>();
 
 	m_selectedEntity = entity;
-	if(m_selectedEntity)
-		m_selectedEntity.AddComponent<OutlineComponent>().color = { 1.0f, 0.41f, 0.21f, 1.0f };
+	//if(m_selectedEntity)
+	//	m_selectedEntity.AddComponent<OutlineComponent>().color = { 1.0f, 0.41f, 0.21f, 1.0f };
 }
 
 void SceneHierarchyPanel::DrawEntityNode(d3dcore::Entity entity, bool child)
@@ -344,6 +344,10 @@ void SceneHierarchyPanel::DrawComponents(d3dcore::Entity entity)
 		const char* filter = "Image Files (*.png, *.jpg, *.jpeg, *.tga)\0*.png; *.jpg; *.jpeg; *.tga";
 		int id = 0;
 		ImGui::Text("Diffuse Map");
+
+		if (component.diffuseMap)
+			ImGui::Image(component.diffuseMap->GetView(), { 100.0f, 100.0f });
+
 		ImGui::PushID(id++);
 		if (ImGui::Button("Browse"))
 		{
@@ -366,12 +370,12 @@ void SceneHierarchyPanel::DrawComponents(d3dcore::Entity entity)
 		ImGui::PopItemWidth();
 		ImGui::PopID();
 
-		ImGui::SameLine();
-		ImGui::PushItemWidth(-1);
-		ImGui::Text(std::string(component.diffuseMap ? component.diffuseMap->GetFilepath().string() : "N/A").c_str());
-		ImGui::PopItemWidth();
 
 		ImGui::Text("Specular Map");
+
+		if (component.specularMap)
+			ImGui::Image(component.specularMap->GetView(), { 100.0f, 100.0f });
+
 		ImGui::PushID(id++);
 		if (ImGui::Button("Browse"))
 		{
@@ -394,13 +398,10 @@ void SceneHierarchyPanel::DrawComponents(d3dcore::Entity entity)
 		ImGui::PopItemWidth();
 		ImGui::PopID();
 
-		ImGui::SameLine();
-		ImGui::PushItemWidth(-1);
-		ImGui::Text(std::string(component.specularMap ? component.specularMap->GetFilepath().string() : "N/A").c_str());
-		ImGui::PopItemWidth();
-
 
 		ImGui::Text("Normal Map");
+		if (component.normalMap)
+			ImGui::Image(component.normalMap->GetView(), { 100.0f, 100.0f });
 		ImGui::PushID(id++);
 		if (ImGui::Button("Browse"))
 		{
@@ -422,11 +423,6 @@ void SceneHierarchyPanel::DrawComponents(d3dcore::Entity entity)
 		}
 		ImGui::PopItemWidth();
 		ImGui::PopID();
-
-		ImGui::SameLine();
-		ImGui::PushItemWidth(-1);
-		ImGui::Text(std::string(component.normalMap ? component.normalMap->GetFilepath().string() : "N/A").c_str());
-		ImGui::PopItemWidth();
 
 		ImGui::ColorEdit4("Diffuse Color", &component.diffuseCol.x);
 		ImGui::DragFloat2("Tiling", &component.tiling.x);
@@ -465,9 +461,9 @@ void SceneHierarchyPanel::DrawComponents(d3dcore::Entity entity)
 		ImGui::DragFloat("Outer cutoff angle", &component.outerCutOffAngle, s_dragSpeed);
 	});
 
-	DrawComponent<OutlineComponent>("Mesh Outliner", entity, [](auto& component)
-	{
-		ImGui::DragFloat("Outline multiplier", &component.outlineMult, s_dragSpeed);
-		ImGui::ColorEdit4("Color", &component.color.x);
-	});
+	//DrawComponent<OutlineComponent>("Mesh Outliner", entity, [](auto& component)
+	//{
+	//	ImGui::DragFloat("Outline multiplier", &component.outlineMult, s_dragSpeed);
+	//	ImGui::ColorEdit4("Color", &component.color.x);
+	//});
 }

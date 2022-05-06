@@ -109,9 +109,6 @@
     <ClInclude Include="src\D3DCore\Renderer\DynamicBuffer.h">
       <Filter>D3DCore\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\D3DCore\Renderer\Framebuffer.h">
-      <Filter>D3DCore\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="src\D3DCore\Renderer\Renderer.h">
       <Filter>D3DCore\Renderer</Filter>
     </ClInclude>
@@ -155,6 +152,8 @@
       <Filter>D3DCore\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\d3dcpch.h" />
+    <ClInclude Include="src\D3DCore\Renderer\RenderTarget.h" />
+    <ClInclude Include="src\D3DCore\Renderer\DepthStencil.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\D3DCore\Core\Application.cpp">
@@ -199,9 +198,6 @@
     <ClCompile Include="src\D3DCore\Renderer\DynamicBuffer.cpp">
       <Filter>D3DCore\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\D3DCore\Renderer\Framebuffer.cpp">
-      <Filter>D3DCore\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="src\D3DCore\Renderer\Renderer.cpp">
       <Filter>D3DCore\Renderer</Filter>
     </ClCompile>
@@ -233,5 +229,7 @@
       <Filter>D3DCore\Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\d3dcpch.cpp" />
+    <ClCompile Include="src\D3DCore\Renderer\RenderTarget.cpp" />
+    <ClCompile Include="src\D3DCore\Renderer\DepthStencil.cpp" />
   </ItemGroup>
 </Project>

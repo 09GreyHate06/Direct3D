@@ -113,14 +113,15 @@
     <ClInclude Include="src\D3DCore\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\D3DCore\Renderer\Buffer.h" />
     <ClInclude Include="src\D3DCore\Renderer\D3DContext.h" />
+    <ClInclude Include="src\D3DCore\Renderer\DepthStencil.h" />
     <ClInclude Include="src\D3DCore\Renderer\DXError\DXGetErrorDescription.inl" />
     <ClInclude Include="src\D3DCore\Renderer\DXError\DXGetErrorString.inl" />
     <ClInclude Include="src\D3DCore\Renderer\DXError\DXTrace.inl" />
     <ClInclude Include="src\D3DCore\Renderer\DXError\DxgiInfoManager.h" />
     <ClInclude Include="src\D3DCore\Renderer\DXError\dxerr.h" />
     <ClInclude Include="src\D3DCore\Renderer\DynamicBuffer.h" />
-    <ClInclude Include="src\D3DCore\Renderer\Framebuffer.h" />
     <ClInclude Include="src\D3DCore\Renderer\Renderer.h" />
+    <ClInclude Include="src\D3DCore\Renderer\RenderTarget.h" />
     <ClInclude Include="src\D3DCore\Renderer\Shader.h" />
     <ClInclude Include="src\D3DCore\Renderer\Texture.h" />
     <ClInclude Include="src\D3DCore\Scene\Components.h" />
@@ -148,13 +149,14 @@
     <ClCompile Include="src\D3DCore\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\D3DCore\Renderer\Buffer.cpp" />
     <ClCompile Include="src\D3DCore\Renderer\D3DContext.cpp" />
+    <ClCompile Include="src\D3DCore\Renderer\DepthStencil.cpp" />
     <ClCompile Include="src\D3DCore\Renderer\DXError\DxgiInfoManager.cpp" />
     <ClCompile Include="src\D3DCore\Renderer\DXError\dxerr.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\D3DCore\Renderer\DynamicBuffer.cpp" />
-    <ClCompile Include="src\D3DCore\Renderer\Framebuffer.cpp" />
     <ClCompile Include="src\D3DCore\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\D3DCore\Renderer\RenderTarget.cpp" />
     <ClCompile Include="src\D3DCore\Renderer\Shader.cpp" />
     <ClCompile Include="src\D3DCore\Renderer\Texture.cpp" />
     <ClCompile Include="src\D3DCore\Scene\Scene.cpp" />

@@ -24,38 +24,36 @@ RenderingSystem::RenderingSystem(d3dcore::Scene* scene)
 	brt.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 	brt.BlendOp = D3D11_BLEND_OP_ADD;
 	brt.SrcBlendAlpha = D3D11_BLEND_ONE;
-	brt.DestBlendAlpha = D3D11_BLEND_ZERO;
+	brt.DestBlendAlpha = D3D11_BLEND_ONE;
 	brt.BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	brt.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	Renderer::SetBlendState(blendDesc);
-
+	Renderer::SetDepthStencilState(DepthStencilMode::Default);
 
 	auto& window = Application::Get().GetWindow();
-	FramebufferDesc fbDesc = {};
-	fbDesc.width = window.GetWidth();
-	fbDesc.height = window.GetHeight();
-	fbDesc.samples = 4;
-	fbDesc.sampleQuality = 1;
-	fbDesc.hasDepth = true;
-	int i = 0;
-	for (auto& fb : m_msFramebuffers)
-	{
-		if (i != 0)
-		{
-			fbDesc.hasDepth = false;
-		}
-		fb = Framebuffer::Create(fbDesc);
-		i++;
-	}
+	RenderTargetDesc rtDesc = {};
+	rtDesc.width = window.GetWidth();
+	rtDesc.height = window.GetHeight();
+	rtDesc.samples = 4;
+	rtDesc.sampleQuality = 1;
+	m_msRenderTarget = RenderTarget::Create(rtDesc);
 
-	fbDesc.samples = 1;
-	fbDesc.sampleQuality = 0;
-	fbDesc.hasDepth = false;
-	m_framebuffer = Framebuffer::Create(fbDesc);
-	m_framebuffer->SetColorAttSampler(D3D11_FILTER_MIN_MAG_MIP_POINT, D3D11_TEXTURE_ADDRESS_CLAMP, D3D11_TEXTURE_ADDRESS_CLAMP, nullptr);
+	rtDesc.samples = 1;
+	rtDesc.sampleQuality = 0;
+	m_renderTarget = RenderTarget::Create(rtDesc);
+	SamplerState sampler = {};
+	sampler.filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	sampler.addressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	sampler.addressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	m_renderTarget->SetTexture2DSamplerState(sampler);
 
-
-	SetBlurCBuf();
+	DepthStencilDesc dsDesc = {};
+	dsDesc.width = window.GetWidth();
+	dsDesc.height = window.GetHeight();
+	dsDesc.samples = 4;
+	dsDesc.sampleQuality = 1;
+	m_msDepthStencil = DepthStencil::Create(dsDesc);
+	//SetBlurCBuf();
 }
 
 RenderingSystem::RenderingSystem()
@@ -96,95 +94,39 @@ void RenderingSystem::Render(const d3dcore::utils::Camera& camera)
 			XMStoreFloat4x4(&transformMatrix, transformMatrixXM);
 
 			m_normalPass.Add({ transformMatrix, mesh, renderer, mat });
-
-			if (m_scene->GetRegistry().any_of<OutlineComponent>(entity))
-			{
-				m_stencilWritePass.Add({ transformMatrix, mesh, renderer });
-				m_stencilOutlinePass.Add({ transformMatrix, mesh, renderer, m_scene->GetRegistry().get<OutlineComponent>(entity) });
-			}
 		}
 	}
 
 	Render_();
-	Framebuffer::Resolve(m_framebuffer.get(), m_msFramebuffers[0].get());
-	Renderer::SetFramebuffer(nullptr);
+	RenderTarget::Resolve(m_renderTarget.get(), m_msRenderTarget.get());
 }
 
-void RenderingSystem::SetViewport(float viewportWidth, float viewportHeight)
+void RenderingSystem::SetRenderTargetSize(uint32_t width, uint32_t height)
 {
-	D3D11_VIEWPORT vpDesc = {};
-	vpDesc.Width = viewportWidth;
-	vpDesc.Height = viewportHeight;
-	vpDesc.TopLeftX = 0.0f;
-	vpDesc.TopLeftY = 0.0f;
-	vpDesc.MinDepth = 0.0f;
-	vpDesc.MaxDepth = 1.0f;
-	for (auto& fb : m_msFramebuffers)
-	{
-		Renderer::SetFramebuffer(fb.get());
-		fb->Resize((uint32_t)viewportWidth, (uint32_t)viewportHeight);
-		Renderer::SetViewport(vpDesc);
-	}
-
-	Renderer::SetFramebuffer(nullptr);
+	m_msRenderTarget->Resize(width, height);
+	m_renderTarget->Resize(width, height);
+	m_msDepthStencil->Resize(width, height);
 }
 
 void RenderingSystem::Render_()
 {
-	// ms fb 0 = main
-	Renderer::SetFramebuffer(nullptr);
-	Renderer::ClearBuffer(0.07f,0.0f,0.12f, 0.0f);
-	Renderer::SetBlendState(false);
-	Renderer::SetDepthStencilState(DepthStencilMode::Default);
+	D3D11_VIEWPORT vp = {};
+	vp.Width = (float)m_msRenderTarget->GetDesc().width;
+	vp.Height = (float)m_msRenderTarget->GetDesc().height;
+	vp.TopLeftX = 0.0f;
+	vp.TopLeftY = 0.0f;
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	Renderer::SetViewport(vp);
+
+	Renderer::SetRenderTarget(m_msRenderTarget.get());
+	Renderer::SetDepthStencil(m_msDepthStencil.get());
+	Renderer::ClearActiveRTV(0.0f, 0.0f, 0.0f, 0.0f);
+	Renderer::ClearActiveDSV(D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	m_normalPass.Execute();
-	Renderer::SetDepthStencilState(DepthStencilMode::Write);
-	m_stencilWritePass.Execute();
 
-	Renderer::SetFramebuffer(m_msFramebuffers[1].get());
-	Renderer::ClearBuffer(0.0f, 0.0f, 0.0f, 0.0f);
-	Renderer::SetDepthStencilState(DepthStencilMode::Default);
-	m_stencilOutlinePass.Execute();
-
-
-	// ----------------------- blur outline pass ---------------------------
-
-	auto blurShader = GlobalAsset::GetShader("fullscreen_blur");
-	blurShader->Bind();
-	GlobalAsset::GetVertexBuffer("screen_vb")->Bind();
-	GlobalAsset::GetIndexBuffer("screen_ib")->Bind();
-	GlobalAsset::GetCBuf("blur_ps_kernel")->PSBind(blurShader->GetPSResBinding("Kernel"));
-	auto blurControl = GlobalAsset::GetCBuf("blur_ps_control");
-
-
-	// horizontal pass
-	Renderer::SetFramebuffer(m_msFramebuffers[2].get());
-	//Renderer::ClearBuffer(0.0f, 0.0f, 0.0f, 0.0f);
-
-	cbufs::blur::PSControlCBuf controlCbuf;
-	controlCbuf.horizontal = TRUE;
-	blurControl->SetData(&controlCbuf);
-	blurControl->PSBind(blurShader->GetPSResBinding("Control"));
-	Framebuffer::Resolve(m_framebuffer.get(), m_msFramebuffers[1].get());
-	m_framebuffer->PSBindColorAttAsTexture2D(blurShader->GetPSResBinding("tex"));
-
-	Renderer::SetTopology(Topology::TriangleList);
-	Renderer::DrawIndexed(GlobalAsset::GetIndexBuffer("screen_ib")->GetCount());
-
-	// vertical pass
-	Renderer::SetFramebuffer(nullptr);
-	controlCbuf.horizontal = FALSE;
-	blurControl->SetData(&controlCbuf);
-	blurControl->PSBind(blurShader->GetPSResBinding("Control"));
-	Framebuffer::Resolve(m_framebuffer.get(), m_msFramebuffers[2].get());
-	m_framebuffer->PSBindColorAttAsTexture2D(blurShader->GetPSResBinding("tex"));
-
-	Renderer::SetTopology(Topology::TriangleList);
-	Renderer::SetDepthStencilState(DepthStencilMode::Mask);
-	Renderer::SetBlendState(false);
-	Renderer::DrawIndexed(GlobalAsset::GetIndexBuffer("screen_ib")->GetCount());
-
-	// --------------------------- outline pass end -----------------------
-
+	Renderer::SetRenderTarget(DEFAULT_RENDER_TARGET);
+	Renderer::SetDepthStencil(nullptr);
 }
 
 void RenderingSystem::SetLigths()
@@ -270,26 +212,4 @@ void RenderingSystem::SetLigths()
 	}
 
 	GlobalAsset::GetCBuf("light_ps_system")->SetData(&psSysCBuf);
-}
-
-void RenderingSystem::SetBlurCBuf()
-{
-	int radius = 15;
-	float sigma = 5.2f;
-	cbufs::blur::PSKernelCBuf k;
-	k.nTaps = radius * 2 + 1;
-	float sum = 0.0f;
-	for (int i = 0; i < k.nTaps; i++)
-	{
-		const float x = i - radius;
-		const float gauss = utils::Gauss(x, sigma);
-		sum += gauss;
-		k.coefficients[i].x = gauss;
-	}
-	for (int i = 0; i < k.nTaps; i++)
-	{
-		k.coefficients[i].x /= sum;
-	}
-
-	GlobalAsset::GetCBuf("blur_ps_kernel")->SetData(&k);
 }

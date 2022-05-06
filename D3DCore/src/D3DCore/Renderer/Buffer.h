@@ -16,6 +16,11 @@ namespace d3dcore
 		void VSBind(uint32_t slot = 0) const;
 		void PSBind(uint32_t slot = 0) const;
 
+#ifdef D3DC_INTERNALS
+		const ID3D11Buffer* GetNativeBuffer() const { return m_constantBuffer.Get(); }
+		ID3D11Buffer* GetNativeBuffer() { return m_constantBuffer.Get(); }
+#endif
+
 		static std::shared_ptr<ConstantBuffer> Create(const void* data, uint32_t size);
 		static std::shared_ptr<ConstantBuffer> Create(uint32_t size);
 
@@ -46,7 +51,12 @@ namespace d3dcore
 		~VertexBuffer() = default;
 		void Bind() const;
 		void SetData(const void* data);
-		
+
+#ifdef D3DC_INTERNALS
+		const ID3D11Buffer* GetNativeBuffer() const { return m_vertexBuffer.Get(); }
+		ID3D11Buffer* GetNativeBuffer() { return m_vertexBuffer.Get(); }
+#endif
+
 		static std::shared_ptr<VertexBuffer> Create(const void* data, const VertexBufferDesc& desc);
 
 
@@ -75,7 +85,12 @@ namespace d3dcore
 		void Bind() const;
 		void SetData(const uint32_t* data);
 		uint32_t GetCount() const { return m_count; }
-		
+
+#ifdef D3DC_INTERNALS
+		const ID3D11Buffer* GetNativeBuffer() const { return m_indexBuffer.Get(); }
+		ID3D11Buffer* GetNativeBuffer() { return m_indexBuffer.Get(); }
+#endif
+
 		static std::shared_ptr<IndexBuffer> Create(const uint32_t* data, const IndexBufferDesc& desc);
 
 	private:

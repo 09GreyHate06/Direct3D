@@ -6,10 +6,6 @@ class TestPass
 {
 public:
 	
-	void Execute(const d3dcore::Framebuffer* fb)
-	{
-
-	}
 
 private:
 

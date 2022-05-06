@@ -18,7 +18,6 @@
 #include "D3DCore/ImGui/ImGuiLayer.h"
 
 #include "D3DCore/Renderer/Renderer.h"
-#include "D3DCore/Renderer/Framebuffer.h"
 #include "D3DCore/Renderer/Shader.h"
 #include "D3DCore/Renderer/Buffer.h"
 #include "D3DCore/Renderer/Texture.h"
@@ -46,4 +45,4 @@
 
 #ifdef D3DC_INTERNALS
 #include "D3DCore/Renderer/D3DContext.h"
-#endif // D3DC_INTERNAL
+#endif // D3DC_INTERNALS

@@ -1,5 +1,4 @@
 #pragma once
-#define D3DC_INTERNALS
 #include "D3DCore.h"
 #include "D3DCore/Utils/Camera.h"
 #include "Passes/NormalPass.h"
@@ -26,15 +25,18 @@ private:
 	void Render_();
 
 	void SetLigths();
-	//void SetBlurCBuf();
+	void SetBlurCBuf();
+	void LoadResources();
 
 	NormalPass m_normalPass;
-	//StencilWritePass m_stencilWritePass;
-	//StencilOutlineEffectPass m_stencilOutlinePass;
+	StencilWritePass m_stencilWritePass;
+	StencilOutlineEffectPass m_stencilOutlinePass;
 	//TestPass m_testPass;
 
-	std::shared_ptr<d3dcore::RenderTarget> m_msRenderTarget;
+	std::array<std::shared_ptr<d3dcore::RenderTarget>, 3> m_msRenderTargets;
 	std::shared_ptr<d3dcore::DepthStencil> m_msDepthStencil;
 
 	std::shared_ptr<d3dcore::RenderTarget> m_renderTarget;
+
+	entt::observer m_observer;
 };

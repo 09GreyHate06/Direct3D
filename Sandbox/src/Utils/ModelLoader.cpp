@@ -52,7 +52,7 @@ Entity ModelLoader::ProcessNode(aiNode* node, const aiScene* scene, d3dcore::Ent
         ProcessMesh(mesh, scene, &meshEntity.AddComponent<MeshComponent>(), &meshEntity.AddComponent<MaterialComponent>());
         auto& mr = meshEntity.AddComponent<MeshRendererComponent>();
         mr.receiveLight = true;
-        mr.topology = Topology::TriangleList;
+        mr.topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
     }
     for (uint32_t i = 0; i < node->mNumChildren; i++)
         ProcessNode(node->mChildren[i], scene, nodeEntity, appScene);

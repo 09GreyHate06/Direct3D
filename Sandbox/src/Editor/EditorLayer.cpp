@@ -2,9 +2,8 @@
 #include "Scene/Components/Components.h"
 #include "Utils/ModelLoader.h"
 #include "Utils/FileDialog.h"
-#include "Utils/GlobalAsset.h"
-#include "Utils/Asset.h"
 #include "D3DCore/Utils/BasicMesh.h"
+#include "Scene/System/Rendering/ResourceLibrary.h"
 
 using namespace d3dcore;
 using namespace DirectX;
@@ -24,8 +23,6 @@ void EditorLayer::OnAttach()
 	m_camera.Set(camDesc);
 	m_editorCamController.SetContext(&m_camera);
 
-	Asset::LoadAssets();
-
 	m_scene = std::make_unique<Scene>();
 	m_renderingSystem = std::make_unique<RenderingSystem>(m_scene.get());
 	m_sceneHierarchyPanel.SetContext(m_scene.get());
@@ -42,9 +39,9 @@ void EditorLayer::OnAttach()
 	light.specularIntensity = 1.0f;
 
 	//CreateCube().GetComponent<TransformComponent>().position = { 0.0f, 0.5f, 2.0f };
-	//auto e = CreateCube();
-	//e.GetComponent<MeshRendererComponent>().topology = Topology::PointList;
-	//e.AddComponent<OutlineComponent>().color = { 1.0f, 0.4f, 0.4f, 1.0f };
+	auto e = CreateCube();
+	e.GetComponent<MeshRendererComponent>().topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	e.AddComponent<OutlineComponent>().color = { 1.0f, 0.4f, 0.4f, 1.0f };
 }
 
 void EditorLayer::OnEvent(d3dcore::Event& event)
@@ -76,8 +73,8 @@ void EditorLayer::OnDetach()
 
 void EditorLayer::OnImGuiRender()
 {
-	Renderer::SetRenderTarget(DEFAULT_RENDER_TARGET);
 	Renderer::SetDepthStencil(nullptr);
+	Renderer::SetRenderTarget(DEFAULT_RENDER_TARGET);
 
 	const auto& app = Application::Get();
 
@@ -191,8 +188,8 @@ d3dcore::Entity EditorLayer::CreateCube()
 {
 	Entity entity = m_scene->CreateEntity("Cube");
 	auto& mc = entity.AddComponent<MeshComponent>();
-	mc.vBuffer = GlobalAsset::GetVertexBuffer("cube_vb");
-	mc.iBuffer = GlobalAsset::GetIndexBuffer("cube_ib");;
+	mc.vBuffer = ResourceLibrary<VertexBuffer>::Get("cube_vb");
+	mc.iBuffer = ResourceLibrary<IndexBuffer>::Get("cube_ib");
 	auto& mat = entity.AddComponent<MaterialComponent>();
 	mat.diffuseMap = nullptr;
 	mat.specularMap = nullptr;
@@ -208,8 +205,8 @@ d3dcore::Entity EditorLayer::CreatePlane()
 {
 	Entity entity = m_scene->CreateEntity("Plane");
 	auto& mc = entity.AddComponent<MeshComponent>();
-	mc.vBuffer = GlobalAsset::GetVertexBuffer("plane_vb");;
-	mc.iBuffer = GlobalAsset::GetIndexBuffer("plane_ib");;
+	mc.vBuffer = ResourceLibrary<VertexBuffer>::Get("plane_vb");
+	mc.iBuffer = ResourceLibrary<IndexBuffer>::Get("plane_ib");
 	auto& mat = entity.AddComponent<MaterialComponent>();
 	mat.diffuseMap = nullptr;
 	mat.specularMap = nullptr;

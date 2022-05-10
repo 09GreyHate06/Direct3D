@@ -9,7 +9,7 @@ struct MeshComponent
 
 struct MeshRendererComponent
 {
-	d3dcore::Topology topology = d3dcore::Topology::TriangleList;
+	D3D11_PRIMITIVE_TOPOLOGY topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	bool receiveLight = true;
 	// bool castShadow = true;
 };
@@ -61,7 +61,6 @@ struct SpotLightComponent
 
 struct OutlineComponent
 {
-	float outlineMult = 1.1f;
 	DirectX::XMFLOAT4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
 };
 

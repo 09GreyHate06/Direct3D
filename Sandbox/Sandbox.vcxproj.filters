@@ -48,16 +48,10 @@
     <ClInclude Include="src\Scene\System\Rendering\RenderingSystem.h">
       <Filter>Scene\System\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="src\Utils\Asset.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="src\Utils\ComponentUtils.h">
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\Utils\FileDialog.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Utils\GlobalAsset.h">
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\Utils\ModelLoader.h">
@@ -67,6 +61,7 @@
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\Utils\GaussianBlurPack.h" />
+    <ClInclude Include="src\Scene\System\Rendering\ResourceLibrary.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Editor\EditorLayer.cpp">
@@ -91,11 +86,9 @@
     <ClCompile Include="src\Utils\FileDialog.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="src\Utils\GlobalAsset.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
     <ClCompile Include="src\Utils\ModelLoader.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
+    <ClCompile Include="src\Scene\System\Rendering\ResourceLibrary.cpp" />
   </ItemGroup>
 </Project>

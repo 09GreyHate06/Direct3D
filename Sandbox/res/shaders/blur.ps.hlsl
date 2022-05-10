@@ -31,15 +31,17 @@ float4 main(float2 uv : TEXCOORD) : SV_TARGET
     }
     
     const int radius = nTaps / 2;
-    float4 acc = { 0.0f, 0.0f, 0.0f, 0.0f };
+    float accAlpha = 0.0f;
+    float3 maxColor = { 0.0f, 0.0f, 0.0f };
     for (int i = -radius; i <= radius; i++)
     {
         const float2 tc = uv + float2(dx * i, dy * i);
         const float4 s = tex.Sample(samplerState, tc).rgba;
         const float coef = coefficients[i + radius];
-        acc += s * coef;
+        accAlpha += s.a * coef;
+        maxColor = max(s.rgb, maxColor);
     }
     
-    return acc;
+    return float4(maxColor, accAlpha);
 
 }

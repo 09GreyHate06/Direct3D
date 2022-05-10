@@ -1,6 +1,6 @@
 #include "StencilOutlineEffectPass.h"
-#include "Utils/GlobalAsset.h"
 #include "Utils/ShaderCBufs.h"
+#include "Scene/System/Rendering/ResourceLibrary.h"
 
 using namespace d3dcore;
 using namespace DirectX;
@@ -19,26 +19,26 @@ void StencilOutlineEffectPass::Execute()
 
 		mesh.vBuffer->Bind();
 		mesh.iBuffer->Bind();
-		Renderer::SetTopology(Topology::TriangleList);
+		Renderer::SetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		auto basicShader = GlobalAsset::GetShader("basic");
+		auto basicShader = ResourceLibrary<Shader>::Get("basic");
 		basicShader->Bind();
 
-		GlobalAsset::GetCBuf("basic_vs_system")->VSBind(basicShader->GetVSResBinding("VSSystemCBuf"));
-		GlobalAsset::GetCBuf("basic_vs_entity")->VSBind(basicShader->GetVSResBinding("VSEntityCBuf"));
-		GlobalAsset::GetCBuf("basic_ps_entity")->PSBind(basicShader->GetPSResBinding("PSEntityCBuf"));
+		ResourceLibrary<ConstantBuffer>::Get("basic_vs_system")->VSBind(basicShader->GetVSResBinding("VSSystemCBuf"));
+		ResourceLibrary<ConstantBuffer>::Get("basic_vs_entity")->VSBind(basicShader->GetVSResBinding("VSEntityCBuf"));
+		ResourceLibrary<ConstantBuffer>::Get("basic_ps_entity")->PSBind(basicShader->GetPSResBinding("PSEntityCBuf"));
 
-		GlobalAsset::GetTexture("default")->PSBind(basicShader->GetPSResBinding("tex"));
+		ResourceLibrary<Texture2D>::Get("default")->PSBind(basicShader->GetPSResBinding("tex"));
 
 		cbufs::basic::VSEntityCBuf vsEntityCBuf = {};
 		XMMATRIX transformXM = XMLoadFloat4x4(&transform);
 		XMStoreFloat4x4(&vsEntityCBuf.transform, XMMatrixTranspose(transformXM));
-		GlobalAsset::GetCBuf("basic_vs_entity")->SetData(&vsEntityCBuf);
+		ResourceLibrary<ConstantBuffer>::Get("basic_vs_entity")->SetData(&vsEntityCBuf);
 
 		cbufs::basic::PSEntityCBuf psEntityCBuf = {};
 		psEntityCBuf.color = outliner.color;
 		psEntityCBuf.tiling = { 1.0f, 1.0f };
-		GlobalAsset::GetCBuf("basic_ps_entity")->SetData(&psEntityCBuf);
+		ResourceLibrary<ConstantBuffer>::Get("basic_ps_entity")->SetData(&psEntityCBuf);
 
 		Renderer::DrawIndexed(mesh.iBuffer->GetCount());
 	}

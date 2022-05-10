@@ -70,9 +70,9 @@ namespace d3dcore
 		D3DC_CONTEXT_THROW_INFO_ONLY(ctx::GetDeviceContext()->DrawIndexed(count, 0, 0));
 	}
 
-	void Renderer::SetTopology(Topology topology)
+	void Renderer::SetTopology(D3D11_PRIMITIVE_TOPOLOGY topology)
 	{
-		ctx::GetDeviceContext()->IASetPrimitiveTopology(static_cast<D3D11_PRIMITIVE_TOPOLOGY>(topology));
+		ctx::GetDeviceContext()->IASetPrimitiveTopology(topology);
 	}
 
 	void Renderer::SetViewport(const D3D11_VIEWPORT& vp)
@@ -96,45 +96,45 @@ namespace d3dcore
 		ctx::GetDeviceContext()->OMSetDepthStencilState(dsState.Get(), stencilRef);
 	}
 
-	void Renderer::SetDepthStencilState(DepthStencilMode mode, uint32_t stencilRef)
-	{
-		D3D11_DEPTH_STENCIL_DESC dsDesc = CD3D11_DEPTH_STENCIL_DESC(CD3D11_DEFAULT());
-		switch (mode)
-		{
-		case d3dcore::DepthStencilMode::Default:
-			break;
-		case d3dcore::DepthStencilMode::Write:
-		{
-			dsDesc.DepthEnable = FALSE;
-			dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-			dsDesc.StencilEnable = TRUE;
-			dsDesc.StencilReadMask = 0x0;
-			dsDesc.StencilWriteMask = 0xff;
-			dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-			dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
-		}
-			break;
-		case d3dcore::DepthStencilMode::Mask:
-		{
-			dsDesc.DepthEnable = FALSE;
-			dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-			dsDesc.StencilEnable = TRUE;
-			dsDesc.StencilReadMask = 0xff;
-			dsDesc.StencilWriteMask = 0x0;
-			dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_NOT_EQUAL;
-			dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-		}
-			break;
-		case d3dcore::DepthStencilMode::DepthOff:
-		{
-			dsDesc.DepthEnable = FALSE;
-			dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-		}
-			break;
-		}
-
-		SetDepthStencilState(dsDesc, stencilRef);
-	}
+	//void Renderer::SetDepthStencilState(DepthStencilMode mode, uint32_t stencilRef)
+	//{
+	//	D3D11_DEPTH_STENCIL_DESC dsDesc = CD3D11_DEPTH_STENCIL_DESC(CD3D11_DEFAULT());
+	//	switch (mode)
+	//	{
+	//	case d3dcore::DepthStencilMode::Default:
+	//		break;
+	//	case d3dcore::DepthStencilMode::Write:
+	//	{
+	//		dsDesc.DepthEnable = FALSE;
+	//		dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	//		dsDesc.StencilEnable = TRUE;
+	//		dsDesc.StencilReadMask = 0x0;
+	//		dsDesc.StencilWriteMask = 0xff;
+	//		dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	//		dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
+	//	}
+	//		break;
+	//	case d3dcore::DepthStencilMode::Mask:
+	//	{
+	//		dsDesc.DepthEnable = FALSE;
+	//		dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	//		dsDesc.StencilEnable = TRUE;
+	//		dsDesc.StencilReadMask = 0xff;
+	//		dsDesc.StencilWriteMask = 0x0;
+	//		dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_NOT_EQUAL;
+	//		dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	//	}
+	//		break;
+	//	case d3dcore::DepthStencilMode::DepthOff:
+	//	{
+	//		dsDesc.DepthEnable = FALSE;
+	//		dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	//	}
+	//		break;
+	//	}
+	//
+	//	SetDepthStencilState(dsDesc, stencilRef);
+	//}
 
 	void Renderer::SetBlendState(const D3D11_BLEND_DESC& bsDesc, std::optional<float> blendFactor)
 	{
@@ -151,34 +151,34 @@ namespace d3dcore
 		ctx::GetDeviceContext()->OMSetBlendState(blendState.Get(), factorData, 0xffffffff);
 	}
 
-	void Renderer::SetBlendState(bool blend, std::optional<float> blendFactor)
-	{
-		D3D11_BLEND_DESC bsDesc = CD3D11_BLEND_DESC(CD3D11_DEFAULT());
-
-		if (blend)
-		{
-			for (int i = 0; i < 8; i++)
-			{
-				auto& brt = bsDesc.RenderTarget[i];
-				brt.BlendEnable = TRUE;
-				brt.SrcBlendAlpha = D3D11_BLEND_ONE; // to preserve alpha value
-				brt.DestBlendAlpha = D3D11_BLEND_ONE; // to preserve alpha value
-
-				if (blendFactor)
-				{
-					brt.SrcBlend = D3D11_BLEND_BLEND_FACTOR;
-					brt.DestBlend = D3D11_BLEND_INV_BLEND_FACTOR;
-				}
-				else
-				{
-					brt.SrcBlend = D3D11_BLEND_SRC_ALPHA;
-					brt.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-				}
-			}
-		}
-
-		SetBlendState(bsDesc, blendFactor);
-	}
+	//void Renderer::SetBlendState(bool blend, std::optional<float> blendFactor)
+	//{
+	//	D3D11_BLEND_DESC bsDesc = CD3D11_BLEND_DESC(CD3D11_DEFAULT());
+	//
+	//	if (blend)
+	//	{
+	//		for (int i = 0; i < 8; i++)
+	//		{
+	//			auto& brt = bsDesc.RenderTarget[i];
+	//			brt.BlendEnable = TRUE;
+	//			brt.SrcBlendAlpha = D3D11_BLEND_ONE; // to preserve alpha value
+	//			brt.DestBlendAlpha = D3D11_BLEND_ONE; // to preserve alpha value
+	//
+	//			if (blendFactor)
+	//			{
+	//				brt.SrcBlend = D3D11_BLEND_BLEND_FACTOR;
+	//				brt.DestBlend = D3D11_BLEND_INV_BLEND_FACTOR;
+	//			}
+	//			else
+	//			{
+	//				brt.SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	//				brt.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	//			}
+	//		}
+	//	}
+	//
+	//	SetBlendState(bsDesc, blendFactor);
+	//}
 
 	void Renderer::SetRasterizerState(const D3D11_RASTERIZER_DESC& rsDesc)
 	{

@@ -275,15 +275,15 @@ void SceneHierarchyPanel::DrawComponents(d3dcore::Entity entity)
 			ImGui::CloseCurrentPopup();
 		}
 
-		//if (ImGui::MenuItem("Outline"))
-		//{
-		//	if (!entity.HasComponent<OutlineComponent>())
-		//		m_selectedEntity.AddComponent<OutlineComponent>();
-		//	else
-		//		D3DC_LOG_WARN(entity.GetComponent<TagComponent>().tag + " already have Outline Component");
+		if (ImGui::MenuItem("Outline"))
+		{
+			if (!entity.HasComponent<OutlineComponent>())
+				m_selectedEntity.AddComponent<OutlineComponent>();
+			else
+				D3DC_LOG_WARN(entity.GetComponent<TagComponent>().tag + " already have Outline Component");
 
-		//	ImGui::CloseCurrentPopup();
-		//}
+			ImGui::CloseCurrentPopup();
+		}
 
 		ImGui::EndPopup();
 	}
@@ -317,22 +317,22 @@ void SceneHierarchyPanel::DrawComponents(d3dcore::Entity entity)
 
 		switch (component.topology)
 		{
-		case Topology::LineList:	   index = 0; break;
-		case Topology::LineStrip:	   index = 1; break;
-		case Topology::PointList:	   index = 2; break;
-		case Topology::TriangleList:   index = 3; break;
-		case Topology::TriangleStrip:  index = 4; break;
+		case D3D11_PRIMITIVE_TOPOLOGY_LINELIST:	       index = 0; break;
+		case D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP:	   index = 1; break;
+		case D3D11_PRIMITIVE_TOPOLOGY_POINTLIST:	   index = 2; break;
+		case D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST:    index = 3; break;
+		case D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP:   index = 4; break;
 		}
 
 		if (ImGui::Combo("Primitive", &index, typeStr, IM_ARRAYSIZE(typeStr)))
 		{
 			switch (index)
 			{
-			case 0: component.topology = Topology::LineList;		 break;
-			case 1: component.topology = Topology::LineStrip;	 break;
-			case 2: component.topology = Topology::PointList;	 break;
-			case 3: component.topology = Topology::TriangleList;  break;
-			case 4: component.topology = Topology::TriangleStrip; break;
+			case 0: component.topology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;       break;
+			case 1: component.topology = D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP;      break;
+			case 2: component.topology = D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;      break;
+			case 3: component.topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;   break;
+			case 4: component.topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;  break;
 			}
 		}
 
@@ -461,9 +461,8 @@ void SceneHierarchyPanel::DrawComponents(d3dcore::Entity entity)
 		ImGui::DragFloat("Outer cutoff angle", &component.outerCutOffAngle, s_dragSpeed);
 	});
 
-	//DrawComponent<OutlineComponent>("Mesh Outliner", entity, [](auto& component)
-	//{
-	//	ImGui::DragFloat("Outline multiplier", &component.outlineMult, s_dragSpeed);
-	//	ImGui::ColorEdit4("Color", &component.color.x);
-	//});
+	DrawComponent<OutlineComponent>("Mesh Outliner", entity, [](auto& component)
+	{
+		ImGui::ColorEdit4("Color", &component.color.x);
+	});
 }

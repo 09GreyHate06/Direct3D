@@ -1,6 +1,6 @@
 #include "StencilWritePass.h"
 #include "Utils/ComponentUtils.h"
-#include "Utils/GlobalAsset.h"
+#include "Scene/System/Rendering/ResourceLibrary.h"
 #include "Utils/ShaderCBufs.h"
 
 using namespace d3dcore;
@@ -21,16 +21,16 @@ void StencilWritePass::Execute()
 		mesh.iBuffer->Bind();
 		Renderer::SetTopology(renderer.topology);
 
-		auto shader = GlobalAsset::GetShader("nullps");
+		auto shader = ResourceLibrary<Shader>::Get("nullps");
 		shader->Bind();
 
-		GlobalAsset::GetCBuf("basic_vs_system")->VSBind(shader->GetVSResBinding("VSSystemCBuf"));
-		GlobalAsset::GetCBuf("basic_vs_entity")->VSBind(shader->GetVSResBinding("VSEntityCBuf"));
+		ResourceLibrary<ConstantBuffer>::Get("basic_vs_system")->VSBind(shader->GetVSResBinding("VSSystemCBuf"));
+		ResourceLibrary<ConstantBuffer>::Get("basic_vs_entity")->VSBind(shader->GetVSResBinding("VSEntityCBuf"));
 
 		cbufs::basic::VSEntityCBuf vsEntityCBuf = {};
 		XMMATRIX transformMatrix = XMLoadFloat4x4(&transform);
 		XMStoreFloat4x4(&vsEntityCBuf.transform, XMMatrixTranspose(transformMatrix));
-		GlobalAsset::GetCBuf("basic_vs_entity")->SetData(&vsEntityCBuf);
+		ResourceLibrary<ConstantBuffer>::Get("basic_vs_entity")->SetData(&vsEntityCBuf);
 
 		Renderer::DrawIndexed(mesh.iBuffer->GetCount());
 	}

@@ -1,7 +1,7 @@
 #include "NormalPass.h"
 #include "Utils/ShaderCBufs.h"
-#include "Utils/GlobalAsset.h"
 #include "Utils/ComponentUtils.h"
+#include "Scene/System/Rendering/ResourceLibrary.h"
 
 using namespace d3dcore;
 using namespace d3dcore::utils;
@@ -27,23 +27,23 @@ void NormalPass::Execute()
 		{
 			BOOL enableNormalMap = FALSE;
 
-			auto lightingShader = GlobalAsset::GetShader("lighting");
+			auto lightingShader = ResourceLibrary<Shader>::Get("lighting");
 			lightingShader->Bind();
 
-			GlobalAsset::GetCBuf("light_vs_system")->VSBind(lightingShader->GetVSResBinding("VSSystemCBuf"));
-			GlobalAsset::GetCBuf("light_vs_entity")->VSBind(lightingShader->GetVSResBinding("VSEntityCBuf"));
-			GlobalAsset::GetCBuf("light_ps_system")->PSBind(lightingShader->GetPSResBinding("PSSystemCBuf"));
-			GlobalAsset::GetCBuf("light_ps_entity")->PSBind(lightingShader->GetPSResBinding("PSEntityCBuf"));
+			ResourceLibrary<ConstantBuffer>::Get("light_vs_system")->VSBind(lightingShader->GetVSResBinding("VSSystemCBuf"));
+			ResourceLibrary<ConstantBuffer>::Get("light_vs_entity")->VSBind(lightingShader->GetVSResBinding("VSEntityCBuf"));
+			ResourceLibrary<ConstantBuffer>::Get("light_ps_system")->PSBind(lightingShader->GetPSResBinding("PSSystemCBuf"));
+			ResourceLibrary<ConstantBuffer>::Get("light_ps_entity")->PSBind(lightingShader->GetPSResBinding("PSEntityCBuf"));
 
 			if (mat.diffuseMap)
 				mat.diffuseMap->PSBind(lightingShader->GetPSResBinding("diffuseMap"));
 			else
-				GlobalAsset::GetTexture("default")->PSBind(lightingShader->GetPSResBinding("diffuseMap"));
+				ResourceLibrary<Texture2D>::Get("default")->PSBind(lightingShader->GetPSResBinding("diffuseMap"));
 
 			if (mat.specularMap)
 				mat.specularMap->PSBind(lightingShader->GetPSResBinding("specularMap"));
 			else
-				GlobalAsset::GetTexture("default")->PSBind(lightingShader->GetPSResBinding("specularMap"));
+				ResourceLibrary<Texture2D>::Get("default")->PSBind(lightingShader->GetPSResBinding("specularMap"));
 
 			if (mat.normalMap)
 			{
@@ -51,7 +51,7 @@ void NormalPass::Execute()
 				enableNormalMap = TRUE;
 			}
 			else
-				GlobalAsset::GetTexture("default")->PSBind(lightingShader->GetPSResBinding("normalMap"));
+				ResourceLibrary<Texture2D>::Get("default")->PSBind(lightingShader->GetPSResBinding("normalMap"));
 
 
 
@@ -59,38 +59,38 @@ void NormalPass::Execute()
 			cbufs::light::VSEntityCBuf vsEntityCBuf = {};
 			XMStoreFloat4x4(&vsEntityCBuf.entity.transformMatrix, XMMatrixTranspose(transformXM));
 			XMStoreFloat4x4(&vsEntityCBuf.entity.normalMatrix, XMMatrixInverse(nullptr, transformXM));
-			GlobalAsset::GetCBuf("light_vs_entity")->SetData(&vsEntityCBuf);
+			ResourceLibrary<ConstantBuffer>::Get("light_vs_entity")->SetData(&vsEntityCBuf);
 
 			cbufs::light::PSEntityCBuf psEntityCBuf = {};
 			psEntityCBuf.material.diffuseCol = mat.diffuseCol;
 			psEntityCBuf.material.tiling = mat.tiling;
 			psEntityCBuf.material.shininess = mat.shininess;
 			psEntityCBuf.material.enableNormalMap = enableNormalMap;
-			GlobalAsset::GetCBuf("light_ps_entity")->SetData(&psEntityCBuf);
+			ResourceLibrary<ConstantBuffer>::Get("light_ps_entity")->SetData(&psEntityCBuf);
 		}
 		else
 		{
-			auto basicShader = GlobalAsset::GetShader("basic");
+			auto basicShader = ResourceLibrary<Shader>::Get("basic");
 			basicShader->Bind();
 
-			GlobalAsset::GetCBuf("basic_vs_system")->VSBind(basicShader->GetVSResBinding("VSSystemCBuf"));
-			GlobalAsset::GetCBuf("basic_vs_entity")->VSBind(basicShader->GetVSResBinding("VSEntityCBuf"));
-			GlobalAsset::GetCBuf("basic_ps_entity")->PSBind(basicShader->GetPSResBinding("PSEntityCBuf"));
+			ResourceLibrary<ConstantBuffer>::Get("basic_vs_system")->VSBind(basicShader->GetVSResBinding("VSSystemCBuf"));
+			ResourceLibrary<ConstantBuffer>::Get("basic_vs_entity")->VSBind(basicShader->GetVSResBinding("VSEntityCBuf"));
+			ResourceLibrary<ConstantBuffer>::Get("basic_ps_entity")->PSBind(basicShader->GetPSResBinding("PSEntityCBuf"));
 
 			if (mat.diffuseMap)
 				mat.diffuseMap->PSBind(basicShader->GetPSResBinding("tex"));
 			else
-				GlobalAsset::GetTexture("default")->PSBind(basicShader->GetPSResBinding("tex"));
+				ResourceLibrary<Texture2D>::Get("default")->PSBind(basicShader->GetPSResBinding("tex"));
 
 			cbufs::basic::VSEntityCBuf vsEntityCBuf = {};
 			XMMATRIX transformXM = XMLoadFloat4x4(&transform);
 			XMStoreFloat4x4(&vsEntityCBuf.transform, XMMatrixTranspose(transformXM));
-			GlobalAsset::GetCBuf("basic_vs_entity")->SetData(&vsEntityCBuf);
+			ResourceLibrary<ConstantBuffer>::Get("basic_vs_entity")->SetData(&vsEntityCBuf);
 
 			cbufs::basic::PSEntityCBuf psEntityCBuf = {};
 			psEntityCBuf.color = mat.diffuseCol;
 			psEntityCBuf.tiling = mat.tiling;
-			GlobalAsset::GetCBuf("basic_ps_entity")->SetData(&psEntityCBuf);
+			ResourceLibrary<ConstantBuffer>::Get("basic_ps_entity")->SetData(&psEntityCBuf);
 		}
 
 		Renderer::DrawIndexed(mesh.iBuffer->GetCount());

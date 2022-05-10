@@ -7,23 +7,6 @@
 
 namespace d3dcore
 {
-	enum class Topology
-	{
-		PointList = D3D11_PRIMITIVE_TOPOLOGY_POINTLIST,
-		LineList = D3D11_PRIMITIVE_TOPOLOGY_LINELIST,
-		LineStrip = D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP,
-		TriangleList = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
-		TriangleStrip = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP,
-	};
-
-	enum class DepthStencilMode
-	{
-		Default,
-		Write,
-		Mask,
-		DepthOff,
-	};
-
 	class Renderer
 	{
 	public:
@@ -32,15 +15,12 @@ namespace d3dcore
 		static void SwapBuffers(uint32_t syncInterval);
 		static void DrawIndexed(uint32_t count);
 
-		static void SetTopology(Topology topology);
+		static void SetTopology(D3D11_PRIMITIVE_TOPOLOGY topology);
 		static void SetViewport(const D3D11_VIEWPORT& vp);
 		static void SetDepthStencilState(const D3D11_DEPTH_STENCIL_DESC& dsDesc, uint32_t stencilRef = 0xff);
-		static void SetDepthStencilState(DepthStencilMode mode, uint32_t stencilRef = 0xff);
 		static void SetBlendState(const D3D11_BLEND_DESC& bsDesc, std::optional<float> blendFactor = {});
-		static void SetBlendState(bool blend, std::optional<float> blendFactor = {});
 		static void SetRasterizerState(const D3D11_RASTERIZER_DESC& rsDesc);
 
-		//static void SetFramebuffer(const Framebuffer* fb);
 		static void SetRenderTarget(const RenderTarget* rt);
 		static void SetDepthStencil(const DepthStencil* ds);
 

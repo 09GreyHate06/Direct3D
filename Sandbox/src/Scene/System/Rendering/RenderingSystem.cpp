@@ -85,7 +85,7 @@ static void SetDepthStencilState(DepthStencilMode mode, uint32_t stencilRef = 0x
 
 
 RenderingSystem::RenderingSystem(d3dcore::Scene* scene)
-	: m_scene(scene)
+	: m_scene(scene), m_phongPass(scene), m_stencilWritePass(scene), m_stencilOutlinePass(scene)
 {
 	SetBlendState(true);
 	SetDepthStencilState(DepthStencilMode::Default);
@@ -125,8 +125,6 @@ RenderingSystem::RenderingSystem(d3dcore::Scene* scene)
 
 	LoadResources();
 	SetBlurCBuf();
-
-	m_observer.connect(m_scene->GetRegistry(), entt::collector.group<MeshComponent, OutlineComponent>(entt::exclude<>));
 }
 
 RenderingSystem::RenderingSystem()
@@ -141,8 +139,8 @@ void RenderingSystem::SetScene(d3dcore::Scene* scene)
 
 void RenderingSystem::Render(const d3dcore::utils::Camera& camera)
 {
-	std::cout << m_observer.size() << '\n';
-	SetLigths();
+	//std::cout << m_observer.size() << '\n';
+	//SetLigths();
 
 	cbufs::light::VSSystemCBuf vsLightSysCBuf = {};
 	XMStoreFloat4x4(&vsLightSysCBuf.camera.view, XMMatrixTranspose(camera.GetViewMatrix()));
@@ -167,12 +165,12 @@ void RenderingSystem::Render(const d3dcore::utils::Camera& camera)
 			XMFLOAT4X4 transformMatrix;
 			XMStoreFloat4x4(&transformMatrix, transformMatrixXM);
 
-			m_normalPass.Add({ transformMatrix, mesh, renderer, mat });
+			//m_normalPass.Add({ transformMatrix, mesh, renderer, mat });
 
 			if (m_scene->GetRegistry().any_of<OutlineComponent>(entity))
 			{
-				m_stencilWritePass.Add({ transformMatrix, mesh, renderer });
-				m_stencilOutlinePass.Add({ transformMatrix, mesh, renderer, Entity(entity, m_scene).GetComponent<OutlineComponent>() });
+				//m_stencilWritePass.Add({ transformMatrix, mesh, renderer });
+				//m_stencilOutlinePass.Add({ transformMatrix, mesh, renderer, Entity(entity, m_scene).GetComponent<OutlineComponent>() });
 			}
 		}
 	}
@@ -207,16 +205,12 @@ void RenderingSystem::Render_()
 	Renderer::SetDepthStencil(m_msDepthStencil.get());
 	Renderer::ClearActiveRTV(0.0f, 0.0f, 0.0f, 0.0f);
 	Renderer::ClearActiveDSV(D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	SetDepthStencilState(DepthStencilMode::Default);
-	m_normalPass.Execute();
-	SetDepthStencilState(DepthStencilMode::Write);
+	m_phongPass.Execute();
 	m_stencilWritePass.Execute();
 
-	SetBlendState(false);
 	Renderer::SetRenderTarget(m_msRenderTargets[1].get());
 	Renderer::SetDepthStencil(nullptr);
 	Renderer::ClearActiveRTV(0.0f, 0.0f, 0.0f, 0.0f);
-	SetDepthStencilState(DepthStencilMode::Default);
 	m_stencilOutlinePass.Execute();
 
 

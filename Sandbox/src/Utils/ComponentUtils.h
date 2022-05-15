@@ -28,3 +28,6 @@ static DirectX::XMMATRIX GetEntityParentsTransform(const d3dcore::RelationshipCo
 
 	return result;
 }
+
+#define REQ_COMP d3dcore::TransformComponent, d3dcore::RelationshipComponent
+#define RENDERABLE_COMP REQ_COMP, MeshComponent, MeshRendererComponent, MaterialComponent

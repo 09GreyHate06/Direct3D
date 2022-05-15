@@ -1,17 +1,14 @@
 #pragma once
 #include "D3DCore.h"
-#include "Scene/Components/Components.h"
+#include "RenderPass.h"
 
-class StencilOutlineEffectPass
+class StencilOutlineEffectPass : public RenderPass
 {
 public:
-	StencilOutlineEffectPass() = default;
+	StencilOutlineEffectPass(d3dcore::Scene* scene);
 
-	void Add(const std::tuple<DirectX::XMFLOAT4X4,
-		MeshComponent, MeshRendererComponent, OutlineComponent>& components);
+	virtual void Execute() override;
 
-	void Execute();
 private:
-	std::vector<std::tuple<DirectX::XMFLOAT4X4,
-		MeshComponent, MeshRendererComponent, OutlineComponent>> m_components;
+	entt::observer m_entities;
 };

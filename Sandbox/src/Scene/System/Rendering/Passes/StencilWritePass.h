@@ -1,17 +1,14 @@
 #pragma once
 
 #include "D3DCore.h"
-#include "Scene/Components/Components.h"
-#include <queue>
+#include "RenderPass.h"
 
-class StencilWritePass
+class StencilWritePass : public RenderPass
 {
 public:
-	StencilWritePass() = default;
-	void Add(const std::tuple<DirectX::XMFLOAT4X4, MeshComponent, MeshRendererComponent>& components);
-
-	void Execute();
+	StencilWritePass(d3dcore::Scene* scene);
+	virtual void Execute() override;
 
 private:
-	std::vector<std::tuple<DirectX::XMFLOAT4X4, MeshComponent, MeshRendererComponent>> m_components;
+	entt::observer m_entities;
 };

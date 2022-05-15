@@ -1,10 +1,10 @@
 #pragma once
 #include "D3DCore.h"
 #include "D3DCore/Utils/Camera.h"
-#include "Passes/NormalPass.h"
 #include "Passes/StencilWritePass.h"
 #include "Passes/StencilOutlineEffectPass.h"
 #include "Passes/TestPass.h"
+#include "Passes/PhongPass.h"
 #include <queue>
 
 class RenderingSystem
@@ -28,7 +28,8 @@ private:
 	void SetBlurCBuf();
 	void LoadResources();
 
-	NormalPass m_normalPass;
+	PhongPass m_phongPass;
+	
 	StencilWritePass m_stencilWritePass;
 	StencilOutlineEffectPass m_stencilOutlinePass;
 	//TestPass m_testPass;
@@ -37,6 +38,4 @@ private:
 	std::shared_ptr<d3dcore::DepthStencil> m_msDepthStencil;
 
 	std::shared_ptr<d3dcore::RenderTarget> m_renderTarget;
-
-	entt::observer m_observer;
 };

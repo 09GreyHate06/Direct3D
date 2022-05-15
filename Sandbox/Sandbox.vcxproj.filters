@@ -33,9 +33,6 @@
     <ClInclude Include="src\Scene\Components\Components.h">
       <Filter>Scene\Components</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene\System\Rendering\Passes\NormalPass.h">
-      <Filter>Scene\System\Rendering\Passes</Filter>
-    </ClInclude>
     <ClInclude Include="src\Scene\System\Rendering\Passes\StencilOutlineEffectPass.h">
       <Filter>Scene\System\Rendering\Passes</Filter>
     </ClInclude>
@@ -62,6 +59,8 @@
     </ClInclude>
     <ClInclude Include="src\Utils\GaussianBlurPack.h" />
     <ClInclude Include="src\Scene\System\Rendering\ResourceLibrary.h" />
+    <ClInclude Include="src\Scene\System\Rendering\Passes\RenderPass.h" />
+    <ClInclude Include="src\Scene\System\Rendering\Passes\PhongPass.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Editor\EditorLayer.cpp">
@@ -71,9 +70,6 @@
       <Filter>Editor</Filter>
     </ClCompile>
     <ClCompile Include="src\Sandbox.cpp" />
-    <ClCompile Include="src\Scene\System\Rendering\Passes\NormalPass.cpp">
-      <Filter>Scene\System\Rendering\Passes</Filter>
-    </ClCompile>
     <ClCompile Include="src\Scene\System\Rendering\Passes\StencilOutlineEffectPass.cpp">
       <Filter>Scene\System\Rendering\Passes</Filter>
     </ClCompile>
@@ -90,5 +86,6 @@
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\Scene\System\Rendering\ResourceLibrary.cpp" />
+    <ClCompile Include="src\Scene\System\Rendering\Passes\PhongPass.cpp" />
   </ItemGroup>
 </Project>

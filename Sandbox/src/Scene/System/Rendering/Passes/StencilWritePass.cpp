@@ -1,39 +1,49 @@
 #include "StencilWritePass.h"
 #include "Utils/ComponentUtils.h"
 #include "Scene/System/Rendering/ResourceLibrary.h"
+#include "Scene/Components/Components.h"
+#include "Utils/ComponentUtils.h"
 #include "Utils/ShaderCBufs.h"
 
 using namespace d3dcore;
 using namespace DirectX;
 
-void StencilWritePass::Add(const std::tuple<DirectX::XMFLOAT4X4, MeshComponent, MeshRendererComponent>& components)
+StencilWritePass::StencilWritePass(d3dcore::Scene* scene)
+	: RenderPass(scene)
 {
-	m_components.emplace_back(components);
+	m_entities.connect(m_scene->GetRegistry(), entt::collector.group<RENDERABLE_COMP, OutlineComponent>(entt::exclude<>));
 }
 
 void StencilWritePass::Execute()
 {
-	for (const auto& components : m_components)
+	D3D11_DEPTH_STENCIL_DESC dsDesc = CD3D11_DEPTH_STENCIL_DESC(CD3D11_DEFAULT());
+	dsDesc.DepthEnable = FALSE;
+	dsDesc.StencilEnable = TRUE;
+	dsDesc.StencilReadMask = 0x0;
+	dsDesc.StencilWriteMask = 0xff;
+	dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
+	Renderer::SetDepthStencilState(dsDesc);
+
+	for (const auto& e : m_entities)
 	{
-		auto& [transform, mesh, renderer] = components;
+		const auto& [transform, relationship, mesh, renderer] = m_scene->GetRegistry().get<REQ_COMP, MeshComponent, MeshRendererComponent>(e);
 
 		mesh.vBuffer->Bind();
 		mesh.iBuffer->Bind();
 		Renderer::SetTopology(renderer.topology);
 
-		auto shader = ResourceLibrary<Shader>::Get("nullps");
-		shader->Bind();
+		auto nullpsShader = ResourceLibrary<Shader>::Get("nullps");
+		nullpsShader->Bind();
 
-		ResourceLibrary<ConstantBuffer>::Get("basic_vs_system")->VSBind(shader->GetVSResBinding("VSSystemCBuf"));
-		ResourceLibrary<ConstantBuffer>::Get("basic_vs_entity")->VSBind(shader->GetVSResBinding("VSEntityCBuf"));
+		XMMATRIX transformXM = transform.GetTransform() * GetEntityParentsTransform(relationship);
+		ResourceLibrary<ConstantBuffer>::Get("basic_vs_system")->VSBind(nullpsShader->GetVSResBinding("VSSystemCBuf"));
+		ResourceLibrary<ConstantBuffer>::Get("basic_vs_entity")->VSBind(nullpsShader->GetVSResBinding("VSEntityCBuf"));
 
 		cbufs::basic::VSEntityCBuf vsEntityCBuf = {};
-		XMMATRIX transformMatrix = XMLoadFloat4x4(&transform);
-		XMStoreFloat4x4(&vsEntityCBuf.transform, XMMatrixTranspose(transformMatrix));
+		XMStoreFloat4x4(&vsEntityCBuf.transform, XMMatrixTranspose(transformXM));
 		ResourceLibrary<ConstantBuffer>::Get("basic_vs_entity")->SetData(&vsEntityCBuf);
 
 		Renderer::DrawIndexed(mesh.iBuffer->GetCount());
 	}
-
-	m_components.clear();
 }

@@ -140,7 +140,7 @@ namespace d3dcore
 		std::ostringstream oss;
 		oss << GetType() << '\n'
 			<< "\n[Error Info]\n" << GetErrorInfo() << "\n\n"
-			<< GetOriginString();;
+			<< GetOriginString();
 		m_whatBuffer = oss.str();
 		return m_whatBuffer.c_str();
 	}

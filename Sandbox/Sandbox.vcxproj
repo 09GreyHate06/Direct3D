@@ -93,14 +93,17 @@
   <ItemGroup>
     <ClInclude Include="src\Editor\EditorLayer.h" />
     <ClInclude Include="src\Editor\SceneHierarchyPanel.h" />
+    <ClInclude Include="src\Scene\Components.h" />
     <ClInclude Include="src\Scene\Components\Components.h" />
     <ClInclude Include="src\Scene\System\Rendering\Passes\PhongPass.h" />
     <ClInclude Include="src\Scene\System\Rendering\Passes\RenderPass.h" />
-    <ClInclude Include="src\Scene\System\Rendering\ResourceLibrary.h" />
     <ClInclude Include="src\Scene\System\Rendering\Passes\StencilOutlineEffectPass.h" />
     <ClInclude Include="src\Scene\System\Rendering\Passes\StencilWritePass.h" />
     <ClInclude Include="src\Scene\System\Rendering\Passes\TestPass.h" />
     <ClInclude Include="src\Scene\System\Rendering\RenderingSystem.h" />
+    <ClInclude Include="src\Scene\System\Rendering\RenderPasses\Pass.h" />
+    <ClInclude Include="src\Scene\System\Rendering\ResourceLibrary.h" />
+    <ClInclude Include="src\Scene\System\Rendering\Test\RenderGraph.h" />
     <ClInclude Include="src\Utils\ComponentUtils.h" />
     <ClInclude Include="src\Utils\FileDialog.h" />
     <ClInclude Include="src\Utils\GaussianBlurPack.h" />
@@ -114,8 +117,8 @@
     <ClCompile Include="src\Scene\System\Rendering\Passes\PhongPass.cpp" />
     <ClCompile Include="src\Scene\System\Rendering\Passes\StencilOutlineEffectPass.cpp" />
     <ClCompile Include="src\Scene\System\Rendering\Passes\StencilWritePass.cpp" />
-    <ClCompile Include="src\Scene\System\Rendering\ResourceLibrary.cpp" />
     <ClCompile Include="src\Scene\System\Rendering\RenderingSystem.cpp" />
+    <ClCompile Include="src\Scene\System\Rendering\ResourceLibrary.cpp" />
     <ClCompile Include="src\Utils\FileDialog.cpp" />
     <ClCompile Include="src\Utils\ModelLoader.cpp" />
   </ItemGroup>

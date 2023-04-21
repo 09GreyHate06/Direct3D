@@ -211,8 +211,8 @@ namespace d3dcore
 		HRESULT hr;
 
 		// gain access to texturesub resource in swap chain (back buffer)
-		ComPtr<ID3D11Resource> backBuffer = nullptr;
-		D3DC_CONTEXT_THROW_INFO(ctx::GetSwapChain()->GetBuffer(0, __uuidof(ID3D11Resource), &backBuffer)); // 0 is the index of back buffer
+		ComPtr<ID3D11Texture2D> backBuffer = nullptr;
+		D3DC_CONTEXT_THROW_INFO(ctx::GetSwapChain()->GetBuffer(0, __uuidof(ID3D11Texture2D), &backBuffer)); // 0 is the index of back buffer
 		D3DC_CONTEXT_THROW_INFO(ctx::GetDevice()->CreateRenderTargetView(backBuffer.Get(), nullptr, &s_swapChainRTV));
 
 		D3D11_RASTERIZER_DESC rsDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT());

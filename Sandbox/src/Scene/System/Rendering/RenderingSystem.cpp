@@ -1,4 +1,3 @@
-#pragma once
 #include "RenderingSystem.h"
 #include "Scene/Components/Components.h"
 #include "Utils/ShaderCBufs.h"
